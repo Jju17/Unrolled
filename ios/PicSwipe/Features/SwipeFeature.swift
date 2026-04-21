@@ -16,7 +16,19 @@ struct SwipeFeature {
         var authorizationStatus: PhotoAuthorizationStatus = .notDetermined
         var deleted = 0
         var drag: CGSize = .zero
-        var exitingDirection = 0  // -1 delete, +1 keep, 0 none
+        /// -1 delete, +1 keep, 0 none. Read by `ExitingCardView` to pick
+        /// the direction of the fly-off.
+        var exitingDirection = 0
+        /// The card currently flying off. While non-nil, an overlay
+        /// renders it with its own `@State`-driven animation, independent
+        /// of the stack (which has already advanced). Cleared by
+        /// `swipeExitAnimationCompleted` after the known animation
+        /// duration has elapsed.
+        var exitingPhoto: PhotoAsset?
+        /// Finger position captured at commit time. The exit overlay
+        /// starts here so the fly-off continues the gesture arc instead
+        /// of teleporting to screen centre.
+        var exitingStartDrag: CGSize = .zero
         var fullscreenOpen = false
         var history: [SwipeHistoryEntry] = []
         var isDragging = false
@@ -72,7 +84,9 @@ struct SwipeFeature {
         case resetButtonTapped
         case settingsButtonTapped
         case shuffleButtonTapped
-        case swipeAnimationCompleted(direction: Int)
+        /// Fires after `exitAnimationDurationMs`. Clears the overlay so
+        /// the exiting card disappears once it has flown off-screen.
+        case swipeExitAnimationCompleted
         case topCardTapped
         case undoButtonTapped
         case viewAllPhotosTapped
@@ -82,7 +96,11 @@ struct SwipeFeature {
     enum CancelID { case fetchAlbums, fetchPhotos, swipeAnimation }
 
     static let dragThreshold: CGFloat = 110
-    static let animationDurationMs = 320
+    /// The overlay's fly-off animation itself is 260 ms; we wait 60 ms
+    /// more before clearing `exitingPhoto` so the overlay is never
+    /// yanked mid-flight (which manifested as the card "stopping" the
+    /// instant the finger lifted).
+    static let exitAnimationDurationMs = 320
 
     @Dependency(\.continuousClock) var clock
     @Dependency(\.openURL) var openURL
@@ -111,8 +129,6 @@ struct SwipeFeature {
 
             case .albumsLoaded(let albums):
                 state.albums = albums
-                // Adopt the first album's ID as the default if nothing is
-                // selected yet — makes subsequent re-picks compare by id.
                 if state.selectedAlbumID == nil {
                     state.selectedAlbumID = albums.first?.id
                 }
@@ -126,8 +142,6 @@ struct SwipeFeature {
                 return .none
 
             case .binding:
-                // Sheet dismissals & other binding-driven state writes
-                // (e.g. swipe-down to close) land here via `BindingReducer`.
                 return .none
 
             case .cardDragChanged(let translation):
@@ -184,36 +198,28 @@ struct SwipeFeature {
             case .shuffleButtonTapped:
                 state.shuffleEnabled.toggle()
                 if state.shuffleEnabled {
-                    // Entering shuffle: remember where we are in the
-                    // unshuffled list so we can come back to it.
                     state.unshuffledIndex = state.activeIndex
                     state.photos = state.loadedPhotos.shuffled()
                     state.activeIndex = 0
                 } else {
-                    // Exiting shuffle: resume at the photo the user was
-                    // reviewing before turning shuffle on.
                     state.photos = state.loadedPhotos
                     state.activeIndex = min(state.unshuffledIndex, state.photos.count)
                 }
                 state.history.removeAll()
                 state.drag = .zero
                 state.exitingDirection = 0
+                state.exitingPhoto = nil
+                state.exitingStartDrag = .zero
                 state.isDragging = false
                 return .cancel(id: CancelID.swipeAnimation)
 
-            case .swipeAnimationCompleted(let direction):
-                state.history.append(
-                    SwipeHistoryEntry(index: state.activeIndex, kept: direction == 1)
-                )
-                if direction == 1 { state.kept += 1 } else { state.deleted += 1 }
-                state.activeIndex += 1
-                state.drag = .zero
+            case .swipeExitAnimationCompleted:
+                state.exitingPhoto = nil
                 state.exitingDirection = 0
+                state.exitingStartDrag = .zero
                 return .none
 
             case .topCardTapped:
-                // Clear any transient drag state from the tap gesture
-                // (onChanged can fire with zero translation before onEnded).
                 state.drag = .zero
                 state.isDragging = false
                 state.fullscreenOpen = true
@@ -227,22 +233,16 @@ struct SwipeFeature {
                     state.deleted = max(0, state.deleted - 1)
                 }
                 state.activeIndex = last.index
-                return .none
+                state.exitingPhoto = nil
+                state.exitingDirection = 0
+                state.exitingStartDrag = .zero
+                return .cancel(id: CancelID.swipeAnimation)
 
             case .viewAllPhotosTapped:
-                // First album in the list is always the "all photos"
-                // collection (smartAlbumUserLibrary on iOS).
                 guard let firstID = state.albums.first?.id else { return .none }
                 return .send(.albumPicked(firstID))
 
             case .viewInPhotosTapped:
-                // Sheet dismissal is handled by SwiftUI (the settings view
-                // calls `dismiss()` which flips `settingsOpen` via the
-                // BindingReducer). This action is purely the side-effect.
-                //
-                // No officially-documented URL scheme opens a specific
-                // PHAsset; this launches the Photos app at its root
-                // (best-effort, honoured on iOS 14+).
                 return .run { _ in
                     if let url = URL(string: "photos-redirect://") {
                         await openURL(url)
@@ -254,9 +254,6 @@ struct SwipeFeature {
 
     // MARK: - Helpers
 
-    /// Kick off the two independent fetches that we need once the user is
-    /// authorized: the list of albums for the picker + the photos for the
-    /// currently-selected album (default: Recents).
     private func loadLibrary(_ state: inout State) -> Effect<Action> {
         let photosEffect = fetchPhotos(&state, albumID: state.selectedAlbumID)
         let albumsEffect: Effect<Action> = .run { send in
@@ -276,12 +273,26 @@ struct SwipeFeature {
         .cancellable(id: CancelID.fetchPhotos)
     }
 
+    /// Commits the swipe synchronously AND captures the data the exit
+    /// overlay needs (photo, direction, drag-at-lift). The overlay
+    /// renders this photo flying off while the stack has already
+    /// advanced underneath, so the new top card is immediately drag-able.
     private func startSwipe(_ state: inout State, direction: Int) -> Effect<Action> {
         guard state.activeIndex < state.photos.count else { return .none }
+        let committedPhoto = state.photos[state.activeIndex]
+        state.history.append(
+            SwipeHistoryEntry(index: state.activeIndex, kept: direction == 1)
+        )
+        if direction == 1 { state.kept += 1 } else { state.deleted += 1 }
+        state.activeIndex += 1
+        state.exitingPhoto = committedPhoto
         state.exitingDirection = direction
+        state.exitingStartDrag = state.drag
+        state.drag = .zero
+        state.isDragging = false
         return .run { send in
-            try await clock.sleep(for: .milliseconds(Self.animationDurationMs))
-            await send(.swipeAnimationCompleted(direction: direction))
+            try await clock.sleep(for: .milliseconds(Self.exitAnimationDurationMs))
+            await send(.swipeExitAnimationCompleted)
         }
         .cancellable(id: CancelID.swipeAnimation)
     }
@@ -293,6 +304,8 @@ struct SwipeFeature {
         state.deleted = 0
         state.drag = .zero
         state.exitingDirection = 0
+        state.exitingPhoto = nil
+        state.exitingStartDrag = .zero
         state.isDragging = false
         state.unshuffledIndex = 0
     }

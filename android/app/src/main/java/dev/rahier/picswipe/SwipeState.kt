@@ -8,6 +8,14 @@ data class SwipeState(
     val dragX: Float = 0f,
     val dragY: Float = 0f,
     val exitingDirection: Int = 0,   // -1 delete, +1 keep, 0 none
+    /** Photo currently flying off as an overlay, or `null`. Rendered in
+     *  a dedicated `ExitingCardOverlay` with its own `Animatable` so the
+     *  fly-off can't be interrupted by the stack shifting underneath. */
+    val exitingPhoto: PhotoAsset? = null,
+    /** Finger X position captured at commit time. The overlay starts
+     *  here so the fly-off continues the gesture arc. */
+    val exitingStartDragX: Float = 0f,
+    val exitingStartDragY: Float = 0f,
     val fullscreenOpen: Boolean = false,
     val history: List<SwipeHistoryEntry> = emptyList(),
     val isDragging: Boolean = false,

@@ -21,7 +21,11 @@ sealed interface SwipeIntent {
     data object SettingsButtonTapped : SwipeIntent
     data object SettingsDismissed : SwipeIntent
     data object ShuffleButtonTapped : SwipeIntent
-    data class SwipeAnimationCompleted(val direction: Int) : SwipeIntent
+    /** Fired from a delayed coroutine after a commit. Just clears
+     *  [SwipeState.exitingPhoto] / [SwipeState.exitingDirection] — the
+     *  actual commit (index bump, history, tallies) happened
+     *  synchronously in [SwipeViewModel.startSwipe]. */
+    data object SwipeExitAnimationCompleted : SwipeIntent
     data object TopCardTapped : SwipeIntent
     data object UndoButtonTapped : SwipeIntent
     data object ViewAllPhotosTapped : SwipeIntent

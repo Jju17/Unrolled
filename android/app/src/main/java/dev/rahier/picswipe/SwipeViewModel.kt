@@ -131,7 +131,6 @@ class SwipeViewModel(
                 _state.update {
                     val newShuffle = !it.shuffleEnabled
                     if (newShuffle) {
-                        // Entering shuffle: remember position so disabling resumes there.
                         it.copy(
                             shuffleEnabled = true,
                             unshuffledIndex = it.activeIndex,
@@ -140,10 +139,12 @@ class SwipeViewModel(
                             history = emptyList(),
                             dragX = 0f, dragY = 0f,
                             exitingDirection = 0,
+                            exitingPhoto = null,
+                            exitingStartDragX = 0f,
+                            exitingStartDragY = 0f,
                             isDragging = false
                         )
                     } else {
-                        // Exiting shuffle: resume at pre-shuffle position.
                         it.copy(
                             shuffleEnabled = false,
                             photos = it.loadedPhotos,
@@ -151,23 +152,22 @@ class SwipeViewModel(
                             history = emptyList(),
                             dragX = 0f, dragY = 0f,
                             exitingDirection = 0,
+                            exitingPhoto = null,
+                            exitingStartDragX = 0f,
+                            exitingStartDragY = 0f,
                             isDragging = false
                         )
                     }
                 }
             }
 
-            is SwipeIntent.SwipeAnimationCompleted ->
+            SwipeIntent.SwipeExitAnimationCompleted ->
                 _state.update {
                     it.copy(
-                        history = it.history + SwipeHistoryEntry(it.activeIndex, intent.direction == 1),
-                        kept = if (intent.direction == 1) it.kept + 1 else it.kept,
-                        deleted = if (intent.direction == -1) it.deleted + 1 else it.deleted,
-                        activeIndex = it.activeIndex + 1,
-                        dragX = 0f,
-                        dragY = 0f,
+                        exitingPhoto = null,
                         exitingDirection = 0,
-                        isDragging = false
+                        exitingStartDragX = 0f,
+                        exitingStartDragY = 0f
                     )
                 }
 
@@ -183,12 +183,17 @@ class SwipeViewModel(
 
             SwipeIntent.UndoButtonTapped -> {
                 val last = _state.value.history.lastOrNull() ?: return
+                cancelAnimation()
                 _state.update {
                     it.copy(
                         history = it.history.dropLast(1),
                         kept = if (last.kept) (it.kept - 1).coerceAtLeast(0) else it.kept,
                         deleted = if (!last.kept) (it.deleted - 1).coerceAtLeast(0) else it.deleted,
-                        activeIndex = last.index
+                        activeIndex = last.index,
+                        exitingPhoto = null,
+                        exitingDirection = 0,
+                        exitingStartDragX = 0f,
+                        exitingStartDragY = 0f
                     )
                 }
             }
@@ -237,11 +242,31 @@ class SwipeViewModel(
     private fun startSwipe(direction: Int) {
         val s = _state.value
         if (s.activeIndex >= s.photos.size) return
-        _state.update { it.copy(exitingDirection = direction) }
+        val committedIndex = s.activeIndex
+        val committedPhoto = s.photos[committedIndex]
+        // Commit synchronously and capture what the fly-off overlay needs
+        // (photo + drag-at-lift). The overlay renders that photo with
+        // its own `Animatable`, independent of the stack shift, so the
+        // animation always plays its full arc.
+        _state.update {
+            it.copy(
+                history = it.history + SwipeHistoryEntry(committedIndex, direction == 1),
+                kept = if (direction == 1) it.kept + 1 else it.kept,
+                deleted = if (direction == -1) it.deleted + 1 else it.deleted,
+                activeIndex = committedIndex + 1,
+                exitingPhoto = committedPhoto,
+                exitingDirection = direction,
+                exitingStartDragX = it.dragX,
+                exitingStartDragY = it.dragY,
+                dragX = 0f,
+                dragY = 0f,
+                isDragging = false
+            )
+        }
         cancelAnimation()
         animationJob = viewModelScope.launch {
-            delay(ANIMATION_DURATION_MS)
-            onIntent(SwipeIntent.SwipeAnimationCompleted(direction))
+            delay(EXIT_ANIMATION_DURATION_MS)
+            onIntent(SwipeIntent.SwipeExitAnimationCompleted)
         }
     }
 
@@ -258,6 +283,9 @@ class SwipeViewModel(
         dragX = 0f,
         dragY = 0f,
         exitingDirection = 0,
+        exitingPhoto = null,
+        exitingStartDragX = 0f,
+        exitingStartDragY = 0f,
         isDragging = false,
         unshuffledIndex = 0
     )
@@ -271,6 +299,9 @@ class SwipeViewModel(
     }
 
     companion object {
-        const val ANIMATION_DURATION_MS = 320L
+        /** Reducer cleanup delay — slightly longer than the overlay's
+         *  own tween (260 ms) so the animation always finishes before
+         *  `exitingPhoto` is nulled out. Shorter ⇒ card stops mid-flight. */
+        const val EXIT_ANIMATION_DURATION_MS = 320L
     }
 }

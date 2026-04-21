@@ -216,17 +216,24 @@ final class SwipeFeatureTests: XCTestCase {
             $0.continuousClock = clock
         }
 
+        // Commit happens synchronously — the new top card is
+        // immediately drag-able while the fly-off overlay renders
+        // `exitingPhoto`.
         await store.send(.cardDragEnded) {
             $0.isDragging = false
             $0.exitingDirection = 1
-        }
-        await clock.advance(by: .milliseconds(SwipeFeature.animationDurationMs))
-        await store.receive(\.swipeAnimationCompleted) {
+            $0.exitingPhoto = PhotoAsset.five[0]
+            $0.exitingStartDrag = CGSize(width: 150, height: 0)
             $0.activeIndex = 1
             $0.kept = 1
             $0.history = [SwipeHistoryEntry(index: 0, kept: true)]
             $0.drag = .zero
+        }
+        await clock.advance(by: .milliseconds(SwipeFeature.exitAnimationDurationMs))
+        await store.receive(\.swipeExitAnimationCompleted) {
             $0.exitingDirection = 0
+            $0.exitingPhoto = nil
+            $0.exitingStartDrag = .zero
         }
     }
 
@@ -247,14 +254,18 @@ final class SwipeFeatureTests: XCTestCase {
         await store.send(.cardDragEnded) {
             $0.isDragging = false
             $0.exitingDirection = -1
-        }
-        await clock.advance(by: .milliseconds(SwipeFeature.animationDurationMs))
-        await store.receive(\.swipeAnimationCompleted) {
+            $0.exitingPhoto = PhotoAsset.five[0]
+            $0.exitingStartDrag = CGSize(width: -150, height: 0)
             $0.activeIndex = 1
             $0.deleted = 1
             $0.history = [SwipeHistoryEntry(index: 0, kept: false)]
             $0.drag = .zero
+        }
+        await clock.advance(by: .milliseconds(SwipeFeature.exitAnimationDurationMs))
+        await store.receive(\.swipeExitAnimationCompleted) {
             $0.exitingDirection = 0
+            $0.exitingPhoto = nil
+            $0.exitingStartDrag = .zero
         }
     }
 
@@ -552,10 +563,17 @@ final class SwipeFeatureTests: XCTestCase {
             $0.continuousClock = clock
         }
 
-        // Start a swipe — animation effect is in-flight.
+        // Start a swipe — commit happens immediately, exit animation
+        // is in-flight.
         await store.send(.cardDragEnded) {
             $0.isDragging = false
             $0.exitingDirection = 1
+            $0.exitingPhoto = PhotoAsset.five[0]
+            $0.exitingStartDrag = CGSize(width: 150, height: 0)
+            $0.activeIndex = 1
+            $0.kept = 1
+            $0.history = [SwipeHistoryEntry(index: 0, kept: true)]
+            $0.drag = .zero
         }
 
         // Reset before the clock advances past the animation window.
@@ -566,13 +584,15 @@ final class SwipeFeatureTests: XCTestCase {
             $0.deleted = 0
             $0.drag = .zero
             $0.exitingDirection = 0
+            $0.exitingPhoto = nil
+            $0.exitingStartDrag = .zero
             $0.isDragging = false
             $0.unshuffledIndex = 0
         }
 
-        // Advance the clock — the animation effect was cancelled, so no
-        // `swipeAnimationCompleted` should be received.
-        await clock.advance(by: .milliseconds(SwipeFeature.animationDurationMs * 2))
+        // Advance the clock — the exit animation effect was cancelled,
+        // so no `swipeExitAnimationCompleted` should be received.
+        await clock.advance(by: .milliseconds(SwipeFeature.exitAnimationDurationMs * 2))
         await store.finish()
     }
 

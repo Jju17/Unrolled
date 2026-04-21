@@ -12,9 +12,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -24,12 +28,15 @@ import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
 
 /**
- * Full-screen photo preview opened from a tap on the top card. Uses a
- * `Dialog` with `usePlatformDefaultWidth = false` so it fills the window.
- * Tap anywhere on the photo or the close button dismisses.
+ * Full-screen photo preview. Supports pinch-to-zoom with pan, and a
+ * single-finger swipe (from anywhere) past the dismiss threshold to
+ * close. Backdrop dims proportionally to the drag distance so the user
+ * gets feedback about how close they are to triggering dismissal.
  */
 @Composable
 internal fun FullscreenPhotoView(photo: PhotoAsset, onClose: () -> Unit) {
+    var dismissProgress by remember { mutableStateOf(0f) }
+
     Dialog(
         onDismissRequest = onClose,
         properties = DialogProperties(
@@ -40,7 +47,7 @@ internal fun FullscreenPhotoView(photo: PhotoAsset, onClose: () -> Unit) {
         Box(
             Modifier
                 .fillMaxSize()
-                .background(Color.Black)
+                .background(Color.Black.copy(alpha = 1f - dismissProgress * 0.7f))
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
@@ -51,7 +58,13 @@ internal fun FullscreenPhotoView(photo: PhotoAsset, onClose: () -> Unit) {
                 model = photo.uri,
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zoomableDismissable(
+                        onDismiss = onClose,
+                        onDismissProgress = { dismissProgress = it },
+                        maxScale = 4f
+                    )
             )
             Box(
                 Modifier
@@ -60,7 +73,8 @@ internal fun FullscreenPhotoView(photo: PhotoAsset, onClose: () -> Unit) {
                     .size(34.dp)
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.5f))
-                    .clickable(onClick = onClose),
+                    .clickable(onClick = onClose)
+                    .alpha(1f - dismissProgress),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

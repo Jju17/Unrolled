@@ -296,7 +296,7 @@ class SwipeViewModelTest {
     }
 
     @Test
-    fun `drag past right threshold commits keep after animation`() = runTest(dispatcher) {
+    fun `drag past right threshold commits keep immediately`() = runTest(dispatcher) {
         val viewModel = vm()
         viewModel.onIntent(SwipeIntent.ScreenAppeared)
         advanceUntilIdle()
@@ -304,19 +304,28 @@ class SwipeViewModelTest {
         viewModel.onIntent(SwipeIntent.CardDragChanged(x = 150f, y = 0f))
         viewModel.onIntent(SwipeIntent.CardDragEnded(thresholdPx = 100f))
 
-        // Before animation completes: exitingDirection set, index unchanged.
-        assertEquals(1, viewModel.state.value.exitingDirection)
-        assertEquals(0, viewModel.state.value.activeIndex)
+        // Commit is synchronous now — index bump + tally + history all
+        // happen in `startSwipe`. `exitingPhoto` tracks the card that
+        // is animating off in the overlay.
+        val mid = viewModel.state.value
+        assertEquals(1, mid.exitingDirection)
+        assertEquals(p1, mid.exitingPhoto)
+        assertEquals(150f, mid.exitingStartDragX)
+        assertEquals(1, mid.activeIndex)
+        assertEquals(1, mid.kept)
+        assertEquals(listOf(SwipeHistoryEntry(0, kept = true)), mid.history)
 
-        advanceTimeBy(SwipeViewModel.ANIMATION_DURATION_MS + 50)
+        // After the animation window the visual overlay clears.
+        advanceTimeBy(SwipeViewModel.EXIT_ANIMATION_DURATION_MS + 50)
         runCurrent()
 
-        val s = viewModel.state.value
-        assertEquals(1, s.activeIndex)
-        assertEquals(1, s.kept)
-        assertEquals(0, s.deleted)
-        assertEquals(listOf(SwipeHistoryEntry(0, kept = true)), s.history)
-        assertEquals(0, s.exitingDirection)
+        val after = viewModel.state.value
+        assertEquals(0, after.exitingDirection)
+        assertNull(after.exitingPhoto)
+        assertEquals(0f, after.exitingStartDragX)
+        // Commit fields are unchanged by the completion handler.
+        assertEquals(1, after.activeIndex)
+        assertEquals(1, after.kept)
     }
 
     @Test
@@ -401,15 +410,16 @@ class SwipeViewModelTest {
     }
 
     @Test
-    fun `undo clamps tallies at zero when inconsistent`() = runTest(dispatcher) {
+    fun `undo past empty history stays clamped at zero`() = runTest(dispatcher) {
         val viewModel = vm()
         viewModel.onIntent(SwipeIntent.ScreenAppeared)
         advanceUntilIdle()
 
-        // Manually feed an inconsistent history (kept count too low).
-        viewModel.onIntent(SwipeIntent.SwipeAnimationCompleted(direction = 1))  // kept=1, hist len 1
-        viewModel.onIntent(SwipeIntent.UndoButtonTapped)                        // kept=0
-        viewModel.onIntent(SwipeIntent.UndoButtonTapped)                        // empty history, no-op
+        viewModel.onIntent(SwipeIntent.KeepButtonTapped)   // kept=1
+        advanceTimeBy(SwipeViewModel.EXIT_ANIMATION_DURATION_MS + 50)
+        runCurrent()
+        viewModel.onIntent(SwipeIntent.UndoButtonTapped)   // kept=0
+        viewModel.onIntent(SwipeIntent.UndoButtonTapped)   // history empty, no-op
 
         val s = viewModel.state.value
         assertEquals(0, s.kept)
@@ -497,9 +507,15 @@ class SwipeViewModelTest {
         advanceUntilIdle()
 
         viewModel.onIntent(SwipeIntent.ShuffleButtonTapped)
-        // Manually cheat into a risky state: pretend we saved a bigger index.
-        viewModel.onIntent(SwipeIntent.SwipeAnimationCompleted(direction = 1))
-        viewModel.onIntent(SwipeIntent.ShuffleButtonTapped)
+        // Swipe through both photos while shuffled.
+        viewModel.onIntent(SwipeIntent.KeepButtonTapped)
+        advanceTimeBy(SwipeViewModel.EXIT_ANIMATION_DURATION_MS + 50)
+        runCurrent()
+        viewModel.onIntent(SwipeIntent.KeepButtonTapped)
+        advanceTimeBy(SwipeViewModel.EXIT_ANIMATION_DURATION_MS + 50)
+        runCurrent()
+
+        viewModel.onIntent(SwipeIntent.ShuffleButtonTapped)  // back to unshuffled
         // activeIndex must never exceed loadedPhotos.size.
         val s = viewModel.state.value
         assertTrue(s.activeIndex <= s.loadedPhotos.size)
@@ -537,7 +553,7 @@ class SwipeViewModelTest {
 
         // Advance the clock past the animation window — if cancellation
         // worked, SwipeAnimationCompleted never fires, so kept stays 0.
-        advanceTimeBy(SwipeViewModel.ANIMATION_DURATION_MS * 5)
+        advanceTimeBy(SwipeViewModel.EXIT_ANIMATION_DURATION_MS * 5)
         runCurrent()
 
         assertEquals(0, viewModel.state.value.kept)
@@ -683,7 +699,7 @@ class SwipeViewModelTest {
             assertEquals(fivePhotos, s.photos)
 
             viewModel.onIntent(SwipeIntent.KeepButtonTapped)
-            advanceTimeBy(SwipeViewModel.ANIMATION_DURATION_MS + 50)
+            advanceTimeBy(SwipeViewModel.EXIT_ANIMATION_DURATION_MS + 50)
             runCurrent()
             // Drain to the post-swipe state.
             while (awaitItem().let { it.activeIndex != 1 }) { /* keep draining */ }
