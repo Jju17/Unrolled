@@ -1,0 +1,47 @@
+# === iOS ===
+*.ipa
+*.dSYM.zip
+*.dSYM
+.env
+GoogleService-Info.plist
+*.xcbkptlist
+*.resolved
+xcuserdata/
+*.xcuserstate
+ios/PicSwipe.xcodeproj/
+ios/PicSwipe.xcworkspace/
+
+# === Android ===
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/**/google-services.json
+android/keystore.properties
+android/*.keystore
+*.apk
+*.aab
+
+# === Cloud Functions ===
+functions/lib/
+functions/node_modules/
+functions/.env
+functions/.env.*
+functions/service-account.json
+
+# === IDE ===
+.idea/
+android/.idea/
+*.iml
+
+# === Firebase ===
+.firebase/
+
+# === Web ===
+web/node_modules/
+web/dist/
+
+# === macOS ===
+.DS_Store
+
+.claude/
