@@ -93,7 +93,7 @@ fun SwipeScreen(viewModel: SwipeViewModel) {
         onViewInPhotos = { photoUri ->
             // Opens the photo in the system gallery (Google Photos, etc.)
             val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(photoUri, "image/*")
+                setDataAndType(Uri.parse(photoUri), "image/*")
                 flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
                         Intent.FLAG_ACTIVITY_NEW_TASK
             }
@@ -108,7 +108,7 @@ fun SwipeScreenContent(
     state: SwipeState,
     onIntent: (SwipeIntent) -> Unit,
     onRequestPermission: () -> Unit,
-    onViewInPhotos: (Uri) -> Unit,
+    onViewInPhotos: (String) -> Unit,
     darkTheme: Boolean = isSystemInDarkTheme()
 ) {
     val density = LocalDensity.current

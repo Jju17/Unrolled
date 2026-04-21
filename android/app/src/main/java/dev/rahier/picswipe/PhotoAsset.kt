@@ -1,16 +1,17 @@
 package dev.rahier.picswipe
 
-import android.net.Uri
 import java.util.Date
 
 /**
  * Lightweight reference to a photo in the user's MediaStore.
- * The [uri] is a `content://media/external/images/media/<id>` that
- * Coil can load directly.
+ * [uri] is the string form of the content URI (`content://media/...`);
+ * Coil accepts it directly, and keeping it as a String lets the model
+ * stay a pure JVM value type (no `android.net.Uri` dependency in the
+ * ViewModel, which matters for local unit tests).
  */
 data class PhotoAsset(
     val id: Long,
-    val uri: Uri,
+    val uri: String,
     val creationDate: Date?
 )
 

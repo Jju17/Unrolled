@@ -21,7 +21,8 @@ struct PhotoLibraryClient: Sendable {
 }
 
 extension PhotoLibraryClient: DependencyKey {
-    static let liveValue: PhotoLibraryClient = PhotoLibraryClient(
+    static var liveValue: PhotoLibraryClient {
+        PhotoLibraryClient(
         authorizationStatus: {
             map(PHPhotoLibrary.authorizationStatus(for: .readWrite))
         },
@@ -107,20 +108,25 @@ extension PhotoLibraryClient: DependencyKey {
             }
         }
     )
+    }
 
-    static let testValue = PhotoLibraryClient(
-        authorizationStatus: { .notDetermined },
-        fetchAlbums: { [] },
-        fetchPhotos: { _ in [] },
-        requestAuthorization: { .notDetermined }
-    )
+    static var testValue: PhotoLibraryClient {
+        PhotoLibraryClient(
+            authorizationStatus: { .notDetermined },
+            fetchAlbums: { [] },
+            fetchPhotos: { _ in [] },
+            requestAuthorization: { .notDetermined }
+        )
+    }
 
-    static let previewValue = PhotoLibraryClient(
-        authorizationStatus: { .authorized },
-        fetchAlbums: { [] },
-        fetchPhotos: { _ in [] },
-        requestAuthorization: { .authorized }
-    )
+    static var previewValue: PhotoLibraryClient {
+        PhotoLibraryClient(
+            authorizationStatus: { .authorized },
+            fetchAlbums: { [] },
+            fetchPhotos: { _ in [] },
+            requestAuthorization: { .authorized }
+        )
+    }
 }
 
 extension DependencyValues {

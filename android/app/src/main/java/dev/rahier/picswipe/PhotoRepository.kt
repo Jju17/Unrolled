@@ -12,21 +12,25 @@ import kotlinx.coroutines.withContext
 import java.util.Date
 
 /**
- * Reads the user's image library via `MediaStore`. Constructor-injected
- * into [SwipeViewModel] so tests can swap in a fake implementation.
- *
- * Wraps `applicationContext` — never the Activity — so the repository
- * can live as long as the VM (which survives config changes) without
- * leaking the current Activity.
+ * Abstraction over the device photo library. The real implementation
+ * ([MediaStorePhotoRepository]) queries Android's `MediaStore`. Tests
+ * supply a fake implementation via the [SwipeViewModel.Factory] to
+ * drive fixtures and failure modes.
  */
-class PhotoRepository(private val context: Context) {
+interface PhotoRepository {
+    fun hasReadPermission(): Boolean
+    suspend fun loadAlbums(): List<Album>
+    suspend fun loadPhotos(albumId: String? = null): List<PhotoAsset>
+}
 
-    /**
-     * Read-permission check. Owned by the repository rather than the
-     * Activity so passing it as a callback into the VM doesn't capture
-     * the Activity and cause a leak on config change.
-     */
-    fun hasReadPermission(): Boolean {
+/**
+ * MediaStore-backed [PhotoRepository]. Wraps `applicationContext` only —
+ * never the Activity — so the repository can live as long as the VM
+ * (which survives config changes) without leaking the current Activity.
+ */
+class MediaStorePhotoRepository(private val context: Context) : PhotoRepository {
+
+    override fun hasReadPermission(): Boolean {
         val perm = if (Build.VERSION.SDK_INT >= 33) {
             Manifest.permission.READ_MEDIA_IMAGES
         } else {
@@ -42,7 +46,7 @@ class PhotoRepository(private val context: Context) {
      * library. MediaStore doesn't support SQL `DISTINCT` via
      * ContentResolver, so we dedupe + count in-memory.
      */
-    suspend fun loadAlbums(): List<Album> = withContext(Dispatchers.IO) {
+    override suspend fun loadAlbums(): List<Album> = withContext(Dispatchers.IO) {
         val collection = imagesCollection()
         val projection = arrayOf(
             MediaStore.Images.Media.BUCKET_ID,
@@ -51,8 +55,6 @@ class PhotoRepository(private val context: Context) {
         val sort = "${MediaStore.Images.Media.DATE_TAKEN} DESC, " +
                 "${MediaStore.Images.Media.DATE_ADDED} DESC"
 
-        // Preserve "most recently added to bucket" order for the picker
-        // by walking photos newest-first and keeping first-seen bucket.
         val ordered = linkedMapOf<String, Pair<String, Int>>()
         var total = 0
         context.contentResolver.query(collection, projection, null, null, sort)?.use { cursor ->
@@ -74,7 +76,6 @@ class PhotoRepository(private val context: Context) {
             Album(id = id, name = value.first, count = value.second, icon = "📁")
         }
 
-        // Prepend synthetic "All Photos" entry.
         listOf(
             Album(
                 id = Album.ALL_PHOTOS_ID,
@@ -90,7 +91,7 @@ class PhotoRepository(private val context: Context) {
      * [Album.ALL_PHOTOS_ID], returns all images; otherwise filters by
      * MediaStore bucket id.
      */
-    suspend fun loadPhotos(albumId: String? = null): List<PhotoAsset> = withContext(Dispatchers.IO) {
+    override suspend fun loadPhotos(albumId: String?): List<PhotoAsset> = withContext(Dispatchers.IO) {
         val collection = imagesCollection()
 
         val projection = arrayOf(
@@ -124,7 +125,7 @@ class PhotoRepository(private val context: Context) {
                 val dateMs = if (takenMs > 0) takenMs else addedSec * 1000L
                 out += PhotoAsset(
                     id = id,
-                    uri = ContentUris.withAppendedId(collection, id),
+                    uri = ContentUris.withAppendedId(collection, id).toString(),
                     creationDate = if (dateMs > 0) Date(dateMs) else null
                 )
             }

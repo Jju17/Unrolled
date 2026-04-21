@@ -2,7 +2,7 @@ name: PicSwipe
 options:
   bundleIdPrefix: dev.rahier
   deploymentTarget:
-    iOS: "17.0"
+    iOS: "18.0"
   createIntermediateGroups: true
 settings:
   base:
@@ -10,6 +10,10 @@ settings:
     CURRENT_PROJECT_VERSION: 1
     SWIFT_VERSION: "5.9"
     DEVELOPMENT_TEAM: ""
+    # Disable explicit module builds — with TCA 1.25+ the CasePaths /
+    # Perception transitive modules fail to resolve in the testability
+    # build variant on Xcode 26 simulator SDKs.
+    SWIFT_ENABLE_EXPLICIT_MODULES: NO
 packages:
   ComposableArchitecture:
     url: https://github.com/pointfreeco/swift-composable-architecture
@@ -37,3 +41,25 @@ targets:
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
+  PicSwipeTests:
+    type: bundle.unit-test
+    platform: iOS
+    # Sources compiled directly into the test target instead of depending
+    # on the main app — avoids the `PicSwipe.debug.dylib` build step that
+    # fails to link TCA's transitive SPM packages (CasePathsCore,
+    # PerceptionCore) on recent Xcode/TCA combos. The reducer + its
+    # models/clients are pure Swift value types with no UIKit/Photos
+    # coupling that would break when compiled as a test bundle, except
+    # for the live PhotoLibraryClient which tests never reach anyway.
+    sources:
+      - PicSwipeTests
+      - PicSwipe/Features/SwipeFeature.swift
+      - PicSwipe/Models
+      - PicSwipe/Clients
+    dependencies:
+      - package: ComposableArchitecture
+        product: ComposableArchitecture
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.rahier.picswipe.tests
+        GENERATE_INFOPLIST_FILE: YES

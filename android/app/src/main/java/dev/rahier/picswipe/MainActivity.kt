@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
 
         // Repository wraps applicationContext — safe to let the VM hold
         // the reference across config changes.
-        val repository = PhotoRepository(applicationContext)
+        val repository: PhotoRepository = MediaStorePhotoRepository(applicationContext)
         val factory = SwipeViewModel.Factory(photoRepository = repository)
 
         setContent {
