@@ -9,17 +9,11 @@ import SwiftUI
 struct SwipeScreen: View {
     @Environment(\.colorScheme) private var colorScheme
 
-    let store: StoreOf<SwipeFeature>
+    @Bindable var store: StoreOf<SwipeFeature>
 
-    private let photos = PhotoLibrary.samples
-    private let albums = AlbumLibrary.all
     private let stackDepth = 4
 
-    private var currentAlbum: Album {
-        albums.first { $0.id == store.albumID } ?? albums[0]
-    }
-    private var total: Int { photos.count }
-    private var done: Bool { store.activeIndex >= total }
+    private var done: Bool { store.activeIndex >= store.photos.count && !store.photos.isEmpty }
 
     // Accent (coral default)
     private let keepColor = Color(red: 0.188, green: 0.824, blue: 0.541)
@@ -51,36 +45,62 @@ struct SwipeScreen: View {
 
             VStack(spacing: 0) {
                 header
-                progressBar
                 stackArea
                 actionBar
             }
 
-            if store.pickerOpen {
-                AlbumPickerSheet(
-                    albums: albums,
-                    currentID: store.albumID,
-                    onPick: { store.send(.albumPicked($0)) },
-                    onClose: { store.send(.albumPickerDismissed) }
-                )
-                .transition(.opacity)
+            // Subtle gear in the bottom-left corner — hidden until
+            // we're actually showing cards so it doesn't clutter
+            // loading / permission / done views.
+            if contentState == .cards {
+                settingsGearButton
+                    .frame(maxWidth: .infinity, maxHeight: .infinity,
+                           alignment: .bottomLeading)
+                    .padding(.leading, 20)
+                    .padding(.bottom, 48)
+                    .allowsHitTesting(true)
             }
 
-            if store.menuOpen {
-                MenuPopover(
-                    onAbout: { store.send(.aboutMenuItemTapped) },
-                    onClose: { store.send(.menuDismissed) }
-                )
-            }
-
-            if store.aboutOpen {
-                AboutSheet(onClose: { store.send(.aboutDismissed) })
-                    .transition(.opacity)
+        }
+        .sheet(isPresented: $store.aboutOpen) { AboutSheet() }
+        .sheet(isPresented: $store.pickerOpen) {
+            AlbumPickerView(
+                albums: store.albums,
+                currentID: store.currentAlbum?.id ?? "",
+                onPick: { store.send(.albumPicked($0)) }
+            )
+        }
+        .sheet(isPresented: $store.settingsOpen) {
+            SettingsSheet(
+                hasTopPhoto: store.topPhoto != nil,
+                onViewInPhotos: { store.send(.viewInPhotosTapped) }
+            )
+        }
+        .fullScreenCover(isPresented: $store.fullscreenOpen) {
+            if let photo = store.topPhoto {
+                FullscreenPhotoView(photo: photo)
             }
         }
-        .animation(.easeInOut(duration: 0.22), value: store.pickerOpen)
-        .animation(.easeInOut(duration: 0.22), value: store.aboutOpen)
-        .animation(.easeOut(duration: 0.16), value: store.menuOpen)
+        .onAppear { store.send(.onAppear) }
+    }
+
+    private var settingsGearButton: some View {
+        Button {
+            store.send(.settingsButtonTapped)
+        } label: {
+            Image(systemName: "gearshape")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(textSec)
+                .frame(width: 36, height: 36)
+                .background(
+                    Circle().fill(
+                        colorScheme == .dark
+                            ? Color.white.opacity(0.06)
+                            : Color.black.opacity(0.04)
+                    )
+                )
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Header
@@ -96,7 +116,7 @@ struct SwipeScreen: View {
                     store.send(.albumTitleTapped)
                 } label: {
                     HStack(spacing: 6) {
-                        Text(currentAlbum.name)
+                        Text(store.currentAlbum?.name ?? "Photos")
                             .font(.system(size: 24, weight: .bold))
                             .tracking(-0.5)
                             .foregroundStyle(textPrim)
@@ -108,22 +128,22 @@ struct SwipeScreen: View {
                 .buttonStyle(.plain)
             }
             Spacer()
-            HStack(spacing: 14) {
-                counterPill(icon: "xmark", color: dropColor, value: store.deleted)
-                counterPill(icon: "heart.fill", color: keepColor, value: store.kept)
-                Button {
-                    store.send(.menuButtonTapped)
-                } label: {
-                    Circle()
-                        .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.05))
-                        .frame(width: 32, height: 32)
-                        .overlay(
-                            HStack(spacing: 3) {
-                                ForEach(0..<3) { _ in Circle().fill(textPrim).frame(width: 4, height: 4) }
-                            }
-                        )
+            HStack(spacing: 10) {
+                iconButton(
+                    systemImage: "shuffle",
+                    active: store.shuffleEnabled
+                ) {
+                    store.send(.shuffleButtonTapped)
                 }
-                .buttonStyle(.plain)
+                Menu {
+                    Button {
+                        store.send(.aboutMenuItemTapped)
+                    } label: {
+                        Label("About PicSwipe", systemImage: "info.circle")
+                    }
+                } label: {
+                    iconButton(dots: true)
+                }
             }
         }
         .padding(.horizontal, 20)
@@ -131,33 +151,42 @@ struct SwipeScreen: View {
         .padding(.bottom, 12)
     }
 
-    private func counterPill(icon: String, color: Color, value: Int) -> some View {
-        HStack(spacing: 5) {
-            Image(systemName: icon)
-                .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(color)
-            Text("\(value)")
-                .font(.system(size: 15, weight: .semibold))
-                .monospacedDigit()
-                .foregroundStyle(textPrim)
-        }
-    }
+    /// Small circular topbar button. Either shows an SF Symbol, or the
+    /// three-dot pattern when `dots == true` (used as the Menu's label).
+    /// When `active` is true, the button is filled with the accent colour
+    /// to signal a toggled-on state (e.g. shuffle enabled).
+    @ViewBuilder
+    private func iconButton(
+        systemImage: String = "",
+        dots: Bool = false,
+        active: Bool = false,
+        action: @escaping () -> Void = {}
+    ) -> some View {
+        let backgroundColor: Color = active
+            ? dropColor
+            : (colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.05))
+        let foregroundColor: Color = active ? .white : textPrim
 
-    // MARK: - Progress
-
-    private var progressBar: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .leading) {
-                Capsule().fill(border)
-                Capsule()
-                    .fill(dropColor)
-                    .frame(width: geo.size.width * CGFloat(store.activeIndex) / CGFloat(max(total, 1)))
-                    .animation(.easeInOut(duration: 0.35), value: store.activeIndex)
+        let shape = Circle()
+            .fill(backgroundColor)
+            .frame(width: 32, height: 32)
+            .overlay {
+                if dots {
+                    HStack(spacing: 3) {
+                        ForEach(0..<3) { _ in Circle().fill(foregroundColor).frame(width: 4, height: 4) }
+                    }
+                } else {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(foregroundColor)
+                }
             }
+        if dots {
+            shape  // caller wraps in Menu
+        } else {
+            Button(action: action) { shape }
+                .buttonStyle(.plain)
         }
-        .frame(height: 3)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 16)
     }
 
     // MARK: - Stack
@@ -165,10 +194,17 @@ struct SwipeScreen: View {
     private var stackArea: some View {
         GeometryReader { geo in
             ZStack {
-                if done {
+                switch contentState {
+                case .permissionGate:
+                    permissionGate.frame(maxWidth: 420)
+                case .loading:
+                    ProgressView().tint(textPrim)
+                case .empty:
+                    emptyState.frame(maxWidth: 420)
+                case .done:
                     doneView.frame(maxWidth: 420)
-                } else {
-                    ForEach(Array(photos.enumerated()), id: \.element.id) { idx, photo in
+                case .cards:
+                    ForEach(Array(store.photos.enumerated()), id: \.element.id) { idx, photo in
                         let depth = idx - store.activeIndex
                         if depth >= 0 && depth <= stackDepth {
                             cardView(photo: photo, depth: depth, size: geo.size)
@@ -183,7 +219,17 @@ struct SwipeScreen: View {
         .padding(.vertical, 6)
     }
 
-    private func cardView(photo: Photo, depth: Int, size: CGSize) -> some View {
+    private enum ContentState { case permissionGate, loading, empty, done, cards }
+
+    private var contentState: ContentState {
+        if !store.authorizationStatus.grantsRead { return .permissionGate }
+        if store.isLoading { return .loading }
+        if store.photos.isEmpty { return .empty }
+        if done { return .done }
+        return .cards
+    }
+
+    private func cardView(photo: PhotoAsset, depth: Int, size: CGSize) -> some View {
         let isTop = depth == 0
         let stackRotations: [Double] = [0, -1.2, 0.8, -0.6, 0.4]
         let stackRotation = stackRotations[min(depth, stackRotations.count - 1)]
@@ -203,7 +249,6 @@ struct SwipeScreen: View {
 
         return PhotoCard(
             photo: photo,
-            counterText: isTop ? "\(store.activeIndex + 1) / \(total)" : nil,
             keepColor: keepColor,
             dropColor: dropColor,
             keepOpacity: keepOpacity,
@@ -227,30 +272,103 @@ struct SwipeScreen: View {
             .onChanged { value in
                 store.send(.cardDragChanged(value.translation))
             }
-            .onEnded { _ in
-                store.send(.cardDragEnded)
+            .onEnded { value in
+                // Hypot-distance < 5pt counts as a tap (finger down + up
+                // without meaningful motion) — open the fullscreen view.
+                let distance = hypot(value.translation.width, value.translation.height)
+                if distance < 5 {
+                    store.send(.topCardTapped)
+                } else {
+                    store.send(.cardDragEnded)
+                }
             }
     }
 
-    private var doneView: some View {
-        VStack(spacing: 8) {
-            Text("All done!")
-                .font(.system(size: 36, weight: .bold))
-                .tracking(-1)
+    // MARK: - Non-card states
+
+    private var permissionGate: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "photo.on.rectangle.angled")
+                .font(.system(size: 48))
+                .foregroundStyle(textSec)
+            Text("Photo library access")
+                .font(.system(size: 22, weight: .bold))
                 .foregroundStyle(textPrim)
-            Text("\(store.kept) kept · \(store.deleted) deleted")
+            Text("PicSwipe needs permission to read your photos so you can swipe through them.")
                 .font(.system(size: 14))
                 .foregroundStyle(textSec)
-            Button("Start over") {
-                store.send(.resetButtonTapped)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+            if store.authorizationStatus == .denied {
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                .buttonStyle(PrimaryButtonStyle(color: dropColor))
+                .padding(.top, 8)
+            } else {
+                Button("Allow access") {
+                    store.send(.requestAuthorizationTapped)
+                }
+                .buttonStyle(PrimaryButtonStyle(color: dropColor))
+                .padding(.top, 8)
             }
-            .font(.system(size: 14, weight: .semibold))
-            .foregroundStyle(.white)
-            .padding(.horizontal, 22)
-            .padding(.vertical, 12)
-            .background(Capsule().fill(dropColor))
-            .padding(.top, 12)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 8) {
+            Text("No photos found")
+                .font(.system(size: 22, weight: .bold))
+                .foregroundStyle(textPrim)
+            Text("Your library is empty.")
+                .font(.system(size: 14))
+                .foregroundStyle(textSec)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var doneView: some View {
+        // Hide "View all photos" if we're already on the first (all-photos)
+        // album so the CTA never fires a no-op album switch.
+        let isOnAllPhotos = store.currentAlbum?.id == store.albums.first?.id
+
+        return VStack(spacing: 8) {
+            Image(systemName: "checkmark.seal.fill")
+                .font(.system(size: 44))
+                .foregroundStyle(keepColor)
+                .padding(.bottom, 4)
+            Text("Album terminé")
+                .font(.system(size: 28, weight: .bold))
+                .tracking(-0.8)
+                .foregroundStyle(textPrim)
+            Text("\(store.kept) gardée\(store.kept == 1 ? "" : "s") · \(store.deleted) supprimée\(store.deleted == 1 ? "" : "s")")
+                .font(.system(size: 14))
+                .foregroundStyle(textSec)
+
+            VStack(spacing: 10) {
+                if !isOnAllPhotos {
+                    Button("Voir toutes mes photos") {
+                        store.send(.viewAllPhotosTapped)
+                    }
+                    .buttonStyle(PrimaryButtonStyle(color: dropColor))
+                }
+                Button("Changer d'album") {
+                    store.send(.albumTitleTapped)
+                }
+                .buttonStyle(SecondaryButtonStyle(color: textPrim, border: border))
+                Button("Tout refaire") {
+                    store.send(.resetButtonTapped)
+                }
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(textSec)
+                .padding(.top, 2)
+            }
+            .padding(.top, 16)
+        }
+        .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .overlay(
             RoundedRectangle(cornerRadius: 24)
@@ -291,7 +409,7 @@ struct SwipeScreen: View {
             )
             .allowsHitTesting(false)
         )
-        .opacity(done ? 0 : 1)
+        .opacity(contentState == .cards ? 1 : 0)
     }
 
     private func actionButton<Content: View>(
@@ -322,10 +440,41 @@ private struct ActionButtonStyle: ButtonStyle {
     }
 }
 
+private struct PrimaryButtonStyle: ButtonStyle {
+    let color: Color
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 14, weight: .semibold))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 22)
+            .padding(.vertical, 12)
+            .background(Capsule().fill(color))
+            .scaleEffect(configuration.isPressed ? 0.96 : 1)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+    }
+}
+
+private struct SecondaryButtonStyle: ButtonStyle {
+    let color: Color
+    let border: Color
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 14, weight: .semibold))
+            .foregroundStyle(color)
+            .padding(.horizontal, 22)
+            .padding(.vertical, 12)
+            .background(Capsule().stroke(border, lineWidth: 1))
+            .scaleEffect(configuration.isPressed ? 0.96 : 1)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+    }
+}
+
 #Preview {
     SwipeScreen(
         store: Store(initialState: SwipeFeature.State()) {
             SwipeFeature()
+        } withDependencies: {
+            $0.photoLibrary = .previewValue
         }
     )
 }

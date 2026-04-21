@@ -2,12 +2,10 @@ package dev.rahier.picswipe
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -113,48 +111,6 @@ fun AlbumPickerSheet(
                 contentAlignment = Alignment.Center
             ) {
                 Text("Cancel", color = Tint, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
-            }
-        }
-    }
-}
-
-@Composable
-fun MenuPopover(
-    darkTheme: Boolean,
-    onAbout: () -> Unit,
-    onClose: () -> Unit
-) {
-    val surface = if (darkTheme) Color(0xFF2C2C2E).copy(alpha = 0.95f)
-                  else Color(0xFFFAFAFC).copy(alpha = 0.95f)
-    val textPrim = if (darkTheme) Color.White else Color.Black
-
-    Box(
-        Modifier
-            .fillMaxSize()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClose
-            )
-    ) {
-        Column(
-            Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 104.dp, end = 16.dp)
-                .width(220.dp)
-                .clip(RoundedCornerShape(13.dp))
-                .background(surface)
-        ) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onAbout)
-                    .padding(horizontal = 14.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("About PicSwipe", color = textPrim, fontSize = 15.sp, letterSpacing = (-0.2).sp)
-                Spacer(Modifier.weight(1f))
-                Text("ⓘ", color = textPrim.copy(alpha = 0.75f), fontSize = 16.sp)
             }
         }
     }

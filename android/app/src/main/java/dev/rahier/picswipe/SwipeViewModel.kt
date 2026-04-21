@@ -1,6 +1,7 @@
 package dev.rahier.picswipe
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -10,20 +11,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * MVI-style ViewModel. The composable sends [SwipeIntent]s via [onIntent];
- * the ViewModel reduces them to a new [SwipeState] emitted on [state].
- *
- * Side-effects (the swipe exit animation delay) live in [viewModelScope],
- * not in the composable, and are cancellable via [animationJob] so album
- * changes / reset mid-animation don't fire the deferred completion.
- */
-class SwipeViewModel : ViewModel() {
+class SwipeViewModel(
+    private val photoRepository: PhotoRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(SwipeState())
     val state: StateFlow<SwipeState> = _state.asStateFlow()
 
     private var animationJob: Job? = null
+    private var photosJob: Job? = null
+    private var albumsJob: Job? = null
 
     fun onIntent(intent: SwipeIntent) {
         when (intent) {
@@ -31,13 +28,17 @@ class SwipeViewModel : ViewModel() {
                 _state.update { it.copy(aboutOpen = false) }
 
             SwipeIntent.AboutMenuItemTapped ->
-                _state.update { it.copy(menuOpen = false, aboutOpen = true) }
+                _state.update { it.copy(aboutOpen = true) }
 
             is SwipeIntent.AlbumPicked -> {
                 cancelAnimation()
                 _state.update {
-                    resetProgress(it).copy(albumID = intent.albumId, pickerOpen = false)
+                    resetProgress(it).copy(
+                        selectedAlbumID = intent.albumId,
+                        pickerOpen = false
+                    )
                 }
+                loadPhotos(intent.albumId)
             }
 
             SwipeIntent.AlbumPickerDismissed ->
@@ -45,6 +46,13 @@ class SwipeViewModel : ViewModel() {
 
             SwipeIntent.AlbumTitleTapped ->
                 _state.update { it.copy(pickerOpen = true) }
+
+            is SwipeIntent.AlbumsLoaded -> {
+                _state.update { current ->
+                    val adoptedId = current.selectedAlbumID ?: intent.albums.firstOrNull()?.id
+                    current.copy(albums = intent.albums, selectedAlbumID = adoptedId)
+                }
+            }
 
             is SwipeIntent.CardDragChanged ->
                 _state.update {
@@ -65,17 +73,88 @@ class SwipeViewModel : ViewModel() {
             }
 
             SwipeIntent.DeleteButtonTapped -> startSwipe(direction = -1)
+
+            SwipeIntent.FullscreenDismissed ->
+                _state.update { it.copy(fullscreenOpen = false) }
+
             SwipeIntent.KeepButtonTapped -> startSwipe(direction = 1)
 
-            SwipeIntent.MenuButtonTapped ->
-                _state.update { it.copy(menuOpen = !it.menuOpen) }
+            is SwipeIntent.PermissionResult -> {
+                _state.update { it.copy(permissionStatus = intent.status) }
+                if (intent.status.grantsRead) loadLibrary()
+            }
 
-            SwipeIntent.MenuDismissed ->
-                _state.update { it.copy(menuOpen = false) }
+            is SwipeIntent.PhotosLoadFailed ->
+                _state.update { it.copy(isLoading = false, loadError = intent.message) }
+
+            is SwipeIntent.PhotosLoaded ->
+                _state.update {
+                    it.copy(
+                        loadedPhotos = intent.photos,
+                        photos = if (it.shuffleEnabled) intent.photos.shuffled() else intent.photos,
+                        isLoading = false,
+                        loadError = null
+                    )
+                }
 
             SwipeIntent.ResetButtonTapped -> {
                 cancelAnimation()
                 _state.update { resetProgress(it) }
+            }
+
+            SwipeIntent.RetryLoadTapped -> {
+                _state.update { it.copy(loadError = null) }
+                loadLibrary()
+            }
+
+            SwipeIntent.ScreenAppeared -> {
+                val status = if (photoRepository.hasReadPermission()) {
+                    PermissionStatus.Granted
+                } else {
+                    // We don't distinguish NotDetermined vs Denied here —
+                    // the launcher callback will refine it after a tap.
+                    _state.value.permissionStatus.takeIf { it != PermissionStatus.Granted }
+                        ?: PermissionStatus.NotDetermined
+                }
+                _state.update { it.copy(permissionStatus = status) }
+                if (status.grantsRead) loadLibrary()
+            }
+
+            SwipeIntent.SettingsButtonTapped ->
+                _state.update { it.copy(settingsOpen = true) }
+
+            SwipeIntent.SettingsDismissed ->
+                _state.update { it.copy(settingsOpen = false) }
+
+            SwipeIntent.ShuffleButtonTapped -> {
+                cancelAnimation()
+                _state.update {
+                    val newShuffle = !it.shuffleEnabled
+                    if (newShuffle) {
+                        // Entering shuffle: remember position so disabling resumes there.
+                        it.copy(
+                            shuffleEnabled = true,
+                            unshuffledIndex = it.activeIndex,
+                            photos = it.loadedPhotos.shuffled(),
+                            activeIndex = 0,
+                            history = emptyList(),
+                            dragX = 0f, dragY = 0f,
+                            exitingDirection = 0,
+                            isDragging = false
+                        )
+                    } else {
+                        // Exiting shuffle: resume at pre-shuffle position.
+                        it.copy(
+                            shuffleEnabled = false,
+                            photos = it.loadedPhotos,
+                            activeIndex = it.unshuffledIndex.coerceIn(0, it.loadedPhotos.size),
+                            history = emptyList(),
+                            dragX = 0f, dragY = 0f,
+                            exitingDirection = 0,
+                            isDragging = false
+                        )
+                    }
+                }
             }
 
             is SwipeIntent.SwipeAnimationCompleted ->
@@ -92,9 +171,18 @@ class SwipeViewModel : ViewModel() {
                     )
                 }
 
+            SwipeIntent.TopCardTapped ->
+                _state.update {
+                    // Clear transient drag state from the tap gesture.
+                    it.copy(
+                        fullscreenOpen = true,
+                        dragX = 0f, dragY = 0f,
+                        isDragging = false
+                    )
+                }
+
             SwipeIntent.UndoButtonTapped -> {
-                val s = _state.value
-                val last = s.history.lastOrNull() ?: return
+                val last = _state.value.history.lastOrNull() ?: return
                 _state.update {
                     it.copy(
                         history = it.history.dropLast(1),
@@ -104,12 +192,51 @@ class SwipeViewModel : ViewModel() {
                     )
                 }
             }
+
+            SwipeIntent.ViewAllPhotosTapped -> {
+                val firstAlbumId = _state.value.albums.firstOrNull()?.id
+                if (firstAlbumId != null) onIntent(SwipeIntent.AlbumPicked(firstAlbumId))
+            }
+        }
+    }
+
+    private fun loadLibrary() {
+        loadPhotos(_state.value.selectedAlbumID)
+        loadAlbums()
+    }
+
+    private fun loadAlbums() {
+        albumsJob?.cancel()
+        albumsJob = viewModelScope.launch {
+            try {
+                val albums = photoRepository.loadAlbums()
+                onIntent(SwipeIntent.AlbumsLoaded(albums))
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e  // structured-concurrency cancellation propagates
+            } catch (e: Exception) {
+                onIntent(SwipeIntent.PhotosLoadFailed(e.message ?: "Couldn't load albums"))
+            }
+        }
+    }
+
+    private fun loadPhotos(albumId: String?) {
+        photosJob?.cancel()
+        _state.update { it.copy(isLoading = true, loadError = null) }
+        photosJob = viewModelScope.launch {
+            try {
+                val photos = photoRepository.loadPhotos(albumId)
+                onIntent(SwipeIntent.PhotosLoaded(photos))
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                onIntent(SwipeIntent.PhotosLoadFailed(e.message ?: "Couldn't load photos"))
+            }
         }
     }
 
     private fun startSwipe(direction: Int) {
         val s = _state.value
-        if (s.activeIndex >= PhotoLibrary.samples.size) return
+        if (s.activeIndex >= s.photos.size) return
         _state.update { it.copy(exitingDirection = direction) }
         cancelAnimation()
         animationJob = viewModelScope.launch {
@@ -131,8 +258,17 @@ class SwipeViewModel : ViewModel() {
         dragX = 0f,
         dragY = 0f,
         exitingDirection = 0,
-        isDragging = false
+        isDragging = false,
+        unshuffledIndex = 0
     )
+
+    class Factory(
+        private val photoRepository: PhotoRepository
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            SwipeViewModel(photoRepository) as T
+    }
 
     companion object {
         const val ANIMATION_DURATION_MS = 320L

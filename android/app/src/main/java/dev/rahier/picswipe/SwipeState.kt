@@ -1,27 +1,58 @@
 package dev.rahier.picswipe
 
-/**
- * Immutable state for the swipe screen. All fields alphabetised. The
- * ViewModel emits new instances via `copy(...)`; the composable renders
- * purely from this state and never mutates it directly.
- */
 data class SwipeState(
     val aboutOpen: Boolean = false,
     val activeIndex: Int = 0,
-    val albumID: String = "recents",
+    val albums: List<Album> = emptyList(),
     val deleted: Int = 0,
     val dragX: Float = 0f,
     val dragY: Float = 0f,
     val exitingDirection: Int = 0,   // -1 delete, +1 keep, 0 none
+    val fullscreenOpen: Boolean = false,
     val history: List<SwipeHistoryEntry> = emptyList(),
     val isDragging: Boolean = false,
+    val isLoading: Boolean = false,
     val kept: Int = 0,
-    val menuOpen: Boolean = false,
-    val pickerOpen: Boolean = false
+    /** Set when the last `loadPhotos` / `loadAlbums` call threw. Shown
+     *  in the UI with a Retry button. */
+    val loadError: String? = null,
+    /** Photos as returned from the repository (unshuffled source of truth). */
+    val loadedPhotos: List<PhotoAsset> = emptyList(),
+    val permissionStatus: PermissionStatus = PermissionStatus.NotDetermined,
+    /** What the screen displays — either [loadedPhotos] or a freshly-
+     *  shuffled copy depending on [shuffleEnabled]. */
+    val photos: List<PhotoAsset> = emptyList(),
+    val pickerOpen: Boolean = false,
+    val selectedAlbumID: String? = null,  // null = All Photos (default)
+    val settingsOpen: Boolean = false,
+    val shuffleEnabled: Boolean = false,
+    /** Position in the unshuffled list — saved when enabling shuffle
+     *  so disabling it resumes at the same photo. */
+    val unshuffledIndex: Int = 0
 ) {
-    val done: Boolean get() = activeIndex >= PhotoLibrary.samples.size
-    val currentAlbum: Album
-        get() = AlbumLibrary.all.firstOrNull { it.id == albumID } ?: AlbumLibrary.all[0]
+    val done: Boolean get() = photos.isNotEmpty() && activeIndex >= photos.size
+
+    val topPhoto: PhotoAsset?
+        get() = photos.getOrNull(activeIndex)
+
+    /**
+     * Currently-selected album, resolved from [selectedAlbumID] against
+     * [albums]. Falls back to the first album. `null` while albums are
+     * still loading — the view renders a neutral placeholder instead
+     * of a fake album in that case.
+     */
+    val currentAlbum: Album?
+        get() = selectedAlbumID?.let { id -> albums.firstOrNull { it.id == id } }
+            ?: albums.firstOrNull()
 }
 
 data class SwipeHistoryEntry(val index: Int, val kept: Boolean)
+
+enum class PermissionStatus {
+    NotDetermined,
+    Granted,
+    Denied,
+    PermanentlyDenied;
+
+    val grantsRead: Boolean get() = this == Granted
+}

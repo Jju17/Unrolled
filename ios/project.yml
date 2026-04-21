@@ -29,6 +29,7 @@ targets:
         CFBundleDisplayName: PicSwipe
         UILaunchScreen: {}
         ITSAppUsesNonExemptEncryption: false
+        NSPhotoLibraryUsageDescription: "PicSwipe needs access to your photos so you can swipe through and sort them."
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.rahier.picswipe

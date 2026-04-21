@@ -5,109 +5,83 @@
 
 import SwiftUI
 
+/// Presented via `.sheet(isPresented:)` — shows the app icon, version
+/// and build, with a system "Close" button.
 struct AboutSheet: View {
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
 
-    let onClose: () -> Void
-
-    private let tint = Color(red: 0, green: 0.478, blue: 1.0)
-
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.35)
-                .ignoresSafeArea()
-                .onTapGesture { onClose() }
-
+        NavigationStack {
             VStack(spacing: 0) {
-                VStack(spacing: 0) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(
-                                LinearGradient(
-                                    colors: [
-                                        Color(red: 0.937, green: 0.243, blue: 0.357),
-                                        Color(red: 0.976, green: 0.451, blue: 0.086)
-                                    ],
-                                    startPoint: .topLeading, endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(width: 64, height: 64)
-                            .shadow(color: Color(red: 0.937, green: 0.243, blue: 0.357).opacity(0.4),
-                                    radius: 10, x: 0, y: 8)
-                        Image(systemName: "heart.fill")
-                            .font(.system(size: 32))
-                            .foregroundStyle(.white)
-                    }
-                    .padding(.top, 28)
+                appIcon
+                    .padding(.top, 32)
+                Text("PicSwipe")
+                    .font(.system(size: 22, weight: .bold))
+                    .tracking(-0.4)
+                    .padding(.top, 14)
+                Text("Swipe your camera roll clean.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 4)
 
-                    Text("PicSwipe")
-                        .font(.system(size: 20, weight: .bold))
-                        .tracking(-0.4)
-                        .foregroundStyle(textPrim)
-                        .padding(.top, 14)
-
-                    Text("Swipe your camera roll clean.")
-                        .font(.system(size: 13))
-                        .foregroundStyle(textSec)
-                        .padding(.top, 4)
-
-                    infoRow(label: "Version", value: "1.0.2")
-                        .padding(.top, 20)
-                    infoRow(label: "Build", value: "2026.04.128")
-                        .padding(.top, 6)
+                VStack(spacing: 8) {
+                    infoRow("Version", value: "1.0.2")
+                    infoRow("Build", value: "2026.04.128")
                 }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 20)
+                .padding(.top, 24)
 
-                Divider()
-                    .background(separator)
-
-                Button(action: onClose) {
-                    Text("Close")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(tint)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                }
-                .buttonStyle(.plain)
+                Spacer()
             }
-            .frame(width: 280)
-            .background(
-                surface.background(.ultraThinMaterial)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .frame(maxWidth: .infinity)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+        }
+        .presentationDetents([.medium])
+        .presentationDragIndicator(.visible)
+    }
+
+    private var appIcon: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 18)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.937, green: 0.243, blue: 0.357),
+                            Color(red: 0.976, green: 0.451, blue: 0.086)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 72, height: 72)
+                .shadow(color: Color(red: 0.937, green: 0.243, blue: 0.357).opacity(0.35),
+                        radius: 12, x: 0, y: 10)
+            Image(systemName: "heart.fill")
+                .font(.system(size: 34))
+                .foregroundStyle(.white)
         }
     }
 
-    private func infoRow(label: String, value: String) -> some View {
+    private func infoRow(_ label: String, value: String) -> some View {
         HStack {
-            Text(label).foregroundStyle(textSec)
+            Text(label).foregroundStyle(.secondary)
             Spacer()
             Text(value)
-                .foregroundStyle(textPrim)
                 .monospacedDigit()
                 .fontWeight(.medium)
         }
-        .font(.system(size: 14))
+        .font(.subheadline)
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.04))
+                .fill(colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
         )
-    }
-
-    private var surface: Color {
-        colorScheme == .dark ? Color(red: 0.110, green: 0.110, blue: 0.118).opacity(0.95)
-                             : Color(red: 0.980, green: 0.980, blue: 0.988).opacity(0.96)
-    }
-    private var textPrim: Color { colorScheme == .dark ? .white : .black }
-    private var textSec: Color {
-        colorScheme == .dark ? Color(red: 0.922, green: 0.922, blue: 0.961).opacity(0.6)
-                             : Color(red: 0.235, green: 0.235, blue: 0.263).opacity(0.6)
-    }
-    private var separator: Color {
-        colorScheme == .dark ? Color(red: 0.329, green: 0.329, blue: 0.345).opacity(0.5)
-                             : Color(red: 0.235, green: 0.235, blue: 0.263).opacity(0.14)
     }
 }

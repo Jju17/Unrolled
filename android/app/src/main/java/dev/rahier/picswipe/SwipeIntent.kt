@@ -1,25 +1,28 @@
 package dev.rahier.picswipe
 
-/**
- * All user-driven events the swipe screen can emit. Named after what
- * the user actually does (`DeleteButtonTapped`, `CardDragChanged`)
- * rather than what the reducer will do with them. Effect-completion
- * signals (`SwipeAnimationCompleted`) are also modelled as intents so
- * every state change is traceable through `onIntent`.
- */
 sealed interface SwipeIntent {
     data object AboutDismissed : SwipeIntent
     data object AboutMenuItemTapped : SwipeIntent
     data class AlbumPicked(val albumId: String) : SwipeIntent
     data object AlbumPickerDismissed : SwipeIntent
     data object AlbumTitleTapped : SwipeIntent
+    data class AlbumsLoaded(val albums: List<Album>) : SwipeIntent
     data class CardDragChanged(val x: Float, val y: Float) : SwipeIntent
     data class CardDragEnded(val thresholdPx: Float) : SwipeIntent
     data object DeleteButtonTapped : SwipeIntent
+    data object FullscreenDismissed : SwipeIntent
     data object KeepButtonTapped : SwipeIntent
-    data object MenuButtonTapped : SwipeIntent
-    data object MenuDismissed : SwipeIntent
+    data class PermissionResult(val status: PermissionStatus) : SwipeIntent
+    data class PhotosLoadFailed(val message: String) : SwipeIntent
+    data class PhotosLoaded(val photos: List<PhotoAsset>) : SwipeIntent
     data object ResetButtonTapped : SwipeIntent
+    data object RetryLoadTapped : SwipeIntent
+    data object ScreenAppeared : SwipeIntent
+    data object SettingsButtonTapped : SwipeIntent
+    data object SettingsDismissed : SwipeIntent
+    data object ShuffleButtonTapped : SwipeIntent
     data class SwipeAnimationCompleted(val direction: Int) : SwipeIntent
+    data object TopCardTapped : SwipeIntent
     data object UndoButtonTapped : SwipeIntent
+    data object ViewAllPhotosTapped : SwipeIntent
 }

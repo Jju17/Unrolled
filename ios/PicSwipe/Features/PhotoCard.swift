@@ -6,8 +6,7 @@
 import SwiftUI
 
 struct PhotoCard: View {
-    let photo: Photo
-    let counterText: String?
+    let photo: PhotoAsset
     let keepColor: Color
     let dropColor: Color
     let keepOpacity: Double
@@ -17,24 +16,13 @@ struct PhotoCard: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                AsyncImage(url: photo.url) { phase in
-                    switch phase {
-                    case .empty:
-                        Color(white: 0.13)
-                            .overlay(ProgressView().tint(.white))
-                    case .success(let image):
-                        image.resizable().scaledToFill()
-                    case .failure:
-                        Color(white: 0.13)
-                            .overlay(
-                                Image(systemName: "photo")
-                                    .font(.system(size: 32))
-                                    .foregroundStyle(.white.opacity(0.4))
-                            )
-                    @unknown default:
-                        Color(white: 0.13)
-                    }
-                }
+                PhotoAssetImage(
+                    assetID: photo.id,
+                    targetSize: CGSize(
+                        width: geo.size.width * UIScreen.main.scale,
+                        height: geo.size.height * UIScreen.main.scale
+                    )
+                )
                 .frame(width: geo.size.width, height: geo.size.height)
                 .clipped()
 
@@ -44,33 +32,15 @@ struct PhotoCard: View {
                 )
                 .allowsHitTesting(false)
 
-                // Counter (top right)
-                if let counterText {
-                    Text(counterText)
-                        .font(.system(size: 12, weight: .semibold))
+                // Date (bottom left)
+                if let date = photo.creationDate {
+                    Text(Self.dateFormatter.string(from: date))
+                        .font(.system(size: 18, weight: .semibold))
                         .foregroundStyle(.white)
-                        .tracking(0.3)
-                        .padding(.horizontal, 11)
-                        .padding(.vertical, 5)
-                        .background(Capsule().fill(Color.black.opacity(0.42)))
                         .padding(18)
                         .frame(width: geo.size.width, height: geo.size.height,
-                               alignment: .topTrailing)
+                               alignment: .bottomLeading)
                 }
-
-                // Date + location (bottom left)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(photo.date)
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.85))
-                        .tracking(0.2)
-                    Text(photo.location)
-                        .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(.white)
-                }
-                .padding(18)
-                .frame(width: geo.size.width, height: geo.size.height,
-                       alignment: .bottomLeading)
 
                 // KEEP/DELETE stamps
                 if showLabels {
@@ -111,4 +81,11 @@ struct PhotoCard: View {
             .opacity(opacity)
             .allowsHitTesting(false)
     }
+
+    private static let dateFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.dateStyle = .medium
+        df.timeStyle = .none
+        return df
+    }()
 }
