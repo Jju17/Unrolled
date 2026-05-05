@@ -1,9 +1,13 @@
-name: PicSwipe
+name: Unrolled
 options:
   bundleIdPrefix: dev.rahier
   deploymentTarget:
-    iOS: "18.0"
+    iOS: "17.0"
   createIntermediateGroups: true
+  developmentLanguage: en
+fileGroups:
+  - Unrolled/Resources/Localizable.xcstrings
+  - Unrolled/Resources/InfoPlist.xcstrings
 settings:
   base:
     MARKETING_VERSION: "1.0.0"
@@ -19,43 +23,52 @@ packages:
     url: https://github.com/pointfreeco/swift-composable-architecture
     from: "1.17.0"
 targets:
-  PicSwipe:
+  Unrolled:
     type: application
     platform: iOS
     sources:
-      - PicSwipe
+      - Unrolled
     dependencies:
       - package: ComposableArchitecture
         product: ComposableArchitecture
     info:
-      path: PicSwipe/Info.plist
+      path: Unrolled/Info.plist
       properties:
-        CFBundleDisplayName: PicSwipe
+        CFBundleDisplayName: Unrolled
+        # Substituted from build settings (MARKETING_VERSION /
+        # CURRENT_PROJECT_VERSION below) so a version bump in project.yml
+        # is the single source of truth — no more drift between the
+        # plist and what ships.
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
         ITSAppUsesNonExemptEncryption: false
-        NSPhotoLibraryUsageDescription: "PicSwipe needs access to your photos so you can swipe through and sort them."
+        NSPhotoLibraryUsageDescription: "Unrolled needs access to your photos so you can swipe through and sort them."
     settings:
       base:
+        # Bundle ID stays as the originally-registered reverse-DNS —
+        # it's invisible to users and CAN'T change (Apple dev portal
+        # App ID + App Store Connect listing both reference it).
         PRODUCT_BUNDLE_IDENTIFIER: dev.rahier.picswipe
-        TARGETED_DEVICE_FAMILY: "1,2"
+        TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
-  PicSwipeTests:
+  UnrolledTests:
     type: bundle.unit-test
     platform: iOS
     # Sources compiled directly into the test target instead of depending
-    # on the main app — avoids the `PicSwipe.debug.dylib` build step that
+    # on the main app — avoids the `Unrolled.debug.dylib` build step that
     # fails to link TCA's transitive SPM packages (CasePathsCore,
     # PerceptionCore) on recent Xcode/TCA combos. The reducer + its
     # models/clients are pure Swift value types with no UIKit/Photos
     # coupling that would break when compiled as a test bundle, except
     # for the live PhotoLibraryClient which tests never reach anyway.
     sources:
-      - PicSwipeTests
-      - PicSwipe/Features/SwipeFeature.swift
-      - PicSwipe/Models
-      - PicSwipe/Clients
+      - UnrolledTests
+      - Unrolled/Features/SwipeFeature.swift
+      - Unrolled/Models
+      - Unrolled/Clients
     dependencies:
       - package: ComposableArchitecture
         product: ComposableArchitecture

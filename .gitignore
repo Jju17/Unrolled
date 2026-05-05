@@ -1,47 +1,88 @@
+# === Secrets / env (any directory) ===
+.env
+.env.*
+!.env.example
+*.pem
+*.p8
+*.p12
+*.key
+*.keystore
+*.jks
+*.mobileprovision
+service-account*.json
+
 # === iOS ===
 *.ipa
 *.dSYM.zip
 *.dSYM
-.env
+*.xcarchive
 GoogleService-Info.plist
 *.xcbkptlist
 *.resolved
 xcuserdata/
 *.xcuserstate
-ios/PicSwipe.xcodeproj/
-ios/PicSwipe.xcworkspace/
+ios/Unrolled.xcodeproj/
+ios/Unrolled.xcworkspace/
+ios/Pods/
+ios/DerivedData/
+ios/build/
 
 # === Android ===
 android/.gradle/
+android/.kotlin/
 android/build/
 android/app/build/
+android/captures/
 android/local.properties
 android/**/google-services.json
 android/keystore.properties
-android/*.keystore
+android/keystore.jks
 *.apk
 *.aab
 
 # === Cloud Functions ===
 functions/lib/
 functions/node_modules/
-functions/.env
-functions/.env.*
 functions/service-account.json
+
+# === Web ===
+web/node_modules/
+web/dist/
+web/dist-ssr/
+web/*.local
+
+# === Firebase ===
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
+# === Logs / coverage ===
+*.log
+coverage/
+*.lcov
+
+# === Python (android/playstore tooling) ===
+__pycache__/
+*.pyc
 
 # === IDE ===
 .idea/
 android/.idea/
 *.iml
+.vscode/*
+!.vscode/extensions.json
 
-# === Firebase ===
-.firebase/
-
-# === Web ===
-web/node_modules/
-web/dist/
+# === Editor swap / backup ===
+*.swp
+*.swo
+*~
+*.bak
+*.orig
+*.rej
 
 # === macOS ===
 .DS_Store
 
+# === Claude ===
 .claude/

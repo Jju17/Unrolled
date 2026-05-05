@@ -1,5 +1,6 @@
 package dev.rahier.picswipe
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,8 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,7 +58,7 @@ fun AlbumPickerSheet(
                     .background(surface)
             ) {
                 Text(
-                    "Choose an album",
+                    stringResource(R.string.album_picker_title),
                     color = textSec,
                     fontSize = 13.sp,
                     modifier = Modifier
@@ -87,8 +90,12 @@ fun AlbumPickerSheet(
                             Text(album.icon, color = textPrim, fontSize = 15.sp)
                         }
                         Column(Modifier.weight(1f)) {
+                            // album.name from MediaStore bucket — locale-agnostic.
                             Text(album.name, color = textPrim, fontSize = 16.sp, letterSpacing = (-0.3).sp)
-                            Text("${"%,d".format(album.count)} photos", color = textSec, fontSize = 13.sp)
+                            Text(
+                                stringResource(R.string.album_count_photos, "%,d".format(album.count)),
+                                color = textSec, fontSize = 13.sp
+                            )
                         }
                         if (album.id == currentId) {
                             Text("✓", color = Tint, fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -110,7 +117,7 @@ fun AlbumPickerSheet(
                     .padding(vertical = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Cancel", color = Tint, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.album_picker_cancel), color = Tint, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }
@@ -150,27 +157,22 @@ fun AboutSheet(
                     .padding(top = 28.dp, bottom = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(
-                    Modifier
+                Image(
+                    painter = painterResource(R.mipmap.ic_launcher),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
                         .size(64.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(
-                            Brush.linearGradient(
-                                listOf(Color(0xFFEF3E5B), Color(0xFFF97316))
-                            )
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("♥", color = Color.White, fontSize = 30.sp)
-                }
+                )
                 Spacer(Modifier.height(14.dp))
-                Text("PicSwipe", color = textPrim, fontSize = 20.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.4).sp)
+                Text("Unrolled", color = textPrim, fontSize = 20.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.4).sp)
                 Spacer(Modifier.height(4.dp))
-                Text("Swipe your camera roll clean.", color = textSec, fontSize = 13.sp)
+                Text(stringResource(R.string.about_tagline), color = textSec, fontSize = 13.sp)
                 Spacer(Modifier.height(20.dp))
-                AboutRow("Version", "1.0.2", darkTheme, textPrim, textSec)
+                AboutRow(stringResource(R.string.about_version), BuildConfig.VERSION_NAME, darkTheme, textPrim, textSec)
                 Spacer(Modifier.height(6.dp))
-                AboutRow("Build", "2026.04.128", darkTheme, textPrim, textSec)
+                AboutRow(stringResource(R.string.about_build), BuildConfig.VERSION_CODE.toString(), darkTheme, textPrim, textSec)
             }
             Box(Modifier.fillMaxWidth().height(0.5.dp).background(separator))
             Box(
@@ -180,7 +182,7 @@ fun AboutSheet(
                     .padding(vertical = 14.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Close", color = Tint, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.about_close), color = Tint, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }

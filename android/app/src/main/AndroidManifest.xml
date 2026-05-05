@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- Photo library read permission (API 33+ uses scoped READ_MEDIA_IMAGES;
-         pre-33 falls back to READ_EXTERNAL_STORAGE). -->
+    <!-- Photo library read permission.
+         - API 33+  : READ_MEDIA_IMAGES for full library
+         - API 34+  : ALSO declare READ_MEDIA_VISUAL_USER_SELECTED so the
+                     system shows the partial-access picker (required by
+                     Google Play's Photo & Video Permissions policy when
+                     keeping full-library access).
+         - API ≤32 : falls back to READ_EXTERNAL_STORAGE. -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PicSwipe">
+        android:theme="@style/Theme.Unrolled">
 
         <activity
             android:name=".MainActivity"

@@ -1,4 +1,4 @@
-# Android — PicSwipe
+# Android — Unrolled
 
 Kotlin + Jetpack Compose app.
 

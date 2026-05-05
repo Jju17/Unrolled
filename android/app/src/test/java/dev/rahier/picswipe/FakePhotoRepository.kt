@@ -17,6 +17,7 @@ package dev.rahier.picswipe
  */
 class FakePhotoRepository(
     var initialHasPermission: Boolean = true,
+    var initialHasPartialAccess: Boolean = false,
     var albums: List<Album> = emptyList(),
     var photos: List<PhotoAsset> = emptyList(),
     private val photosByAlbum: MutableMap<String, List<PhotoAsset>> = mutableMapOf()
@@ -33,6 +34,7 @@ class FakePhotoRepository(
     var albumsError: Throwable? = null
 
     override fun hasReadPermission(): Boolean = initialHasPermission
+    override fun hasPartialPhotoAccess(): Boolean = initialHasPartialAccess
 
     override suspend fun loadAlbums(): List<Album> {
         loadAlbumsCalls++

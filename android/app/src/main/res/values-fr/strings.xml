@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- app_name not overridden — same brand in both locales. -->
+
+    <!-- Header -->
+    <string name="header_album_label">ALBUM</string>
+    <string name="header_album_fallback">Photos</string>
+    <string name="header_about_menu_item">À propos d\'Unrolled</string>
+    <string name="header_stats_pill_a11y">%1$d gardées, %2$d supprimées. </string>
+    <string name="header_stats_pill_a11y_open_hint">Ouvre la liste des photos à supprimer.</string>
+    <string name="header_stats_pill_a11y_empty_hint">Aucune photo à supprimer pour l\'instant.</string>
+
+    <!-- Action bar -->
+    <string name="action_delete_a11y">Supprimer cette photo</string>
+    <string name="action_undo_a11y">Annuler le dernier choix</string>
+    <string name="action_keep_a11y">Garder cette photo</string>
+
+    <!-- Permission gate -->
+    <string name="permission_gate_title">Accès à tes photos</string>
+    <string name="permission_gate_body">Unrolled a besoin de lire toute ta bibliothèque photo pour que tu puisses la parcourir carte par carte. Rien ne quitte ton appareil — aucun réseau, aucun compte. Tu peux aussi ne sélectionner que quelques photos, Unrolled ne te proposera alors que celles-là.</string>
+    <string name="permission_gate_allow">Autoriser l\'accès</string>
+    <string name="permission_gate_open_settings">Ouvrir les paramètres</string>
+
+    <!-- Empty / done states -->
+    <string name="empty_state_title">Aucune photo trouvée</string>
+    <string name="empty_state_body">Ta photothèque est vide.</string>
+    <string name="empty_partial_title">Aucune photo sélectionnée</string>
+    <string name="empty_partial_body">Tu as autorisé Unrolled à ne voir qu\'une sélection de photos. Choisis-en d\'autres pour continuer.</string>
+    <string name="empty_partial_change">Modifier la sélection</string>
+    <string name="load_error_title">Impossible de charger tes photos</string>
+    <string name="load_error_retry">Réessayer</string>
+    <string name="done_title">Album terminé</string>
+    <plurals name="done_subtitle_kept">
+        <item quantity="one">%d gardée</item>
+        <item quantity="other">%d gardées</item>
+    </plurals>
+    <plurals name="done_subtitle_deleted">
+        <item quantity="one">%d supprimée</item>
+        <item quantity="other">%d supprimées</item>
+    </plurals>
+    <!-- done_subtitle_separator unchanged -->
+    <string name="done_view_all">Voir toutes mes photos</string>
+    <string name="done_change_album">Changer d\'album</string>
+    <string name="done_start_over">Tout refaire</string>
+
+    <!-- Album picker -->
+    <string name="album_picker_title">Choisir un album</string>
+    <string name="album_picker_cancel">Annuler</string>
+    <string name="album_count_photos">%s photos</string>
+
+    <!-- Settings sheet -->
+    <string name="settings_title">Réglages</string>
+    <string name="settings_view_in_photos">Voir la photo dans la galerie</string>
+
+    <!-- About sheet -->
+    <string name="about_tagline">Swipe pour ranger ta pellicule.</string>
+    <string name="about_version">Version</string>
+    <string name="about_build">Build</string>
+    <string name="about_close">Fermer</string>
+
+    <!-- Deleted photos sheet -->
+    <string name="deleted_title">Photos supprimées</string>
+    <string name="deleted_close_a11y">Fermer</string>
+    <string name="deleted_empty_title">Aucune photo à supprimer</string>
+    <string name="deleted_empty_body">Swipe à gauche pour remplir la corbeille.</string>
+    <string name="deleted_row_fallback_title">Photo</string>
+    <string name="deleted_row_status">Prête à supprimer</string>
+    <string name="deleted_row_keep">Garder</string>
+    <plurals name="deleted_alert_title">
+        <item quantity="one">Supprimer %d photo ?</item>
+        <item quantity="other">Supprimer %d photos ?</item>
+    </plurals>
+    <string name="deleted_alert_body">Les photos seront envoyées dans la corbeille système (récupérables pendant 30 jours). Android te demandera de confirmer à nouveau avant la suppression.</string>
+    <string name="deleted_alert_confirm">Supprimer</string>
+    <string name="deleted_alert_cancel">Annuler</string>
+    <string name="deleted_footer_button">Mettre à la poubelle (%d)</string>
+
+    <!-- Trash error messages -->
+    <string name="trash_error_cancelled">Suppression annulée.</string>
+    <string name="trash_error_old_android">Nécessite Android 11 ou plus récent.</string>
+    <string name="trash_error_generic">Impossible de déclencher la corbeille.</string>
+</resources>

@@ -1,9 +1,14 @@
 package dev.rahier.picswipe
 
+import android.app.Activity
+import android.content.ContentUris
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -18,11 +23,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
@@ -45,11 +52,16 @@ fun SwipeScreen(viewModel: SwipeViewModel) {
     val context = LocalContext.current
     val activity = context.findActivity()
 
+    // Multi-permission contract — on API 34+ both READ_MEDIA_IMAGES AND
+    // READ_MEDIA_VISUAL_USER_SELECTED are requested at once, and the system
+    // returns a map. Any `true` entry means the user granted SOME scope
+    // (full library or selected-only); either is enough for the repo.
     val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { grants ->
+        val anyGranted = grants.values.any { it }
         val status = when {
-            granted -> PermissionStatus.Granted
+            anyGranted -> PermissionStatus.Granted
             // After a denial, if the system says it won't show the rationale
             // either, the user picked "Don't ask again" / has permanently
             // denied. The "Open Settings" fallback becomes the only path.
@@ -75,6 +87,59 @@ fun SwipeScreen(viewModel: SwipeViewModel) {
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
+    // Trash launcher: when the user confirms our in-app alert, the VM
+    // sets `trashPendingIDs`; this effect fires the system PendingIntent
+    // and routes the RESULT_OK / RESULT_CANCELED back to the VM.
+    val cancelledMessage = stringResource(R.string.trash_error_cancelled)
+    val oldAndroidMessage = stringResource(R.string.trash_error_old_android)
+    val genericMessage = stringResource(R.string.trash_error_generic)
+    val trashLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        val ok = result.resultCode == Activity.RESULT_OK
+        viewModel.onIntent(
+            SwipeIntent.TrashResult(
+                success = ok,
+                message = if (ok) null else cancelledMessage
+            )
+        )
+    }
+    LaunchedEffect(state.trashPendingIDs) {
+        val ids = state.trashPendingIDs ?: return@LaunchedEffect
+        // API 30+ has `createTrashRequest` (moves to Recently Deleted).
+        // Below 30 the contract doesn't exist — fall back to a plain
+        // failure so the banner surfaces the limitation.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            viewModel.onIntent(SwipeIntent.TrashResult(
+                success = false,
+                message = oldAndroidMessage
+            ))
+            return@LaunchedEffect
+        }
+        val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+        } else {
+            @Suppress("DEPRECATION")
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        }
+        val uris = ids.map { ContentUris.withAppendedId(collection, it) }
+        try {
+            val pending = MediaStore.createTrashRequest(
+                context.contentResolver, uris, true
+            )
+            trashLauncher.launch(IntentSenderRequest.Builder(pending.intentSender).build())
+        } catch (e: Exception) {
+            viewModel.onIntent(SwipeIntent.TrashResult(
+                success = false,
+                message = e.message ?: genericMessage
+            ))
+        } finally {
+            // Mark the pending IDs as consumed regardless of outcome so
+            // this effect doesn't re-fire on the next recomposition.
+            viewModel.onIntent(SwipeIntent.TrashPendingConsumed)
+        }
+    }
+
     SwipeScreenContent(
         state = state,
         onIntent = viewModel::onIntent,
@@ -87,7 +152,7 @@ fun SwipeScreen(viewModel: SwipeViewModel) {
                     ).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
                     context.startActivity(intent)
                 }
-                else -> launcher.launch(ReadPermission)
+                else -> launcher.launch(ReadPermissions)
             }
         },
         onViewInPhotos = { photoUri ->
@@ -157,7 +222,12 @@ fun SwipeScreenContent(
                         onRetry = { onIntent(SwipeIntent.RetryLoadTapped) }
                     )
                     state.isLoading -> CircularProgressIndicator(color = textPrim)
-                    state.photos.isEmpty() -> EmptyState(textPrim = textPrim, textSec = textSec)
+                    state.photos.isEmpty() -> EmptyState(
+                        textPrim = textPrim,
+                        textSec = textSec,
+                        hasPartialAccess = state.hasPartialPhotoAccess,
+                        onChangeSelection = onRequestPermission
+                    )
                     state.done -> DoneView(
                         state = state,
                         textPrim = textPrim,
@@ -233,6 +303,14 @@ fun SwipeScreenContent(
                     state.topPhoto?.let { onViewInPhotos(it.uri) }
                 },
                 onClose = { onIntent(SwipeIntent.SettingsDismissed) }
+            )
+        }
+
+        AnimatedVisibility(state.deletedSheetOpen, enter = fadeIn(), exit = fadeOut()) {
+            DeletedPhotosSheet(
+                state = state,
+                darkTheme = darkTheme,
+                onIntent = onIntent
             )
         }
     }

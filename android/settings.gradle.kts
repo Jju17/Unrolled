@@ -17,5 +17,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PicSwipe"
+rootProject.name = "Unrolled"
 include(":app")

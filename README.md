@@ -1,4 +1,4 @@
-# PicSwipe
+# Unrolled
 
 Monorepo layout:
 

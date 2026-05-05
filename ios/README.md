@@ -1,4 +1,4 @@
-# iOS — PicSwipe
+# iOS — Unrolled
 
 SwiftUI app. The Xcode project is generated from `project.yml` via [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
@@ -8,15 +8,15 @@ SwiftUI app. The Xcode project is generated from `project.yml` via [XcodeGen](ht
 brew install xcodegen
 cd ios
 xcodegen generate
-open PicSwipe.xcodeproj
+open Unrolled.xcodeproj
 ```
 
 The generated `.xcodeproj` is gitignored — regenerate after adding/removing source files or editing `project.yml`.
 
 ## Layout
 
-- `PicSwipe/App/` — `PicSwipeApp.swift`, `AppDelegate.swift`
-- `PicSwipe/Features/` — views / feature modules
-- `PicSwipe/Models/` — data types
-- `PicSwipe/Resources/` — assets, fonts, localisations
-- `PicSwipe/Info.plist`
+- `Unrolled/App/` — `UnrolledApp.swift`, `AppDelegate.swift`
+- `Unrolled/Features/` — views / feature modules
+- `Unrolled/Models/` — data types
+- `Unrolled/Resources/` — assets, fonts, localisations
+- `Unrolled/Info.plist`

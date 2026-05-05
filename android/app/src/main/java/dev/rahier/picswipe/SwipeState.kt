@@ -5,6 +5,14 @@ data class SwipeState(
     val activeIndex: Int = 0,
     val albums: List<Album> = emptyList(),
     val deleted: Int = 0,
+    /** IDs of photos staged for deletion via swipe-left. Kept in
+     *  deletion order. The big red "Mettre à la poubelle" button in the
+     *  review sheet hands this list to `MediaStore.createTrashRequest`. */
+    val deletedPhotoIDs: List<Long> = emptyList(),
+    val deletedSheetOpen: Boolean = false,
+    /** Surfaced when the Recently-Deleted round-trip fails (user declined
+     *  the system dialog, permission lost, etc.). Shown as a banner. */
+    val deleteError: String? = null,
     val dragX: Float = 0f,
     val dragY: Float = 0f,
     val exitingDirection: Int = 0,   // -1 delete, +1 keep, 0 none
@@ -27,6 +35,11 @@ data class SwipeState(
     /** Photos as returned from the repository (unshuffled source of truth). */
     val loadedPhotos: List<PhotoAsset> = emptyList(),
     val permissionStatus: PermissionStatus = PermissionStatus.NotDetermined,
+    /** Android 14+: `true` when only `READ_MEDIA_VISUAL_USER_SELECTED`
+     *  is granted (user picked a subset via the system picker). The
+     *  empty state branches on this to explain why the list is short /
+     *  empty and how to change the selection. */
+    val hasPartialPhotoAccess: Boolean = false,
     /** What the screen displays — either [loadedPhotos] or a freshly-
      *  shuffled copy depending on [shuffleEnabled]. */
     val photos: List<PhotoAsset> = emptyList(),
@@ -34,6 +47,16 @@ data class SwipeState(
     val selectedAlbumID: String? = null,  // null = All Photos (default)
     val settingsOpen: Boolean = false,
     val shuffleEnabled: Boolean = false,
+    val trashAlertOpen: Boolean = false,
+    /** `true` while the system `createTrashRequest` intent is in flight
+     *  (user hasn't yet confirmed the OS dialog). Keeps the button
+     *  disabled against a double-tap. */
+    val trashInFlight: Boolean = false,
+    /** Signal to the UI layer: when non-null, the screen launches the
+     *  `MediaStore.createTrashRequest` PendingIntent for these IDs and
+     *  sends back a `TrashResult` when the system dialog resolves.
+     *  UI must set it back to `null` once consumed. */
+    val trashPendingIDs: List<Long>? = null,
     /** Position in the unshuffled list — saved when enabling shuffle
      *  so disabling it resumes at the same photo. */
     val unshuffledIndex: Int = 0

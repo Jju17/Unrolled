@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#1E88E5" />
+    <!-- Matches the lavender background baked into the foreground PNG
+         so launchers that crop the foreground past its edges show a
+         seamless extension rather than a hard colour swap. -->
+    <solid android:color="#E6E9F5" />
 </shape>

@@ -74,13 +74,42 @@ class SwipeViewModel(
 
             SwipeIntent.DeleteButtonTapped -> startSwipe(direction = -1)
 
+            is SwipeIntent.DeletedPhotoRestoreTapped -> {
+                val id = intent.id
+                _state.update {
+                    if (!it.deletedPhotoIDs.contains(id)) return@update it
+                    it.copy(
+                        deletedPhotoIDs = it.deletedPhotoIDs - id,
+                        deleted = (it.deleted - 1).coerceAtLeast(0),
+                        kept = it.kept + 1
+                    )
+                }
+            }
+
+            SwipeIntent.DeletedSheetButtonTapped ->
+                _state.update { it.copy(deletedSheetOpen = true) }
+
+            SwipeIntent.DeletedSheetDismissed ->
+                _state.update { it.copy(deletedSheetOpen = false, deleteError = null) }
+
+            SwipeIntent.EmptyTrashButtonTapped -> {
+                if (_state.value.deletedPhotoIDs.isNotEmpty()) {
+                    _state.update { it.copy(trashAlertOpen = true) }
+                }
+            }
+
             SwipeIntent.FullscreenDismissed ->
                 _state.update { it.copy(fullscreenOpen = false) }
 
             SwipeIntent.KeepButtonTapped -> startSwipe(direction = 1)
 
             is SwipeIntent.PermissionResult -> {
-                _state.update { it.copy(permissionStatus = intent.status) }
+                _state.update {
+                    it.copy(
+                        permissionStatus = intent.status,
+                        hasPartialPhotoAccess = photoRepository.hasPartialPhotoAccess()
+                    )
+                }
                 if (intent.status.grantsRead) loadLibrary()
             }
 
@@ -116,7 +145,12 @@ class SwipeViewModel(
                     _state.value.permissionStatus.takeIf { it != PermissionStatus.Granted }
                         ?: PermissionStatus.NotDetermined
                 }
-                _state.update { it.copy(permissionStatus = status) }
+                _state.update {
+                    it.copy(
+                        permissionStatus = status,
+                        hasPartialPhotoAccess = photoRepository.hasPartialPhotoAccess()
+                    )
+                }
                 if (status.grantsRead) loadLibrary()
             }
 
@@ -171,6 +205,73 @@ class SwipeViewModel(
                     )
                 }
 
+            SwipeIntent.TrashAlertConfirmed -> {
+                val ids = _state.value.deletedPhotoIDs
+                if (ids.isEmpty()) {
+                    _state.update { it.copy(trashAlertOpen = false) }
+                } else {
+                    _state.update {
+                        it.copy(
+                            trashAlertOpen = false,
+                            trashInFlight = true,
+                            trashPendingIDs = ids,
+                            deleteError = null
+                        )
+                    }
+                }
+            }
+
+            SwipeIntent.TrashAlertDismissed ->
+                _state.update { it.copy(trashAlertOpen = false) }
+
+            SwipeIntent.TrashPendingConsumed ->
+                _state.update { it.copy(trashPendingIDs = null) }
+
+            is SwipeIntent.TrashResult -> {
+                if (intent.success) {
+                    // Photos are now in the system trash. Prune them from
+                    // our local list so the user doesn't land on an asset
+                    // MediaStore no longer returns, and remap activeIndex
+                    // by ID so the user keeps their place visually.
+                    _state.update {
+                        val deletedSet = it.deletedPhotoIDs.toSet()
+                        val topId = it.photos.getOrNull(it.activeIndex)?.id
+                        val newLoaded = it.loadedPhotos.filterNot { p -> p.id in deletedSet }
+                        val newPhotos = it.photos.filterNot { p -> p.id in deletedSet }
+                        val remapped = if (topId != null) {
+                            newPhotos.indexOfFirst { p -> p.id == topId }
+                                .takeIf { i -> i >= 0 }
+                                ?: it.activeIndex.coerceAtMost(newPhotos.size)
+                        } else {
+                            it.activeIndex.coerceAtMost(newPhotos.size)
+                        }
+                        it.copy(
+                            loadedPhotos = newLoaded,
+                            photos = newPhotos,
+                            activeIndex = remapped,
+                            deletedPhotoIDs = emptyList(),
+                            deletedSheetOpen = false,
+                            trashInFlight = false,
+                            trashPendingIDs = null,
+                            deleteError = null,
+                            kept = 0,
+                            deleted = 0,
+                            history = emptyList()
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(
+                            trashInFlight = false,
+                            trashPendingIDs = null,
+                            // Fallback only fires defensively — every failure path
+                            // in SwipeScreen.kt already provides a localized message.
+                            deleteError = intent.message ?: "Deletion cancelled."
+                        )
+                    }
+                }
+            }
+
             SwipeIntent.TopCardTapped ->
                 _state.update {
                     // Clear transient drag state from the tap gesture.
@@ -185,10 +286,14 @@ class SwipeViewModel(
                 val last = _state.value.history.lastOrNull() ?: return
                 cancelAnimation()
                 _state.update {
+                    val undoneID = it.photos.getOrNull(last.index)?.id
                     it.copy(
                         history = it.history.dropLast(1),
                         kept = if (last.kept) (it.kept - 1).coerceAtLeast(0) else it.kept,
                         deleted = if (!last.kept) (it.deleted - 1).coerceAtLeast(0) else it.deleted,
+                        deletedPhotoIDs = if (!last.kept && undoneID != null)
+                            it.deletedPhotoIDs - undoneID
+                        else it.deletedPhotoIDs,
                         activeIndex = last.index,
                         exitingPhoto = null,
                         exitingDirection = 0,
@@ -253,6 +358,9 @@ class SwipeViewModel(
                 history = it.history + SwipeHistoryEntry(committedIndex, direction == 1),
                 kept = if (direction == 1) it.kept + 1 else it.kept,
                 deleted = if (direction == -1) it.deleted + 1 else it.deleted,
+                deletedPhotoIDs = if (direction == -1)
+                    it.deletedPhotoIDs + committedPhoto.id
+                else it.deletedPhotoIDs,
                 activeIndex = committedIndex + 1,
                 exitingPhoto = committedPhoto,
                 exitingDirection = direction,
@@ -280,6 +388,8 @@ class SwipeViewModel(
         history = emptyList(),
         kept = 0,
         deleted = 0,
+        deletedPhotoIDs = emptyList(),
+        deleteError = null,
         dragX = 0f,
         dragY = 0f,
         exitingDirection = 0,

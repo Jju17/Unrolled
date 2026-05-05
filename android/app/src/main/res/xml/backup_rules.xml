@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Legacy auto-backup rules for API ≤ 30. Mirrors the `<cloud-backup>`
+  block of data_extraction_rules.xml: opt everything OUT of cloud
+  backup. Unrolled has nothing private worth persisting across installs.
+-->
+<full-backup-content>
+    <exclude domain="root" />
+    <exclude domain="file" />
+    <exclude domain="database" />
+    <exclude domain="sharedpref" />
+    <exclude domain="external" />
+</full-backup-content>

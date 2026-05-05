@@ -378,6 +378,156 @@ class SwipeViewModelTest {
         assertEquals(1, viewModel.state.value.kept)  // unchanged
     }
 
+    // MARK: - Deleted review sheet
+
+    @Test
+    fun `DeletedSheetButtonTapped opens sheet`() = runTest(dispatcher) {
+        val viewModel = vm()
+        viewModel.onIntent(SwipeIntent.DeletedSheetButtonTapped)
+        assertTrue(viewModel.state.value.deletedSheetOpen)
+    }
+
+    @Test
+    fun `swipe left adds photo id to deletedPhotoIDs`() = runTest(dispatcher) {
+        val viewModel = vm()
+        viewModel.onIntent(SwipeIntent.ScreenAppeared)
+        advanceUntilIdle()
+
+        viewModel.onIntent(SwipeIntent.DeleteButtonTapped)
+        assertEquals(listOf(p1.id), viewModel.state.value.deletedPhotoIDs)
+    }
+
+    @Test
+    fun `DeletedPhotoRestoreTapped moves photo back to kept bucket`() = runTest(dispatcher) {
+        val viewModel = vm()
+        viewModel.onIntent(SwipeIntent.ScreenAppeared)
+        advanceUntilIdle()
+
+        viewModel.onIntent(SwipeIntent.DeleteButtonTapped)   // p1 → deleted
+        advanceTimeBy(SwipeViewModel.EXIT_ANIMATION_DURATION_MS + 50); runCurrent()
+        viewModel.onIntent(SwipeIntent.DeleteButtonTapped)   // p2 → deleted
+        advanceTimeBy(SwipeViewModel.EXIT_ANIMATION_DURATION_MS + 50); runCurrent()
+
+        val mid = viewModel.state.value
+        assertEquals(listOf(p1.id, p2.id), mid.deletedPhotoIDs)
+        assertEquals(2, mid.deleted)
+
+        viewModel.onIntent(SwipeIntent.DeletedPhotoRestoreTapped(p1.id))
+
+        val s = viewModel.state.value
+        assertEquals(listOf(p2.id), s.deletedPhotoIDs)
+        assertEquals(1, s.deleted)
+        assertEquals(1, s.kept)
+    }
+
+    @Test
+    fun `EmptyTrashButtonTapped with non-empty list opens alert`() = runTest(dispatcher) {
+        val viewModel = vm()
+        viewModel.onIntent(SwipeIntent.ScreenAppeared)
+        advanceUntilIdle()
+        viewModel.onIntent(SwipeIntent.DeleteButtonTapped)
+
+        viewModel.onIntent(SwipeIntent.EmptyTrashButtonTapped)
+        assertTrue(viewModel.state.value.trashAlertOpen)
+    }
+
+    @Test
+    fun `EmptyTrashButtonTapped with empty list is no-op`() = runTest(dispatcher) {
+        val viewModel = vm()
+        viewModel.onIntent(SwipeIntent.EmptyTrashButtonTapped)
+        assertFalse(viewModel.state.value.trashAlertOpen)
+    }
+
+    @Test
+    fun `TrashAlertConfirmed sets trashPendingIDs and trashInFlight`() = runTest(dispatcher) {
+        val viewModel = vm()
+        viewModel.onIntent(SwipeIntent.ScreenAppeared)
+        advanceUntilIdle()
+        viewModel.onIntent(SwipeIntent.DeleteButtonTapped)
+        viewModel.onIntent(SwipeIntent.EmptyTrashButtonTapped)
+
+        viewModel.onIntent(SwipeIntent.TrashAlertConfirmed)
+
+        val s = viewModel.state.value
+        assertFalse(s.trashAlertOpen)
+        assertTrue(s.trashInFlight)
+        assertEquals(listOf(p1.id), s.trashPendingIDs)
+    }
+
+    @Test
+    fun `TrashResult success resets counters, history and closes sheet`() = runTest(dispatcher) {
+        val viewModel = vm()
+        viewModel.onIntent(SwipeIntent.ScreenAppeared)
+        advanceUntilIdle()
+        // 1 keep + 1 delete so we have non-zero tallies/history.
+        viewModel.onIntent(SwipeIntent.KeepButtonTapped)
+        advanceTimeBy(SwipeViewModel.EXIT_ANIMATION_DURATION_MS + 50); runCurrent()
+        viewModel.onIntent(SwipeIntent.DeleteButtonTapped)
+        advanceTimeBy(SwipeViewModel.EXIT_ANIMATION_DURATION_MS + 50); runCurrent()
+
+        viewModel.onIntent(SwipeIntent.DeletedSheetButtonTapped)
+        viewModel.onIntent(SwipeIntent.EmptyTrashButtonTapped)
+        viewModel.onIntent(SwipeIntent.TrashAlertConfirmed)
+        viewModel.onIntent(SwipeIntent.TrashPendingConsumed)
+
+        viewModel.onIntent(SwipeIntent.TrashResult(success = true))
+
+        val s = viewModel.state.value
+        assertTrue(s.deletedPhotoIDs.isEmpty())
+        assertFalse(s.deletedSheetOpen)
+        assertFalse(s.trashInFlight)
+        assertNull(s.trashPendingIDs)
+        assertNull(s.deleteError)
+        // Counters + history reset — session is "committed", user
+        // continues on remaining photos with a clean slate.
+        assertEquals(0, s.kept)
+        assertEquals(0, s.deleted)
+        assertTrue(s.history.isEmpty())
+        // Deleted photos are pruned locally so we don't show assets that
+        // are no longer in MediaStore. p2 was deleted so it disappears;
+        // activeIndex remaps by ID to keep the user on the same photo
+        // they were viewing (p3, now at index 1 instead of 2).
+        assertEquals(listOf(p1, p3, p4, p5), s.photos)
+        assertEquals(listOf(p1, p3, p4, p5), s.loadedPhotos)
+        assertEquals(1, s.activeIndex)
+    }
+
+    @Test
+    fun `TrashResult failure surfaces error and keeps list`() = runTest(dispatcher) {
+        val viewModel = vm()
+        viewModel.onIntent(SwipeIntent.ScreenAppeared)
+        advanceUntilIdle()
+        viewModel.onIntent(SwipeIntent.DeleteButtonTapped)
+        viewModel.onIntent(SwipeIntent.DeletedSheetButtonTapped)
+        viewModel.onIntent(SwipeIntent.EmptyTrashButtonTapped)
+        viewModel.onIntent(SwipeIntent.TrashAlertConfirmed)
+
+        viewModel.onIntent(SwipeIntent.TrashResult(success = false, message = "oops"))
+
+        val s = viewModel.state.value
+        assertEquals(listOf(p1.id), s.deletedPhotoIDs)
+        assertTrue(s.deletedSheetOpen)       // stays so user can retry
+        assertFalse(s.trashInFlight)
+        assertEquals("oops", s.deleteError)
+    }
+
+    @Test
+    fun `undo after delete also removes id from deletedPhotoIDs`() = runTest(dispatcher) {
+        val viewModel = vm()
+        viewModel.onIntent(SwipeIntent.ScreenAppeared)
+        advanceUntilIdle()
+        viewModel.onIntent(SwipeIntent.DeleteButtonTapped)
+        advanceTimeBy(SwipeViewModel.EXIT_ANIMATION_DURATION_MS + 50); runCurrent()
+
+        assertEquals(listOf(p1.id), viewModel.state.value.deletedPhotoIDs)
+        viewModel.onIntent(SwipeIntent.UndoButtonTapped)
+
+        val s = viewModel.state.value
+        assertTrue(s.deletedPhotoIDs.isEmpty())
+        assertEquals(0, s.deleted)
+        assertEquals(0, s.activeIndex)
+    }
+
     // MARK: - Undo
 
     @Test

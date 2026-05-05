@@ -13,7 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.DropdownMenu
@@ -30,6 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,7 +58,7 @@ internal fun Header(
     ) {
         Column(Modifier.weight(1f)) {
             Text(
-                "ALBUM",
+                stringResource(R.string.header_album_label),
                 color = textSec,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -63,8 +71,10 @@ internal fun Header(
                     indication = null
                 ) { onIntent(SwipeIntent.AlbumTitleTapped) }
             ) {
+                // album.name comes from MediaStore (already locale-agnostic
+                // bucket name); fallback when none loaded yet.
                 Text(
-                    state.currentAlbum?.name ?: "Photos",
+                    state.currentAlbum?.name ?: stringResource(R.string.header_album_fallback),
                     color = textPrim,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
@@ -78,6 +88,13 @@ internal fun Header(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            StatsPill(
+                state = state,
+                darkTheme = darkTheme,
+                textPrim = textPrim,
+                textSec = textSec,
+                onClick = { onIntent(SwipeIntent.DeletedSheetButtonTapped) }
+            )
             TopbarIconButton(
                 icon = Icons.Default.Shuffle,
                 darkTheme = darkTheme,
@@ -87,6 +104,76 @@ internal fun Header(
             )
             OverflowMenu(darkTheme = darkTheme, textPrim = textPrim, onIntent = onIntent)
         }
+    }
+}
+
+/**
+ * Tally pill: ♡kept / ✗deleted. Hidden until the user has acted on at
+ * least one photo (keeps a fresh album uncluttered). Disabled when
+ * there's nothing in the trash staging list — tapping it with only
+ * kept photos would open an empty sheet.
+ */
+@Composable
+private fun StatsPill(
+    state: SwipeState,
+    darkTheme: Boolean,
+    textPrim: Color,
+    textSec: Color,
+    onClick: () -> Unit
+) {
+    if (state.kept == 0 && state.deleted == 0) return
+    val enabled = state.deleted > 0
+    val pillBase = stringResource(R.string.header_stats_pill_a11y, state.kept, state.deleted)
+    val pillHint = stringResource(
+        if (enabled) R.string.header_stats_pill_a11y_open_hint
+        else R.string.header_stats_pill_a11y_empty_hint
+    )
+    val pillDescription = pillBase + pillHint
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(
+                if (darkTheme) Color.White.copy(alpha = 0.08f)
+                else Color.Black.copy(alpha = 0.05f)
+            )
+            .clickable(enabled = enabled, onClick = onClick)
+            .semantics(mergeDescendants = true) {
+                role = Role.Button
+                contentDescription = pillDescription
+            }
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Favorite,
+            contentDescription = null,
+            tint = KeepColor,
+            modifier = Modifier.size(10.dp)
+        )
+        Text(
+            state.kept.toString(),
+            color = textPrim,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold
+        )
+        Box(
+            Modifier
+                .size(1.dp, 12.dp)
+                .background(textSec.copy(alpha = 0.4f))
+        )
+        Icon(
+            imageVector = Icons.Default.Close,
+            contentDescription = null,
+            tint = DropColor,
+            modifier = Modifier.size(10.dp)
+        )
+        Text(
+            state.deleted.toString(),
+            color = textPrim.copy(alpha = if (enabled) 1f else 0.6f),
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
@@ -162,7 +249,7 @@ internal fun OverflowMenu(
             onDismissRequest = { expanded = false }
         ) {
             DropdownMenuItem(
-                text = { Text("About PicSwipe") },
+                text = { Text(stringResource(R.string.header_about_menu_item)) },
                 leadingIcon = { Icon(Icons.Outlined.Info, contentDescription = null) },
                 onClick = {
                     expanded = false

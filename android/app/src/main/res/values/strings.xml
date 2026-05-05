@@ -1,4 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PicSwipe</string>
+    <string name="app_name">Unrolled</string>
+
+    <!-- Header -->
+    <string name="header_album_label">ALBUM</string>
+    <string name="header_album_fallback">Photos</string>
+    <string name="header_about_menu_item">About Unrolled</string>
+    <string name="header_stats_pill_a11y">%1$d kept, %2$d deleted. </string>
+    <string name="header_stats_pill_a11y_open_hint">Opens the trash list.</string>
+    <string name="header_stats_pill_a11y_empty_hint">No photos to delete yet.</string>
+
+    <!-- Action bar -->
+    <string name="action_delete_a11y">Delete this photo</string>
+    <string name="action_undo_a11y">Undo last choice</string>
+    <string name="action_keep_a11y">Keep this photo</string>
+
+    <!-- Permission gate -->
+    <string name="permission_gate_title">Photo library access</string>
+    <string name="permission_gate_body">Unrolled needs to read your full photo library so you can browse it card by card. Nothing leaves your device — no network, no account. You can also pick just a few photos and Unrolled will only show those.</string>
+    <string name="permission_gate_allow">Allow access</string>
+    <string name="permission_gate_open_settings">Open settings</string>
+
+    <!-- Empty / done states -->
+    <string name="empty_state_title">No photos found</string>
+    <string name="empty_state_body">Your library is empty.</string>
+    <string name="empty_partial_title">No selected photos</string>
+    <string name="empty_partial_body">You only granted Unrolled access to a selection of photos. Pick more to continue.</string>
+    <string name="empty_partial_change">Change selection</string>
+    <string name="load_error_title">Couldn\'t load your photos</string>
+    <string name="load_error_retry">Retry</string>
+    <string name="done_title">Album finished</string>
+    <plurals name="done_subtitle_kept">
+        <item quantity="one">%d kept</item>
+        <item quantity="other">%d kept</item>
+    </plurals>
+    <plurals name="done_subtitle_deleted">
+        <item quantity="one">%d deleted</item>
+        <item quantity="other">%d deleted</item>
+    </plurals>
+    <string name="done_subtitle_separator"> · </string>
+    <string name="done_view_all">View all my photos</string>
+    <string name="done_change_album">Change album</string>
+    <string name="done_start_over">Start over</string>
+
+    <!-- Album picker -->
+    <string name="album_picker_title">Choose an album</string>
+    <string name="album_picker_cancel">Cancel</string>
+    <string name="album_count_photos">%s photos</string>
+
+    <!-- Settings sheet -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_view_in_photos">View this photo in the gallery</string>
+
+    <!-- About sheet -->
+    <string name="about_tagline">Swipe your camera roll clean.</string>
+    <string name="about_version">Version</string>
+    <string name="about_build">Build</string>
+    <string name="about_close">Close</string>
+
+    <!-- Deleted photos sheet -->
+    <string name="deleted_title">Deleted photos</string>
+    <string name="deleted_close_a11y">Close</string>
+    <string name="deleted_empty_title">No photos to delete</string>
+    <string name="deleted_empty_body">Swipe left to fill the trash.</string>
+    <string name="deleted_row_fallback_title">Photo</string>
+    <string name="deleted_row_status">Ready to delete</string>
+    <string name="deleted_row_keep">Keep</string>
+    <plurals name="deleted_alert_title">
+        <item quantity="one">Delete %d photo?</item>
+        <item quantity="other">Delete %d photos?</item>
+    </plurals>
+    <string name="deleted_alert_body">Photos will be sent to the system trash (recoverable for 30 days). Android will ask you to confirm again before deletion.</string>
+    <string name="deleted_alert_confirm">Delete</string>
+    <string name="deleted_alert_cancel">Cancel</string>
+    <string name="deleted_footer_button">Empty trash (%d)</string>
+
+    <!-- Trash error messages -->
+    <string name="trash_error_cancelled">Deletion cancelled.</string>
+    <string name="trash_error_old_android">Requires Android 11 or newer.</string>
+    <string name="trash_error_generic">Couldn\'t trigger the system trash.</string>
 </resources>

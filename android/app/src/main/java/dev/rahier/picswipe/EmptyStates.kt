@@ -22,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -41,34 +43,70 @@ internal fun PermissionGate(
     ) {
         Text("📷", fontSize = 48.sp)
         Spacer(Modifier.height(12.dp))
-        Text("Photo library access", color = textPrim, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.permission_gate_title), color = textPrim, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
+        // Copy written for Google's Photo & Video Permissions policy
+        // review: explicit about (a) what we need, (b) why, (c) the
+        // purely-local nature, (d) the alternative (partial access).
         Text(
-            "PicSwipe needs permission to read your photos so you can swipe through them.",
+            stringResource(R.string.permission_gate_body),
             color = textSec,
             fontSize = 14.sp,
             modifier = Modifier.padding(horizontal = 24.dp),
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(20.dp))
-        val label = when (status) {
-            PermissionStatus.Denied, PermissionStatus.PermanentlyDenied -> "Open Settings"
-            else -> "Allow access"
-        }
+        val label = stringResource(when (status) {
+            PermissionStatus.Denied, PermissionStatus.PermanentlyDenied -> R.string.permission_gate_open_settings
+            else -> R.string.permission_gate_allow
+        })
         PrimaryPillButton(text = label, onClick = onRequest)
     }
 }
 
 @Composable
-internal fun EmptyState(textPrim: Color, textSec: Color) {
+internal fun EmptyState(
+    textPrim: Color,
+    textSec: Color,
+    hasPartialAccess: Boolean = false,
+    onChangeSelection: () -> Unit = {}
+) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("No photos found", color = textPrim, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(4.dp))
-        Text("Your library is empty.", color = textSec, fontSize = 14.sp)
+        if (hasPartialAccess) {
+            // User is on Android 14+ and granted only READ_MEDIA_VISUAL_USER_SELECTED
+            // — either they picked zero photos, or they picked a few that
+            // all got swiped. Offer a re-pick affordance so the session
+            // isn't a dead end.
+            Text("📷", fontSize = 42.sp)
+            Spacer(Modifier.height(10.dp))
+            Text(
+                stringResource(R.string.empty_partial_title),
+                color = textPrim,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                stringResource(R.string.empty_partial_body),
+                color = textSec,
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(20.dp))
+            PrimaryPillButton(
+                text = stringResource(R.string.empty_partial_change),
+                onClick = onChangeSelection
+            )
+        } else {
+            Text(stringResource(R.string.empty_state_title), color = textPrim, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(4.dp))
+            Text(stringResource(R.string.empty_state_body), color = textSec, fontSize = 14.sp)
+        }
     }
 }
 
@@ -87,7 +125,7 @@ internal fun LoadErrorState(
         Text("⚠️", fontSize = 40.sp)
         Spacer(Modifier.height(8.dp))
         Text(
-            "Couldn't load your photos",
+            stringResource(R.string.load_error_title),
             color = textPrim,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
@@ -100,7 +138,7 @@ internal fun LoadErrorState(
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(18.dp))
-        PrimaryPillButton(text = "Retry", onClick = onRetry)
+        PrimaryPillButton(text = stringResource(R.string.load_error_retry), onClick = onRetry)
     }
 }
 
@@ -131,7 +169,7 @@ internal fun DoneView(
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                "Album terminé",
+                stringResource(R.string.done_title),
                 color = textPrim,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
@@ -139,15 +177,9 @@ internal fun DoneView(
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                buildString {
-                    append(state.kept)
-                    append(" gardée")
-                    if (state.kept != 1) append('s')
-                    append(" · ")
-                    append(state.deleted)
-                    append(" supprimée")
-                    if (state.deleted != 1) append('s')
-                },
+                pluralStringResource(R.plurals.done_subtitle_kept, state.kept, state.kept) +
+                    stringResource(R.string.done_subtitle_separator) +
+                    pluralStringResource(R.plurals.done_subtitle_deleted, state.deleted, state.deleted),
                 color = textSec,
                 fontSize = 14.sp
             )
@@ -155,20 +187,20 @@ internal fun DoneView(
 
             if (!isOnAllPhotos) {
                 PrimaryPillButton(
-                    text = "Voir toutes mes photos",
+                    text = stringResource(R.string.done_view_all),
                     onClick = { onIntent(SwipeIntent.ViewAllPhotosTapped) }
                 )
                 Spacer(Modifier.height(10.dp))
             }
             SecondaryPillButton(
-                text = "Changer d'album",
+                text = stringResource(R.string.done_change_album),
                 textColor = textPrim,
                 border = border,
                 onClick = { onIntent(SwipeIntent.AlbumTitleTapped) }
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                "Tout refaire",
+                stringResource(R.string.done_start_over),
                 color = textSec,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,

@@ -18,6 +18,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -45,15 +50,18 @@ internal fun ActionBar(
     ) {
         ActionButton(
             size = 58.dp, surface = surface, border = border, glow = DropColor,
+            description = stringResource(R.string.action_delete_a11y),
             onClick = { onIntent(SwipeIntent.DeleteButtonTapped) }
         ) { Text("✕", color = DropColor, fontSize = 26.sp, fontWeight = FontWeight.Bold) }
         ActionButton(
             size = 46.dp, surface = surface, border = border, glow = UndoColor,
             enabled = !historyEmpty,
+            description = stringResource(R.string.action_undo_a11y),
             onClick = { onIntent(SwipeIntent.UndoButtonTapped) }
         ) { Text("↺", color = UndoColor, fontSize = 20.sp, fontWeight = FontWeight.Bold) }
         ActionButton(
             size = 58.dp, surface = surface, border = border, glow = KeepColor,
+            description = stringResource(R.string.action_keep_a11y),
             onClick = { onIntent(SwipeIntent.KeepButtonTapped) }
         ) { Text("♥", color = KeepColor, fontSize = 26.sp) }
     }
@@ -66,12 +74,17 @@ private fun ActionButton(
     border: Color,
     glow: Color,
     enabled: Boolean = true,
+    description: String,
     onClick: () -> Unit,
     content: @Composable () -> Unit
 ) {
     Box(
         Modifier
             .size(size)
+            .semantics {
+                role = Role.Button
+                contentDescription = description
+            }
             .graphicsLayer {
                 alpha = if (enabled) 1f else 0.35f
                 shadowElevation = if (enabled) 6.dp.toPx() else 0f

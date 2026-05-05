@@ -2,11 +2,11 @@ import { initializeApp } from "firebase/app";
 import { getFunctions } from "firebase/functions";
 
 const app = initializeApp({
-  projectId: "picswipe",
+  projectId: "picswipe-4c451",
   appId: "",
-  storageBucket: "picswipe.firebasestorage.app",
+  storageBucket: "picswipe-4c451.firebasestorage.app",
   apiKey: "",
-  authDomain: "picswipe.firebaseapp.com",
+  authDomain: "picswipe-4c451.firebaseapp.com",
   messagingSenderId: "",
 });
 

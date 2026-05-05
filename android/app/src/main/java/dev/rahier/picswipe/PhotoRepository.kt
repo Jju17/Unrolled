@@ -19,6 +19,11 @@ import java.util.Date
  */
 interface PhotoRepository {
     fun hasReadPermission(): Boolean
+    /** `true` on API 34+ when the user granted `READ_MEDIA_VISUAL_USER_SELECTED`
+     *  but NOT `READ_MEDIA_IMAGES` — i.e. they picked a subset of photos
+     *  through the system picker. The UI branches on this to offer a
+     *  "change selection" affordance when no photos are visible. */
+    fun hasPartialPhotoAccess(): Boolean
     suspend fun loadAlbums(): List<Album>
     suspend fun loadPhotos(albumId: String? = null): List<PhotoAsset>
 }
@@ -31,13 +36,36 @@ interface PhotoRepository {
 class MediaStorePhotoRepository(private val context: Context) : PhotoRepository {
 
     override fun hasReadPermission(): Boolean {
-        val perm = if (Build.VERSION.SDK_INT >= 33) {
-            Manifest.permission.READ_MEDIA_IMAGES
-        } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
+        // API 34+ : accept EITHER the full `READ_MEDIA_IMAGES` grant OR
+        //          the partial `READ_MEDIA_VISUAL_USER_SELECTED` grant.
+        //          MediaStore naturally filters the query result to
+        //          whatever the app is actually allowed to see, so the
+        //          downstream code doesn't need to branch.
+        // API 33  : only READ_MEDIA_IMAGES exists.
+        // API ≤32 : legacy READ_EXTERNAL_STORAGE.
+        val perms = when {
+            Build.VERSION.SDK_INT >= 34 -> listOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+            )
+            Build.VERSION.SDK_INT >= 33 -> listOf(Manifest.permission.READ_MEDIA_IMAGES)
+            else -> listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
-        return ContextCompat.checkSelfPermission(context, perm) ==
-                PackageManager.PERMISSION_GRANTED
+        return perms.any {
+            ContextCompat.checkSelfPermission(context, it) ==
+                    PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    override fun hasPartialPhotoAccess(): Boolean {
+        if (Build.VERSION.SDK_INT < 34) return false
+        val visual = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+        ) == PackageManager.PERMISSION_GRANTED
+        val full = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.READ_MEDIA_IMAGES
+        ) == PackageManager.PERMISSION_GRANTED
+        return visual && !full
     }
 
     /**

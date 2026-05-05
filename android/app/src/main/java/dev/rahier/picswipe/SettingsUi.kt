@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +48,7 @@ internal fun SettingsGearButton(
     ) {
         Icon(
             imageVector = Icons.Outlined.Settings,
-            contentDescription = "Réglages",
+            contentDescription = stringResource(R.string.settings_title),
             tint = tint,
             modifier = Modifier.size(18.dp)
         )
@@ -73,13 +74,13 @@ internal fun SettingsBottomSheet(
     ) {
         Column(Modifier.padding(bottom = 24.dp)) {
             Text(
-                text = "Réglages",
+                text = stringResource(R.string.settings_title),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
             )
             ListItem(
-                headlineContent = { Text("Voir la photo dans la photothèque") },
+                headlineContent = { Text(stringResource(R.string.settings_view_in_photos)) },
                 leadingContent = {
                     Icon(Icons.Outlined.Photo, contentDescription = null)
                 },
