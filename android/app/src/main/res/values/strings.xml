@@ -67,13 +67,6 @@
     <string name="deleted_row_fallback_title">Photo</string>
     <string name="deleted_row_status">Ready to delete</string>
     <string name="deleted_row_keep">Keep</string>
-    <plurals name="deleted_alert_title">
-        <item quantity="one">Delete %d photo?</item>
-        <item quantity="other">Delete %d photos?</item>
-    </plurals>
-    <string name="deleted_alert_body">Photos will be sent to the system trash (recoverable for 30 days). Android will ask you to confirm again before deletion.</string>
-    <string name="deleted_alert_confirm">Delete</string>
-    <string name="deleted_alert_cancel">Cancel</string>
     <string name="deleted_footer_button">Empty trash (%d)</string>
 
     <!-- Trash error messages -->

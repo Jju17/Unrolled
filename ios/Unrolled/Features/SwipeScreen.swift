@@ -84,20 +84,6 @@ struct SwipeScreen: View {
         .sheet(isPresented: $store.deletedSheetOpen) {
             DeletedPhotosSheet(store: store)
         }
-        .alert(
-            // String Catalog handles plural variations (one/other) → "Delete %lld photo?" / "Delete %lld photos?"
-            String(
-                localized: "Delete \(store.deletedPhotoIDs.count) photos?"
-            ),
-            isPresented: $store.trashAlertOpen
-        ) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) {
-                store.send(.emptyTrashConfirmed)
-            }
-        } message: {
-            Text("Photos will be moved to the Photos app's trash. You can recover them from \"Recently Deleted\" for 30 days.")
-        }
         .onAppear { store.send(.onAppear) }
         // Light haptic every time a commit fires. `activeIndex` advancing
         // is the authoritative signal (covers gestures, buttons).

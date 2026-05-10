@@ -429,37 +429,29 @@ class SwipeViewModelTest {
     }
 
     @Test
-    fun `EmptyTrashButtonTapped with non-empty list opens alert`() = runTest(dispatcher) {
+    fun `EmptyTrashButtonTapped with non-empty list kicks off delete`() = runTest(dispatcher) {
         val viewModel = vm()
         viewModel.onIntent(SwipeIntent.ScreenAppeared)
         advanceUntilIdle()
         viewModel.onIntent(SwipeIntent.DeleteButtonTapped)
 
+        // Single tap goes straight to "delete in flight" — the OS dialog
+        // (rendered by MediaStore.createTrashRequest) is now the only
+        // confirmation step, so we no longer gate on an in-app alert.
         viewModel.onIntent(SwipeIntent.EmptyTrashButtonTapped)
-        assertTrue(viewModel.state.value.trashAlertOpen)
+
+        val s = viewModel.state.value
+        assertTrue(s.trashInFlight)
+        assertEquals(listOf(p1.id), s.trashPendingIDs)
     }
 
     @Test
     fun `EmptyTrashButtonTapped with empty list is no-op`() = runTest(dispatcher) {
         val viewModel = vm()
         viewModel.onIntent(SwipeIntent.EmptyTrashButtonTapped)
-        assertFalse(viewModel.state.value.trashAlertOpen)
-    }
-
-    @Test
-    fun `TrashAlertConfirmed sets trashPendingIDs and trashInFlight`() = runTest(dispatcher) {
-        val viewModel = vm()
-        viewModel.onIntent(SwipeIntent.ScreenAppeared)
-        advanceUntilIdle()
-        viewModel.onIntent(SwipeIntent.DeleteButtonTapped)
-        viewModel.onIntent(SwipeIntent.EmptyTrashButtonTapped)
-
-        viewModel.onIntent(SwipeIntent.TrashAlertConfirmed)
-
         val s = viewModel.state.value
-        assertFalse(s.trashAlertOpen)
-        assertTrue(s.trashInFlight)
-        assertEquals(listOf(p1.id), s.trashPendingIDs)
+        assertFalse(s.trashInFlight)
+        assertNull(s.trashPendingIDs)
     }
 
     @Test
@@ -475,7 +467,6 @@ class SwipeViewModelTest {
 
         viewModel.onIntent(SwipeIntent.DeletedSheetButtonTapped)
         viewModel.onIntent(SwipeIntent.EmptyTrashButtonTapped)
-        viewModel.onIntent(SwipeIntent.TrashAlertConfirmed)
         viewModel.onIntent(SwipeIntent.TrashPendingConsumed)
 
         viewModel.onIntent(SwipeIntent.TrashResult(success = true))
@@ -508,7 +499,6 @@ class SwipeViewModelTest {
         viewModel.onIntent(SwipeIntent.DeleteButtonTapped)
         viewModel.onIntent(SwipeIntent.DeletedSheetButtonTapped)
         viewModel.onIntent(SwipeIntent.EmptyTrashButtonTapped)
-        viewModel.onIntent(SwipeIntent.TrashAlertConfirmed)
 
         viewModel.onIntent(SwipeIntent.TrashResult(success = false, message = "oops"))
 

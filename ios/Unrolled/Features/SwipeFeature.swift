@@ -53,7 +53,6 @@ struct SwipeFeature {
         var settings: UserSettings = .default
         var settingsOpen = false
         var shuffleEnabled = false
-        var trashAlertOpen = false
         /// `true` while a `deleteAssets` request is awaiting the system
         /// confirmation dialog + PhotoKit commit. Keeps the button
         /// disabled so a double-tap can't fire two requests.
@@ -106,9 +105,6 @@ struct SwipeFeature {
         case deletedSheetButtonTapped
         /// User tapped the big red "Mettre à la poubelle" button.
         case emptyTrashButtonTapped
-        /// User confirmed in the "Es-tu sûr ?" alert. Kicks off the
-        /// PhotoKit batch delete. PhotoKit shows its own dialog on top.
-        case emptyTrashConfirmed
         /// PhotoKit delete completed. `success` is true if at least some
         /// assets moved; false carries an error message for the banner.
         case emptyTrashResult(success: Bool, message: String?)
@@ -219,12 +215,9 @@ struct SwipeFeature {
                 return .none
 
             case .emptyTrashButtonTapped:
-                guard !state.deletedPhotoIDs.isEmpty else { return .none }
-                state.trashAlertOpen = true
-                return .none
-
-            case .emptyTrashConfirmed:
-                state.trashAlertOpen = false
+                // No in-app confirmation: PhotoKit shows its own
+                // mandatory system dialog, so duplicating it in-app
+                // was just an extra tap for the user.
                 guard !state.deletedPhotoIDs.isEmpty,
                       !state.trashInFlight else { return .none }
                 state.trashInFlight = true

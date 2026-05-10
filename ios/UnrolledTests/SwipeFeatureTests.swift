@@ -372,19 +372,29 @@ final class SwipeFeatureTests: XCTestCase {
         // No alert opens because the list is empty.
     }
 
-    func test_emptyTrashButton_withList_opensAlert() async {
+    func test_emptyTrashButton_withList_kicksOffDelete() async {
         let store = TestStore(
             initialState: SwipeFeature.State(
                 deleted: 1,
                 deletedPhotoIDs: ["a1"]
             )
-        ) { SwipeFeature() }
+        ) {
+            SwipeFeature()
+        } withDependencies: {
+            $0.photoLibrary = .stubAuthorized()  // deleteAssets no-op ⇒ success
+        }
+        // No in-app alert any more — PhotoKit's own system dialog is the
+        // single confirmation step. Tap goes straight to `trashInFlight`.
         await store.send(.emptyTrashButtonTapped) {
-            $0.trashAlertOpen = true
+            $0.trashInFlight = true
+        }
+        await store.receive(\.emptyTrashResult) {
+            $0.trashInFlight = false
+            $0.deletedPhotoIDs = []
         }
     }
 
-    func test_emptyTrashConfirmed_success_resetsCountersAndHistory() async {
+    func test_emptyTrashButton_success_resetsCountersAndHistory() async {
         let store = TestStore(
             initialState: SwipeFeature.State(
                 deleted: 2,
@@ -395,8 +405,7 @@ final class SwipeFeatureTests: XCTestCase {
                     SwipeHistoryEntry(index: 1, kept: false),
                     SwipeHistoryEntry(index: 2, kept: false),
                 ],
-                kept: 1,
-                trashAlertOpen: true
+                kept: 1
             )
         ) {
             SwipeFeature()
@@ -404,8 +413,7 @@ final class SwipeFeatureTests: XCTestCase {
             $0.photoLibrary = .stubAuthorized()  // deleteAssets no-op ⇒ success
         }
 
-        await store.send(.emptyTrashConfirmed) {
-            $0.trashAlertOpen = false
+        await store.send(.emptyTrashButtonTapped) {
             $0.trashInFlight = true
         }
         await store.receive(\.emptyTrashResult) {
@@ -418,13 +426,12 @@ final class SwipeFeatureTests: XCTestCase {
         }
     }
 
-    func test_emptyTrashConfirmed_failure_surfacesError() async {
+    func test_emptyTrashButton_failure_surfacesError() async {
         let store = TestStore(
             initialState: SwipeFeature.State(
                 deleted: 1,
                 deletedPhotoIDs: ["a1"],
-                deletedSheetOpen: true,
-                trashAlertOpen: true
+                deletedSheetOpen: true
             )
         ) {
             SwipeFeature()
@@ -436,8 +443,7 @@ final class SwipeFeatureTests: XCTestCase {
             $0.photoLibrary = client
         }
 
-        await store.send(.emptyTrashConfirmed) {
-            $0.trashAlertOpen = false
+        await store.send(.emptyTrashButtonTapped) {
             $0.trashInFlight = true
         }
         await store.receive(\.emptyTrashResult) {

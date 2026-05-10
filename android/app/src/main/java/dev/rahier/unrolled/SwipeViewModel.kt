@@ -96,8 +96,18 @@ class SwipeViewModel(
                 _state.update { it.copy(deletedSheetOpen = false, deleteError = null) }
 
             SwipeIntent.EmptyTrashButtonTapped -> {
-                if (_state.value.deletedPhotoIDs.isNotEmpty()) {
-                    _state.update { it.copy(trashAlertOpen = true) }
+                // No in-app confirmation: MediaStore.createTrashRequest
+                // shows its own mandatory system dialog, so duplicating
+                // it in-app was just an extra tap for the user.
+                val ids = _state.value.deletedPhotoIDs
+                if (ids.isNotEmpty()) {
+                    _state.update {
+                        it.copy(
+                            trashInFlight = true,
+                            trashPendingIDs = ids,
+                            deleteError = null
+                        )
+                    }
                 }
             }
 
@@ -232,25 +242,6 @@ class SwipeViewModel(
                         exitingStartDragY = 0f
                     )
                 }
-
-            SwipeIntent.TrashAlertConfirmed -> {
-                val ids = _state.value.deletedPhotoIDs
-                if (ids.isEmpty()) {
-                    _state.update { it.copy(trashAlertOpen = false) }
-                } else {
-                    _state.update {
-                        it.copy(
-                            trashAlertOpen = false,
-                            trashInFlight = true,
-                            trashPendingIDs = ids,
-                            deleteError = null
-                        )
-                    }
-                }
-            }
-
-            SwipeIntent.TrashAlertDismissed ->
-                _state.update { it.copy(trashAlertOpen = false) }
 
             SwipeIntent.TrashPendingConsumed ->
                 _state.update { it.copy(trashPendingIDs = null) }

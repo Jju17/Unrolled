@@ -48,7 +48,6 @@ data class SwipeState(
     val settings: UserSettings = UserSettings(),
     val settingsOpen: Boolean = false,
     val shuffleEnabled: Boolean = false,
-    val trashAlertOpen: Boolean = false,
     /** `true` while the system `createTrashRequest` intent is in flight
      *  (user hasn't yet confirmed the OS dialog). Keeps the button
      *  disabled against a double-tap. */

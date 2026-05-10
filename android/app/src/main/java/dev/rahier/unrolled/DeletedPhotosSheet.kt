@@ -22,18 +22,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -68,9 +65,7 @@ internal fun DeletedPhotosSheet(
     val rows = state.deletedPhotoIDs.mapNotNull { photoByID[it] }
 
     // System back should dismiss the sheet, not the whole Activity.
-    // Disabled when the confirm alert is visible so Back closes the
-    // alert first (standard Material 3 AlertDialog behaviour).
-    BackHandler(enabled = !state.trashAlertOpen) {
+    BackHandler {
         onIntent(SwipeIntent.DeletedSheetDismissed)
     }
 
@@ -190,27 +185,6 @@ internal fun DeletedPhotosSheet(
         }
     }
 
-    if (state.trashAlertOpen) {
-        AlertDialog(
-            onDismissRequest = { onIntent(SwipeIntent.TrashAlertDismissed) },
-            title = {
-                Text(pluralStringResource(R.plurals.deleted_alert_title, rows.size, rows.size))
-            },
-            text = {
-                Text(stringResource(R.string.deleted_alert_body))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = { onIntent(SwipeIntent.TrashAlertConfirmed) }
-                ) { Text(stringResource(R.string.deleted_alert_confirm), color = DropColor, fontWeight = FontWeight.Bold) }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { onIntent(SwipeIntent.TrashAlertDismissed) }
-                ) { Text(stringResource(R.string.deleted_alert_cancel)) }
-            }
-        )
-    }
 }
 
 @Composable
