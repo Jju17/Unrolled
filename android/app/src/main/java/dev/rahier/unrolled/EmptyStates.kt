@@ -1,4 +1,4 @@
-package dev.rahier.picswipe
+package dev.rahier.unrolled
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

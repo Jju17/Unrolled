@@ -1,6 +1,6 @@
 # Web — Unrolled
 
-Marketing + legal surface for the Unrolled apps: landing page, **Privacy** policy, **Support** page. Deployed to **Firebase Hosting** under the project `picswipe-4c451` (custom subdomain to be configured).
+Marketing + legal surface for the Unrolled apps: landing page, **Privacy** policy, **Support** page. Deployed to **Firebase Hosting** under the project `unrolled-e4775` (custom subdomain to be configured).
 
 ## Stack
 
@@ -50,11 +50,11 @@ web/
         └── Support.tsx   — support / contact (linked from in-app About sheet)
 ```
 
-The mobile clients link to `https://picswipe-4c451.web.app/privacy` and `.../support` from their About sheets — the contact email shown on these pages is `julien@rahier.dev` (kept consistent with the app stores' support contact).
+The mobile clients link to `https://unrolled-e4775.web.app/privacy` and `.../support` from their About sheets — the contact email shown on these pages is `julien@rahier.dev` (kept consistent with the app stores' support contact).
 
 ## Firebase config
 
-`src/firebase.ts` initializes a Firebase app pointed at project `picswipe-4c451`, region `europe-west1`. The values for `apiKey`, `appId`, `messagingSenderId` are currently **empty placeholders** — fill them in from the Firebase console before calling any Firebase API. None of today's pages call Firebase, so empty placeholders are fine for now.
+`src/firebase.ts` initializes a Firebase app pointed at project `unrolled-e4775`, region `europe-west1`. The values for `apiKey`, `appId`, `messagingSenderId` are currently **empty placeholders** — fill them in from the Firebase console before calling any Firebase API. None of today's pages call Firebase, so empty placeholders are fine for now.
 
 ## Deploy
 

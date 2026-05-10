@@ -1,6 +1,6 @@
 # iOS — Unrolled
 
-Native SwiftUI app built on **The Composable Architecture (TCA)**. iOS 17+. Bundle id `dev.rahier.picswipe`. The Xcode project is generated from [`project.yml`](project.yml) — never edit the `.xcodeproj` directly.
+Native SwiftUI app built on **The Composable Architecture (TCA)**. iOS 17+. Bundle id `dev.rahier.unrolled`. The Xcode project is generated from [`project.yml`](project.yml) — never edit the `.xcodeproj` directly.
 
 ## Stack
 
@@ -115,7 +115,7 @@ First build takes a few minutes (SPM fetches TCA + transitive deps); subsequent 
 xcrun simctl boot "iPhone 17 Pro" && open -a Simulator
 xcrun simctl install booted \
   ~/Library/Developer/Xcode/DerivedData/Unrolled-*/Build/Products/Debug-iphonesimulator/Unrolled.app
-xcrun simctl launch booted dev.rahier.picswipe
+xcrun simctl launch booted dev.rahier.unrolled
 ```
 
 ## Photo library access

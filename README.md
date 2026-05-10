@@ -9,7 +9,7 @@ ios/         — SwiftUI + The Composable Architecture (TCA), iOS 17+
 android/     — Kotlin + Jetpack Compose, MVI, minSdk 26
 web/         — Vite + React 19 + Tailwind 4 (privacy / support / landing)
 functions/   — Firebase Cloud Functions v2 (TypeScript, Node 22)
-.firebaserc  — Firebase project: picswipe-4c451 (region europe-west1)
+.firebaserc  — Firebase project: unrolled-e4775 (region europe-west1)
 firebase.json, firestore.rules, firestore.indexes.json
 RELEASE_NOTES.md  — single source of truth for store release notes
 audit.md     — code audit & improvement backlog
@@ -23,7 +23,7 @@ Each platform is independent: you can build the iOS app without touching Gradle,
 | --- | --- | --- |
 | Stack | SwiftUI + TCA | Jetpack Compose + MVI |
 | Min OS | iOS 17 | API 26 (Android 8) |
-| Bundle / app id | `dev.rahier.picswipe` | `dev.rahier.unrolled` |
+| Bundle / app id | `dev.rahier.unrolled` | `dev.rahier.unrolled` |
 | Photo source | PhotoKit (`PHAsset`) | MediaStore (`content://` URIs) |
 | Image loader | `PHImageManager` + `PHCachingImageManager` | Coil 3 (no OkHttp) |
 | Deletion | `PHAssetChangeRequest.deleteAssets` (system confirm) | `MediaStore.createTrashRequest` (system confirm) |
@@ -61,7 +61,7 @@ Each sub-project has its own README with build / test / deploy details:
 
 ## Firebase project layout
 
-The whole repo is wired to a single Firebase project — `picswipe-4c451` (region `europe-west1`).
+The whole repo is wired to a single Firebase project — `unrolled-e4775` (region `europe-west1`).
 
 | Service | Used for | File |
 | --- | --- | --- |
@@ -84,7 +84,7 @@ The mobile apps are deliberately offline:
 - No analytics / no crash reporters / no third-party SDKs.
 - iOS ships a `PrivacyInfo.xcprivacy` declaring only `UserDefaults` (CA92.1) and `SystemBootTime` (35F9.1).
 - Android `data_extraction_rules.xml` and `backup_rules.xml` exclude all domains; no app-private state to worry about.
-- The only external touchpoints are `Link`s in the in-app About sheet that open the Privacy / Support pages on `picswipe-4c451.web.app` in the system browser.
+- The only external touchpoints are `Link`s in the in-app About sheet that open the Privacy / Support pages on `unrolled-e4775.web.app` in the system browser.
 
 ## Testing
 

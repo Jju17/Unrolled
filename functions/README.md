@@ -38,7 +38,7 @@ cd functions && npm run build
 firebase deploy --only functions
 ```
 
-The Firebase project id (`picswipe-4c451`) lives in the root [`../.firebaserc`](../.firebaserc).
+The Firebase project id (`unrolled-e4775`) lives in the root [`../.firebaserc`](../.firebaserc).
 
 ## Layout
 

@@ -5,27 +5,36 @@
 
 import SwiftUI
 
-/// Native `.sheet`-presented list of settings. For now the single row
-/// is "Voir la photo dans la photothèque" which opens the Photos app.
+/// Native `.sheet`-presented list of metadata-display preferences.
 struct SettingsSheet: View {
     @Environment(\.dismiss) private var dismiss
 
-    let hasTopPhoto: Bool
-    let onViewInPhotos: () -> Void
+    let settings: UserSettings
+    let onPlayLivePhotosToggled: (Bool) -> Void
+    let onShowLocationToggled: (Bool) -> Void
 
     var body: some View {
         NavigationStack {
-            List {
+            Form {
                 Section {
-                    Button {
-                        onViewInPhotos()
-                        dismiss()
-                    } label: {
-                        Label(String(localized: "View this photo in Photos"),
-                              systemImage: "photo.on.rectangle")
-                            .foregroundStyle(hasTopPhoto ? .primary : .secondary)
-                    }
-                    .disabled(!hasTopPhoto)
+                    Toggle(
+                        String(localized: "Show location"),
+                        isOn: Binding(
+                            get: { settings.showLocation },
+                            set: { onShowLocationToggled($0) }
+                        )
+                    )
+                    Toggle(
+                        String(localized: "Play Live Photos"),
+                        isOn: Binding(
+                            get: { settings.playLivePhotos },
+                            set: { onPlayLivePhotosToggled($0) }
+                        )
+                    )
+                } header: {
+                    Text("Photo display")
+                } footer: {
+                    Text("Choose which info to show on each photo, and whether Live Photos play automatically when viewed full-screen.")
                 }
             }
             .navigationTitle("Settings")

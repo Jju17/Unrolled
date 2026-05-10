@@ -1,4 +1,4 @@
-package dev.rahier.picswipe
+package dev.rahier.unrolled
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
@@ -10,17 +10,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +43,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,6 +80,7 @@ internal fun CardStack(
                 depth = idx - state.activeIndex,
                 state = state,
                 thresholdPx = thresholdPx,
+                showLocation = state.settings.showLocation,
                 onIntent = onIntent
             )
         }
@@ -97,6 +108,7 @@ private fun StackCardSlot(
     depth: Int,
     state: SwipeState,
     thresholdPx: Float,
+    showLocation: Boolean,
     onIntent: (SwipeIntent) -> Unit
 ) {
     val density = LocalDensity.current
@@ -185,13 +197,28 @@ private fun StackCardSlot(
                 else Modifier
             )
     ) {
+        val placeName = rememberPlaceName(photo, showLocation, isTop)
         PhotoCardContent(
             photo = photo,
             keepOpacity = keepOpacity,
             dropOpacity = dropOpacity,
-            isTop = isTop
+            isTop = isTop,
+            placeName = placeName
         )
     }
+}
+
+@Composable
+private fun rememberPlaceName(photo: PhotoAsset, showLocation: Boolean, isTop: Boolean): String? {
+    val describer = LocalLocationDescriber.current
+    var placeName by remember(photo.id) { mutableStateOf<String?>(null) }
+    LaunchedEffect(photo.id, showLocation, isTop, describer) {
+        placeName = null
+        if (describer != null && showLocation && isTop) {
+            placeName = describer.placeName(photo.id)
+        }
+    }
+    return placeName
 }
 
 @Composable
@@ -239,7 +266,8 @@ private fun ExitingCardOverlay(
             photo = photo,
             keepOpacity = if (direction > 0) 1f else 0f,
             dropOpacity = if (direction < 0) 1f else 0f,
-            isTop = true
+            isTop = true,
+            placeName = null
         )
     }
 }
@@ -251,7 +279,8 @@ private fun PhotoCardContent(
     photo: PhotoAsset,
     keepOpacity: Float,
     dropOpacity: Float,
-    isTop: Boolean
+    isTop: Boolean,
+    placeName: String?
 ) {
     Box(
         Modifier
@@ -275,20 +304,43 @@ private fun PhotoCardContent(
                     )
                 )
         )
-        photo.creationDate?.let {
-            Text(
-                formatDate(it),
-                color = Color.White,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(18.dp)
-            )
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            photo.creationDate?.let {
+                Text(
+                    formatDate(it),
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            placeName?.let {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = null,
+                        tint = Color.White.copy(alpha = 0.92f),
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Text(
+                        text = it,
+                        color = Color.White.copy(alpha = 0.92f),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
         }
         if (isTop) {
-            Stamp("KEEP", KeepColor, keepOpacity, -18f, Alignment.TopStart)
-            Stamp("DELETE", DropColor, dropOpacity, 18f, Alignment.TopEnd)
+            Stamp(stringResource(R.string.stamp_keep), KeepColor, keepOpacity, -18f, Alignment.TopStart)
+            Stamp(stringResource(R.string.stamp_delete), DropColor, dropOpacity, 18f, Alignment.TopEnd)
         }
     }
 }

@@ -1,4 +1,4 @@
-package dev.rahier.picswipe
+package dev.rahier.unrolled
 
 import app.cash.turbine.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -53,8 +53,16 @@ class SwipeViewModelTest {
             initialHasPermission = true,
             albums = albums,
             photos = fivePhotos
-        )
-    ): SwipeViewModel = SwipeViewModel(repo)
+        ),
+        settingsRepo: SettingsRepository = InMemorySettingsRepository()
+    ): SwipeViewModel = SwipeViewModel(repo, settingsRepo)
+
+    private class InMemorySettingsRepository(
+        private var current: UserSettings = UserSettings()
+    ) : SettingsRepository {
+        override fun load(): UserSettings = current
+        override fun save(settings: UserSettings) { current = settings }
+    }
 
     // MARK: - Initial state
 

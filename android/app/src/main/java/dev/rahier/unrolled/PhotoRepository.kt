@@ -1,4 +1,4 @@
-package dev.rahier.picswipe
+package dev.rahier.unrolled
 
 import android.Manifest
 import android.content.ContentUris
@@ -7,9 +7,13 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.MediaStore
 import androidx.core.content.ContextCompat
+import androidx.exifinterface.media.ExifInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Date
+
+/** GPS coordinates extracted from a photo's EXIF / MediaStore metadata. */
+data class GeoPoint(val latitude: Double, val longitude: Double)
 
 /**
  * Abstraction over the device photo library. The real implementation
@@ -26,6 +30,13 @@ interface PhotoRepository {
     fun hasPartialPhotoAccess(): Boolean
     suspend fun loadAlbums(): List<Album>
     suspend fun loadPhotos(albumId: String? = null): List<PhotoAsset>
+    /**
+     * Lazily reads EXIF GPS for a single photo. Returns `null` when the
+     * photo has no location, when ACCESS_MEDIA_LOCATION wasn't granted,
+     * or when the file can't be opened. Callers should treat absence as
+     * the common case, not an error.
+     */
+    suspend fun loadLocation(photoId: Long): GeoPoint?
 }
 
 /**
@@ -159,6 +170,46 @@ class MediaStorePhotoRepository(private val context: Context) : PhotoRepository 
             }
         }
         out
+    }
+
+    /**
+     * API 29+ : EXIF read through `MediaStore.setRequireOriginal()` which
+     *           requires the `ACCESS_MEDIA_LOCATION` runtime permission.
+     *           Throws `SecurityException` if the perm isn't granted —
+     *           we swallow it and return null so the caller's UI hides
+     *           the location strip silently.
+     * API ≤28 : the legacy `LATITUDE`/`LONGITUDE` columns aren't redacted
+     *           and can be read via a normal cursor query.
+     */
+    override suspend fun loadLocation(photoId: Long): GeoPoint? = withContext(Dispatchers.IO) {
+        val collection = imagesCollection()
+        val uri = ContentUris.withAppendedId(collection, photoId)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            runCatching {
+                val originalUri = MediaStore.setRequireOriginal(uri)
+                context.contentResolver.openInputStream(originalUri)?.use { stream ->
+                    val exif = ExifInterface(stream)
+                    val coords = exif.latLong ?: return@use null
+                    GeoPoint(latitude = coords[0], longitude = coords[1])
+                }
+            }.getOrNull()
+        } else {
+            @Suppress("DEPRECATION")
+            val projection = arrayOf(
+                MediaStore.Images.Media.LATITUDE,
+                MediaStore.Images.Media.LONGITUDE
+            )
+            context.contentResolver.query(
+                uri, projection, null, null, null
+            )?.use { cursor ->
+                if (!cursor.moveToFirst()) return@use null
+                val lat = cursor.getDouble(0)
+                val lng = cursor.getDouble(1)
+                if (lat == 0.0 && lng == 0.0) null
+                else GeoPoint(latitude = lat, longitude = lng)
+            }
+        }
     }
 
     private fun imagesCollection() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

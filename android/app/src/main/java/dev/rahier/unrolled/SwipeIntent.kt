@@ -1,4 +1,4 @@
-package dev.rahier.picswipe
+package dev.rahier.unrolled
 
 sealed interface SwipeIntent {
     data object AboutDismissed : SwipeIntent
@@ -19,6 +19,12 @@ sealed interface SwipeIntent {
      *  in-app "Es-tu sûr ?" alert. */
     data object EmptyTrashButtonTapped : SwipeIntent
     data object FullscreenDismissed : SwipeIntent
+    /** User tapped keep/delete inside the fullscreen pager. [localIdx]
+     *  is the offset from `activeIndex` — i.e. how many pages forward
+     *  they scrolled before deciding. Intermediate photos are skipped
+     *  for this session; the chosen one lands in `history` like a
+     *  normal commit so undo behaves identically. */
+    data class FullscreenMarkAtRelativeIndex(val localIdx: Int, val kept: Boolean) : SwipeIntent
     data object KeepButtonTapped : SwipeIntent
     data class PermissionResult(val status: PermissionStatus) : SwipeIntent
     data class PhotosLoadFailed(val message: String) : SwipeIntent
@@ -28,6 +34,8 @@ sealed interface SwipeIntent {
     data object ScreenAppeared : SwipeIntent
     data object SettingsButtonTapped : SwipeIntent
     data object SettingsDismissed : SwipeIntent
+    /** Toggle for "show location metadata" in Settings. Persists via [SettingsRepository]. */
+    data class SettingsShowLocationToggled(val value: Boolean) : SwipeIntent
     data object ShuffleButtonTapped : SwipeIntent
     /** Fired from a delayed coroutine after a commit. Just clears
      *  [SwipeState.exitingPhoto] / [SwipeState.exitingDirection] — the

@@ -26,5 +26,9 @@
 	<string>Unrolled needs access to your photos so you can swipe through and sort them.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
 </dict>
 </plist>

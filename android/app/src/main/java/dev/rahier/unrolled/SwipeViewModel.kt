@@ -1,4 +1,4 @@
-package dev.rahier.picswipe
+package dev.rahier.unrolled
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -12,10 +12,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SwipeViewModel(
-    private val photoRepository: PhotoRepository
+    private val photoRepository: PhotoRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(SwipeState())
+    private val _state = MutableStateFlow(
+        SwipeState(settings = settingsRepository.load())
+    )
     val state: StateFlow<SwipeState> = _state.asStateFlow()
 
     private var animationJob: Job? = null
@@ -101,6 +104,25 @@ class SwipeViewModel(
             SwipeIntent.FullscreenDismissed ->
                 _state.update { it.copy(fullscreenOpen = false) }
 
+            is SwipeIntent.FullscreenMarkAtRelativeIndex -> {
+                val s = _state.value
+                val targetIdx = s.activeIndex + intent.localIdx
+                if (intent.localIdx < 0 || targetIdx >= s.photos.size) return
+                val photo = s.photos[targetIdx]
+                _state.update {
+                    it.copy(
+                        history = it.history + SwipeHistoryEntry(targetIdx, intent.kept),
+                        kept = if (intent.kept) it.kept + 1 else it.kept,
+                        deleted = if (!intent.kept) it.deleted + 1 else it.deleted,
+                        deletedPhotoIDs = if (!intent.kept)
+                            it.deletedPhotoIDs + photo.id
+                        else it.deletedPhotoIDs,
+                        activeIndex = targetIdx + 1,
+                        fullscreenOpen = false
+                    )
+                }
+            }
+
             SwipeIntent.KeepButtonTapped -> startSwipe(direction = 1)
 
             is SwipeIntent.PermissionResult -> {
@@ -159,6 +181,12 @@ class SwipeViewModel(
 
             SwipeIntent.SettingsDismissed ->
                 _state.update { it.copy(settingsOpen = false) }
+
+            is SwipeIntent.SettingsShowLocationToggled -> {
+                val updated = _state.value.settings.copy(showLocation = intent.value)
+                _state.update { it.copy(settings = updated) }
+                settingsRepository.save(updated)
+            }
 
             SwipeIntent.ShuffleButtonTapped -> {
                 cancelAnimation()
@@ -401,11 +429,12 @@ class SwipeViewModel(
     )
 
     class Factory(
-        private val photoRepository: PhotoRepository
+        private val photoRepository: PhotoRepository,
+        private val settingsRepository: SettingsRepository
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            SwipeViewModel(photoRepository) as T
+            SwipeViewModel(photoRepository, settingsRepository) as T
     }
 
     companion object {

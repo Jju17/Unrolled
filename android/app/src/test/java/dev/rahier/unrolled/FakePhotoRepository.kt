@@ -1,4 +1,4 @@
-package dev.rahier.picswipe
+package dev.rahier.unrolled
 
 /**
  * In-memory [PhotoRepository] for unit tests. Each load method is fully
@@ -60,4 +60,6 @@ class FakePhotoRepository(
     fun setPhotosForAlbum(albumId: String, items: List<PhotoAsset>) {
         photosByAlbum[albumId] = items
     }
+
+    override suspend fun loadLocation(photoId: Long): GeoPoint? = null
 }

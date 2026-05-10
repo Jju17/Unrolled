@@ -46,10 +46,11 @@ targets:
         NSPhotoLibraryUsageDescription: "Unrolled needs access to your photos so you can swipe through and sort them."
     settings:
       base:
-        # Bundle ID stays as the originally-registered reverse-DNS —
-        # it's invisible to users and CAN'T change (Apple dev portal
-        # App ID + App Store Connect listing both reference it).
-        PRODUCT_BUNDLE_IDENTIFIER: dev.rahier.picswipe
+        # Bundle ID matches the brand. Must also be registered as an
+        # explicit App ID in the Apple Developer Portal AND attached to
+        # the App Store Connect listing — both are looked up at archive
+        # time. Don't change without aligning all three.
+        PRODUCT_BUNDLE_IDENTIFIER: dev.rahier.unrolled
         TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
@@ -74,5 +75,5 @@ targets:
         product: ComposableArchitecture
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: dev.rahier.picswipe.tests
+        PRODUCT_BUNDLE_IDENTIFIER: dev.rahier.unrolled.tests
         GENERATE_INFOPLIST_FILE: YES

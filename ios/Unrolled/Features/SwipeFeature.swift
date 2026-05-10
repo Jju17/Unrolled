@@ -50,6 +50,7 @@ struct SwipeFeature {
         var photos: [PhotoAsset] = []
         var pickerOpen = false
         var selectedAlbumID: String?  // nil = Recents / all photos (default)
+        var settings: UserSettings = .default
         var settingsOpen = false
         var shuffleEnabled = false
         var trashAlertOpen = false
@@ -94,6 +95,13 @@ struct SwipeFeature {
         /// "Garder" button next to a photo row in the review sheet —
         /// restores that photo from the trash-staging list back to kept.
         case deletedPhotoRestoreTapped(id: String)
+        /// User tapped keep/delete inside the fullscreen pager. `localIdx`
+        /// is offset from `activeIndex` — i.e. how many pages forward they
+        /// scrolled before deciding. Intermediate photos are skipped for
+        /// this session (re-appear on the next library load) but the
+        /// chosen photo lands in `history` like a normal commit so undo
+        /// works exactly as on the main stack.
+        case fullscreenMarkAtRelativeIndex(localIdx: Int, kept: Bool)
         /// Stats pill in the header tapped — opens the review sheet.
         case deletedSheetButtonTapped
         /// User tapped the big red "Mettre à la poubelle" button.
@@ -110,6 +118,10 @@ struct SwipeFeature {
         case requestAuthorizationTapped
         case resetButtonTapped
         case settingsButtonTapped
+        /// Toggle for "play live photos" in Settings. Persists via `SettingsClient`.
+        case settingsPlayLivePhotosToggled(Bool)
+        /// Toggle for "show location metadata" in Settings.
+        case settingsShowLocationToggled(Bool)
         case shuffleButtonTapped
         /// Fires after `exitAnimationDurationMs`. Clears the overlay so
         /// the exiting card disappears once it has flown off-screen.
@@ -132,6 +144,7 @@ struct SwipeFeature {
     @Dependency(\.continuousClock) var clock
     @Dependency(\.openURL) var openURL
     @Dependency(\.photoLibrary) var photoLibrary
+    @Dependency(\.settings) var settings
 
     var body: some Reducer<State, Action> {
         BindingReducer()
@@ -259,10 +272,26 @@ struct SwipeFeature {
                 }
                 return .none
 
+            case .fullscreenMarkAtRelativeIndex(let localIdx, let kept):
+                let targetIdx = state.activeIndex + localIdx
+                guard localIdx >= 0, targetIdx < state.photos.count else { return .none }
+                let photo = state.photos[targetIdx]
+                state.history.append(SwipeHistoryEntry(index: targetIdx, kept: kept))
+                if kept {
+                    state.kept += 1
+                } else {
+                    state.deleted += 1
+                    state.deletedPhotoIDs.append(photo.id)
+                }
+                state.activeIndex = targetIdx + 1
+                state.fullscreenOpen = false
+                return .none
+
             case .keepButtonTapped:
                 return startSwipe(&state, direction: 1)
 
             case .onAppear:
+                state.settings = settings.load()
                 let current = photoLibrary.authorizationStatus()
                 state.authorizationStatus = current
                 if current.grantsRead {
@@ -289,6 +318,14 @@ struct SwipeFeature {
             case .settingsButtonTapped:
                 state.settingsOpen = true
                 return .none
+
+            case .settingsPlayLivePhotosToggled(let value):
+                state.settings.playLivePhotos = value
+                return persistSettings(state.settings)
+
+            case .settingsShowLocationToggled(let value):
+                state.settings.showLocation = value
+                return persistSettings(state.settings)
 
             case .shuffleButtonTapped:
                 state.shuffleEnabled.toggle()
@@ -402,6 +439,15 @@ struct SwipeFeature {
             await send(.swipeExitAnimationCompleted)
         }
         .cancellable(id: CancelID.swipeAnimation)
+    }
+
+    /// Fire-and-forget save of the settings blob. Errors are swallowed —
+    /// UserDefaults can't really fail at runtime and the UI already
+    /// reflects the optimistic state.
+    private func persistSettings(_ value: UserSettings) -> Effect<Action> {
+        return .run { _ in
+            settings.save(value)
+        }
     }
 
     private func resetProgress(_ state: inout State) {

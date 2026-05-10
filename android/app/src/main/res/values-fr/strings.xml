@@ -50,7 +50,8 @@
 
     <!-- Settings sheet -->
     <string name="settings_title">Réglages</string>
-    <string name="settings_view_in_photos">Voir la photo dans la galerie</string>
+    <string name="settings_show_location">Afficher la localisation</string>
+    <string name="header_view_in_photos_a11y">Voir la photo dans la galerie</string>
 
     <!-- About sheet -->
     <string name="about_tagline">Swipe pour ranger ta pellicule.</string>
@@ -79,4 +80,11 @@
     <string name="trash_error_cancelled">Suppression annulée.</string>
     <string name="trash_error_old_android">Nécessite Android 11 ou plus récent.</string>
     <string name="trash_error_generic">Impossible de déclencher la corbeille.</string>
+
+    <!-- Card stamps shown during swipe -->
+    <string name="stamp_keep">GARDER</string>
+    <string name="stamp_delete">SUPPRIMER</string>
+
+    <!-- Fullscreen photo viewer -->
+    <string name="fullscreen_close_a11y">Fermer</string>
 </resources>

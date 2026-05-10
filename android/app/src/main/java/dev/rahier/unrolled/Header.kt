@@ -1,4 +1,4 @@
-package dev.rahier.picswipe
+package dev.rahier.unrolled
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -188,6 +189,7 @@ internal fun TopbarIconButton(
     darkTheme: Boolean,
     tint: Color,
     active: Boolean = false,
+    contentDescription: String? = null,
     onClick: () -> Unit
 ) {
     val background = when {
@@ -207,7 +209,7 @@ internal fun TopbarIconButton(
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null,
+            contentDescription = contentDescription,
             tint = iconTint,
             modifier = Modifier.size(16.dp)
         )
@@ -248,6 +250,14 @@ internal fun OverflowMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.settings_title)) },
+                leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+                onClick = {
+                    expanded = false
+                    onIntent(SwipeIntent.SettingsButtonTapped)
+                }
+            )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.header_about_menu_item)) },
                 leadingIcon = { Icon(Icons.Outlined.Info, contentDescription = null) },

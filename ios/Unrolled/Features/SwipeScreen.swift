@@ -53,15 +53,6 @@ struct SwipeScreen: View {
                 stackArea
                 actionBar
             }
-
-            if contentState == .cards {
-                settingsGearButton
-                    .frame(maxWidth: .infinity, maxHeight: .infinity,
-                           alignment: .bottomLeading)
-                    .padding(.leading, 20)
-                    .padding(.bottom, 48)
-                    .allowsHitTesting(true)
-            }
         }
         .sheet(isPresented: $store.aboutOpen) { AboutSheet() }
         .sheet(isPresented: $store.pickerOpen) {
@@ -73,14 +64,22 @@ struct SwipeScreen: View {
         }
         .sheet(isPresented: $store.settingsOpen) {
             SettingsSheet(
-                hasTopPhoto: store.topPhoto != nil,
-                onViewInPhotos: { store.send(.viewInPhotosTapped) }
+                settings: store.settings,
+                onPlayLivePhotosToggled: { store.send(.settingsPlayLivePhotosToggled($0)) },
+                onShowLocationToggled: { store.send(.settingsShowLocationToggled($0)) }
             )
         }
         .fullScreenCover(isPresented: $store.fullscreenOpen) {
-            if let photo = store.topPhoto {
-                FullscreenPhotoView(photo: photo)
-            }
+            FullscreenPhotoView(
+                photos: store.photos,
+                startIndex: store.activeIndex,
+                settings: store.settings,
+                onMarkAtRelativeIndex: { localIdx, kept in
+                    store.send(
+                        .fullscreenMarkAtRelativeIndex(localIdx: localIdx, kept: kept)
+                    )
+                }
+            )
         }
         .sheet(isPresented: $store.deletedSheetOpen) {
             DeletedPhotosSheet(store: store)
@@ -107,25 +106,6 @@ struct SwipeScreen: View {
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
             }
         }
-    }
-
-    private var settingsGearButton: some View {
-        Button {
-            store.send(.settingsButtonTapped)
-        } label: {
-            Image(systemName: "gearshape")
-                .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(textSec)
-                .frame(width: 36, height: 36)
-                .background(
-                    Circle().fill(
-                        colorScheme == .dark
-                            ? Color.white.opacity(0.06)
-                            : Color.black.opacity(0.04)
-                    )
-                )
-        }
-        .buttonStyle(.plain)
     }
 
     // MARK: - Header
@@ -155,6 +135,7 @@ struct SwipeScreen: View {
                     }
                 }
                 .buttonStyle(.plain)
+                .accessibilityHint(Text("Open album picker"))
             }
             Spacer()
             HStack(spacing: 10) {
@@ -165,7 +146,13 @@ struct SwipeScreen: View {
                 ) {
                     store.send(.shuffleButtonTapped)
                 }
+                .accessibilityLabel(Text("Shuffle photos"))
                 Menu {
+                    Button {
+                        store.send(.settingsButtonTapped)
+                    } label: {
+                        Label(String(localized: "Settings"), systemImage: "gearshape")
+                    }
                     Button {
                         store.send(.aboutMenuItemTapped)
                     } label: {
@@ -195,9 +182,15 @@ struct SwipeScreen: View {
                         Image(systemName: "heart.fill")
                             .font(.system(size: 10, weight: .bold))
                             .foregroundStyle(keepColor)
+                        // `.fixedSize` + `.lineLimit(1)` so SwiftUI never
+                        // wraps a two-digit count into "3\n3" when the
+                        // header's right group gets squeezed by a long
+                        // album title on the left.
                         Text("\(store.kept)")
                             .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(textPrim)
+                            .lineLimit(1)
+                            .fixedSize(horizontal: true, vertical: false)
                     }
                     Rectangle()
                         .fill(textSec.opacity(0.4))
@@ -209,6 +202,8 @@ struct SwipeScreen: View {
                         Text("\(store.deleted)")
                             .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(textPrim)
+                            .lineLimit(1)
+                            .fixedSize(horizontal: true, vertical: false)
                     }
                 }
                 .padding(.horizontal, 10)
@@ -305,6 +300,8 @@ struct SwipeScreen: View {
                             size: geo.size,
                             keepColor: keepColor,
                             dropColor: dropColor,
+                            showLocation: store.settings.showLocation,
+                            playLivePhotos: store.settings.playLivePhotos,
                             onDragChanged: { store.send(.cardDragChanged($0)) },
                             onDragEnded: {
                                 store.send(.cardDragEnded, animation: Self.stackAnimation)
@@ -371,9 +368,17 @@ struct SwipeScreen: View {
         return .cards
     }
 
+    /// Number of upcoming photos to warm in the cache. Chosen for the
+    /// iCloud case: photos may need a network round-trip to download,
+    /// and the user can swipe through the visible stack faster than a
+    /// single fetch completes. A 12-photo lookahead gives PhotoKit
+    /// enough headroom to keep the *next* top card already decoded
+    /// even on slower connections.
+    private static let prefetchAhead = 12
+
     private func prefetchUpcoming(size: CGSize) {
         let start = store.activeIndex
-        let end = min(start + stackDepth + 2, store.photos.count)
+        let end = min(start + Self.prefetchAhead, store.photos.count)
         guard end > start else { return }
         let ids = store.photos[start..<end].map(\.id)
         let px = CGSize(
@@ -381,7 +386,7 @@ struct SwipeScreen: View {
             height: size.height * UIScreen.main.scale
         )
         Task.detached(priority: .utility) {
-            await PhotoImageCache.shared.prefetch(ids: ids, size: px)
+            PhotoImageCache.shared.prefetch(ids: ids, size: px)
         }
     }
 
@@ -478,36 +483,56 @@ struct SwipeScreen: View {
     // MARK: - Action bar
 
     private var actionBar: some View {
-        HStack(spacing: 14) {
-            Spacer()
-            actionButton(size: 58, color: dropColor, action: {
-                store.send(.deleteButtonTapped, animation: Self.stackAnimation)
-            }) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(dropColor)
+        ZStack {
+            HStack(spacing: 14) {
+                Spacer()
+                actionButton(size: 58, color: dropColor, action: {
+                    store.send(.deleteButtonTapped, animation: Self.stackAnimation)
+                }) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 22, weight: .bold))
+                        .foregroundStyle(dropColor)
+                }
+                .accessibilityLabel("Delete this photo")
+                .accessibilityHint("The photo goes to the trash list")
+                actionButton(size: 46, color: undoColor,
+                             action: {
+                                 store.send(.undoButtonTapped, animation: Self.stackAnimation)
+                             },
+                             disabled: store.history.isEmpty) {
+                    Image(systemName: "arrow.uturn.backward")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(undoColor)
+                }
+                .accessibilityLabel("Undo last choice")
+                actionButton(size: 58, color: keepColor, action: {
+                    store.send(.keepButtonTapped, animation: Self.stackAnimation)
+                }) {
+                    Image(systemName: "heart.fill")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(keepColor)
+                }
+                .accessibilityLabel("Keep this photo")
+                Spacer()
             }
-            .accessibilityLabel("Delete this photo")
-            .accessibilityHint("The photo goes to the trash list")
-            actionButton(size: 46, color: undoColor,
-                         action: {
-                             store.send(.undoButtonTapped, animation: Self.stackAnimation)
-                         },
-                         disabled: store.history.isEmpty) {
-                Image(systemName: "arrow.uturn.backward")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(undoColor)
+
+            // Side ancillary action: "view in Photos.app". Pinned to the
+            // leading edge as a ZStack overlay so the centered keep/undo/
+            // delete trio above doesn't shift when this is shown/hidden.
+            if store.topPhoto != nil {
+                HStack {
+                    actionButton(size: 40, color: textSec, action: {
+                        store.send(.viewInPhotosTapped)
+                    }) {
+                        Image(systemName: "photo.on.rectangle")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(textSec)
+                    }
+                    .accessibilityLabel(Text("Open Photos app"))
+                    Spacer()
+                }
+                .padding(.leading, 20)
             }
-            .accessibilityLabel("Undo last choice")
-            actionButton(size: 58, color: keepColor, action: {
-                store.send(.keepButtonTapped, animation: Self.stackAnimation)
-            }) {
-                Image(systemName: "heart.fill")
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(keepColor)
-            }
-            .accessibilityLabel("Keep this photo")
-            Spacer()
         }
         .padding(.top, 14)
         .padding(.bottom, 10)
@@ -556,6 +581,8 @@ private struct CardSlot: View {
     let size: CGSize
     let keepColor: Color
     let dropColor: Color
+    let showLocation: Bool
+    let playLivePhotos: Bool
     let onDragChanged: (CGSize) -> Void
     let onDragEnded: () -> Void
     let onTap: () -> Void
@@ -590,22 +617,44 @@ private struct CardSlot: View {
             dropColor: dropColor,
             keepOpacity: keepOpacity,
             dropOpacity: dropOpacity,
-            showLabels: isTop
+            showLabels: isTop,
+            showLocation: showLocation,
+            playLivePhotos: playLivePhotos
         )
         .frame(width: size.width, height: size.height)
-        .modifier(TopCardPinchable(enabled: isTop))
+        // Always pinchable — non-top cards are behind in z-order so
+        // they never receive touches anyway. Critically, applying the
+        // modifier unconditionally keeps a stable view-tree shape: a
+        // previous `if isTop { content.pinchable() } else { content }`
+        // wrapper changed branches when a card moved from depth 1 to 0,
+        // and the branch swap blew away the inner `PhotoAssetImage`'s
+        // `@State image`, causing the half-second black flash on the
+        // newly-promoted card while it reloaded.
+        .pinchable()
         .clipShape(RoundedRectangle(cornerRadius: 24))
         .offset(x: offsetX, y: offsetY)
         .rotationEffect(.degrees(rotation), anchor: .bottom)
         .scaleEffect(scale, anchor: .bottom)
         .onTapGesture { if isTop { onTap() } }
-        .simultaneousGesture(isTop ? dragGesture : nil)
+        // Always attach the drag gesture (its modifier becomes part of
+        // the view tree). Conditioning the gesture on `isTop` previously
+        // produced a "modifier present / modifier absent" tree swap on
+        // every commit, which is one of the things that wiped state
+        // from descendants. The gesture handlers themselves still no-op
+        // when `isTop` is false, so non-top cards stay inert.
+        .simultaneousGesture(dragGesture)
     }
 
     private var dragGesture: some Gesture {
         DragGesture()
-            .onChanged { onDragChanged($0.translation) }
-            .onEnded { _ in onDragEnded() }
+            .onChanged { value in
+                guard isTop else { return }
+                onDragChanged(value.translation)
+            }
+            .onEnded { _ in
+                guard isTop else { return }
+                onDragEnded()
+            }
     }
 }
 
@@ -661,17 +710,6 @@ private struct ExitingCardView: View {
         )
         .animation(.easeOut(duration: Self.duration), value: offScreen)
         .onAppear { offScreen = true }
-    }
-}
-
-private struct TopCardPinchable: ViewModifier {
-    let enabled: Bool
-    func body(content: Content) -> some View {
-        if enabled {
-            content.pinchable()
-        } else {
-            content
-        }
     }
 }
 

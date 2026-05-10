@@ -1,6 +1,6 @@
 # Android — Unrolled
 
-Native Kotlin + **Jetpack Compose** app built on an **MVI** architecture. `minSdk = 26`, `compileSdk = 35`, `targetSdk = 35`. Application id `dev.rahier.unrolled` (the namespace is still `dev.rahier.picswipe` for legacy R-class compatibility).
+Native Kotlin + **Jetpack Compose** app built on an **MVI** architecture. `minSdk = 26`, `compileSdk = 35`, `targetSdk = 35`. Application id and namespace both `dev.rahier.unrolled`.
 
 ## Stack
 
@@ -27,7 +27,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 cd android
 ./gradlew :app:assembleDebug                      # → app/build/outputs/apk/debug/app-debug.apk
 ./gradlew :app:installDebug                       # build + push to selected device
-adb shell am start -n dev.rahier.unrolled/dev.rahier.picswipe.MainActivity
+adb shell am start -n dev.rahier.unrolled/dev.rahier.unrolled.MainActivity
 ```
 
 (Open `android/` in Android Studio and the IDE handles all of this.)
@@ -35,7 +35,7 @@ adb shell am start -n dev.rahier.unrolled/dev.rahier.picswipe.MainActivity
 ## Project layout
 
 ```
-app/src/main/java/dev/rahier/picswipe/
+app/src/main/java/dev/rahier/unrolled/
 ├── MainActivity.kt           — entry; constructs PhotoRepository + ViewModelProvider.Factory
 ├── SwipeState.kt             — immutable data class (alphabetised fields)
 ├── SwipeIntent.kt            — sealed interface (data object / data class)
@@ -56,7 +56,7 @@ app/src/main/res/
 ├── drawable/ic_launcher_background.xml
 └── xml/{backup_rules,data_extraction_rules}.xml
 
-app/src/test/java/dev/rahier/picswipe/
+app/src/test/java/dev/rahier/unrolled/
 ├── FakePhotoRepository.kt
 └── SwipeViewModelTest.kt     — 50+ unit tests
 ```
@@ -186,4 +186,4 @@ Declared in `AndroidManifest.xml`:
 ## Gotchas
 
 - **AGP 9 + Kotlin plugin** — AGP 9 bundles Kotlin support. `gradle.properties` sets `android.builtInKotlin=false` + `android.newDsl=false` so the explicit `org.jetbrains.kotlin.android` plugin can apply without conflict. Don't remove those lines without removing the explicit plugin too.
-- **`namespace` ≠ `applicationId`** — namespace is `dev.rahier.picswipe` (used for the generated `R` class); applicationId is `dev.rahier.unrolled` (the Play Store package name). Don't try to "fix" the mismatch unless you're prepared to migrate the package path.
+- **Namespace + applicationId aligned to `dev.rahier.unrolled`** — both `R`-class package and Play Store package name match. The legacy `picswipe` namespace was migrated when the brand was finalised.

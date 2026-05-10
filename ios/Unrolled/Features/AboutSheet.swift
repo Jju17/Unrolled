@@ -13,8 +13,10 @@ struct AboutSheet: View {
 
     // Served by Firebase Hosting (see web/src/pages/Privacy.tsx +
     // Support.tsx). Must be reachable — App Store reviewers tap these.
-    private let privacyPolicyURL = URL(string: "https://picswipe-4c451.web.app/privacy")!
-    private let supportURL = URL(string: "https://picswipe-4c451.web.app/support")!
+    // Optional + conditional render so a typo in either string can't
+    // ship a guaranteed crash on About-sheet open.
+    private let privacyPolicyURL = URL(string: "https://unrolled-e4775.web.app/privacy")
+    private let supportURL = URL(string: "https://unrolled-e4775.web.app/support")
 
     // Version + build are read from the bundle so they can't drift from
     // what's actually shipping. Hardcoded strings drifted by 4 builds
@@ -43,8 +45,12 @@ struct AboutSheet: View {
                 VStack(spacing: 8) {
                     infoRow(String(localized: "Version"), value: versionString)
                     infoRow(String(localized: "Build"), value: buildString)
-                    linkRow(String(localized: "Privacy Policy"), url: privacyPolicyURL)
-                    linkRow(String(localized: "Support"), url: supportURL)
+                    if let privacyPolicyURL {
+                        linkRow(String(localized: "Privacy Policy"), url: privacyPolicyURL)
+                    }
+                    if let supportURL {
+                        linkRow(String(localized: "Support"), url: supportURL)
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 24)

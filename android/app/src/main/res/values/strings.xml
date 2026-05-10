@@ -50,7 +50,8 @@
 
     <!-- Settings sheet -->
     <string name="settings_title">Settings</string>
-    <string name="settings_view_in_photos">View this photo in the gallery</string>
+    <string name="settings_show_location">Show location</string>
+    <string name="header_view_in_photos_a11y">View this photo in the gallery</string>
 
     <!-- About sheet -->
     <string name="about_tagline">Swipe your camera roll clean.</string>
@@ -79,4 +80,11 @@
     <string name="trash_error_cancelled">Deletion cancelled.</string>
     <string name="trash_error_old_android">Requires Android 11 or newer.</string>
     <string name="trash_error_generic">Couldn\'t trigger the system trash.</string>
+
+    <!-- Card stamps shown during swipe -->
+    <string name="stamp_keep">KEEP</string>
+    <string name="stamp_delete">DELETE</string>
+
+    <!-- Fullscreen photo viewer -->
+    <string name="fullscreen_close_a11y">Close</string>
 </resources>

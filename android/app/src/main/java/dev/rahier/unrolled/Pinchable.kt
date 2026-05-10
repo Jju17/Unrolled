@@ -1,4 +1,4 @@
-package dev.rahier.picswipe
+package dev.rahier.unrolled
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState

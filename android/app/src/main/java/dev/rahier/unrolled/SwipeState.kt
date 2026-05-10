@@ -1,4 +1,4 @@
-package dev.rahier.picswipe
+package dev.rahier.unrolled
 
 data class SwipeState(
     val aboutOpen: Boolean = false,
@@ -25,6 +25,11 @@ data class SwipeState(
     val exitingStartDragX: Float = 0f,
     val exitingStartDragY: Float = 0f,
     val fullscreenOpen: Boolean = false,
+    /** Android 14+: `true` when only `READ_MEDIA_VISUAL_USER_SELECTED`
+     *  is granted (user picked a subset via the system picker). The
+     *  empty state branches on this to explain why the list is short /
+     *  empty and how to change the selection. */
+    val hasPartialPhotoAccess: Boolean = false,
     val history: List<SwipeHistoryEntry> = emptyList(),
     val isDragging: Boolean = false,
     val isLoading: Boolean = false,
@@ -35,16 +40,12 @@ data class SwipeState(
     /** Photos as returned from the repository (unshuffled source of truth). */
     val loadedPhotos: List<PhotoAsset> = emptyList(),
     val permissionStatus: PermissionStatus = PermissionStatus.NotDetermined,
-    /** Android 14+: `true` when only `READ_MEDIA_VISUAL_USER_SELECTED`
-     *  is granted (user picked a subset via the system picker). The
-     *  empty state branches on this to explain why the list is short /
-     *  empty and how to change the selection. */
-    val hasPartialPhotoAccess: Boolean = false,
     /** What the screen displays — either [loadedPhotos] or a freshly-
      *  shuffled copy depending on [shuffleEnabled]. */
     val photos: List<PhotoAsset> = emptyList(),
     val pickerOpen: Boolean = false,
     val selectedAlbumID: String? = null,  // null = All Photos (default)
+    val settings: UserSettings = UserSettings(),
     val settingsOpen: Boolean = false,
     val shuffleEnabled: Boolean = false,
     val trashAlertOpen: Boolean = false,

@@ -14,6 +14,12 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
+    <!-- Reading EXIF GPS from photos requires the dedicated runtime
+         permission on API 29+ (the legacy MediaStore lat/lng columns
+         are redacted). We request it alongside READ_MEDIA_IMAGES so
+         the user can opt in when first granting library access. -->
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+
     <application
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"

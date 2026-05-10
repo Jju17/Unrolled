@@ -57,12 +57,12 @@ camera roll,photo cleanup,delete photos,swipe,declutter,storage,sort,organize,ga
 
 **Support URL**
 ```
-https://picswipe-4c451.web.app/support
+https://unrolled-e4775.web.app/support
 ```
 
 **Marketing URL**
 ```
-https://picswipe-4c451.web.app
+https://unrolled-e4775.web.app
 ```
 
 **Version**: `1.0`
@@ -185,7 +185,7 @@ No login or test credentials required. To test:
 Other features: album picker (top-left), shuffle (top-right), undo (bottom center), tap card for full-screen pinch-zoom, settings gear (bottom-left), "..." menu → About.
 
 4) EXTERNAL SERVICES
-None. Unrolled has no backend, analytics, ads, login, payments, or AI services. The app does not include an HTTP client. The only network calls are openURL handoffs to Safari for the Privacy and Support links in the About sheet (https://picswipe-4c451.web.app/privacy and /support). Third-party SPM dependencies: swift-composable-architecture (state management library, Point-Free) — no network behavior. System frameworks: PhotoKit (read + delete), SwiftUI/UIKit. NOT used: StoreKit, CloudKit, Network, UserNotifications.
+None. Unrolled has no backend, analytics, ads, login, payments, or AI services. The app does not include an HTTP client. The only network calls are openURL handoffs to Safari for the Privacy and Support links in the About sheet (https://unrolled-e4775.web.app/privacy and /support). Third-party SPM dependencies: swift-composable-architecture (state management library, Point-Free) — no network behavior. System frameworks: PhotoKit (read + delete), SwiftUI/UIKit. NOT used: StoreKit, CloudKit, Network, UserNotifications.
 
 5) REGIONAL DIFFERENCES
 None. Identical features and content in every region. Only locale-driven difference is UI language (English base, French translation), following the device's preferred language.
@@ -220,8 +220,8 @@ Julien Rahier — julien@rahier.dev
 - [ ] Uploaded via Organizer / Transporter
 - [ ] App icon: opaque RGB, no alpha (already fixed in `Icon-1024.png`)
 - [ ] Screenshots: 1284×2778 (iPhone 6.7"), no alpha (use `-AppStore.png` files on Desktop)
-- [ ] Privacy Policy URL reachable: https://picswipe-4c451.web.app/privacy
-- [ ] Support URL reachable: https://picswipe-4c451.web.app/support
+- [ ] Privacy Policy URL reachable: https://unrolled-e4775.web.app/privacy
+- [ ] Support URL reachable: https://unrolled-e4775.web.app/support
 - [ ] French (France) locale added
 - [ ] App Privacy = Data Not Collected
 - [ ] "Add for Review" → Submit
@@ -388,7 +388,7 @@ Réponds "Non" à toutes les questions sur violence, contenu sexuel, langage, je
 
 ### Privacy Policy URL
 ```
-https://picswipe-4c451.web.app/privacy
+https://unrolled-e4775.web.app/privacy
 ```
 (Obligatoire dans Play Console → App content → Privacy policy.)
 
@@ -435,7 +435,7 @@ The app:
 ## Notes communes
 
 ### Domaine Firebase
-Les URL Privacy / Support pointent encore vers `picswipe-4c451.web.app` parce que le projet Firebase n'a pas été renommé (le rebrand "PicSwipe → Unrolled" est resté côté app). C'est OK pour le release — Apple et Google acceptent un domaine qui ne correspond pas exactement au nom de l'app du moment qu'il est joignable et qu'il sert bien la bonne politique. Si tu veux migrer vers `unrolled.app` ou similaire plus tard, c'est un chantier séparé (DNS + Firebase Hosting custom domain + redirect).
+Les URL Privacy / Support pointent vers `unrolled-e4775.web.app/privacy` et `.../support`, sur le projet Firebase `unrolled-e4775` (région `europe-west1`). Avant la première soumission Store, vérifier que le site web a bien été déployé sur ce projet (`cd web && npm run build && firebase deploy --only hosting`) — sinon Apple / Google testent l'URL et la trouvent en 404. Migration future possible vers un domaine custom (`unrolled.app` ou similaire) — chantier séparé (DNS + Firebase Hosting custom domain + redirect).
 
 ### Ce qui change par plateforme
 | | iOS | Android |

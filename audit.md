@@ -65,7 +65,7 @@ Generated audit of the iOS (`ios/`) and Android (`android/`) clients. Each findi
 
 ### Bugs / correctness
 
-- **Hardcoded French in iOS-localized app** — `android/app/src/main/java/dev/rahier/picswipe/FullscreenPhotoView.kt:82` sets `contentDescription = "Fermer"`. Non-French TalkBack users hear French. Add `R.string.fullscreen_close_a11y` and translate it.
+- **Hardcoded French in iOS-localized app** — `android/app/src/main/java/dev/rahier/unrolled/FullscreenPhotoView.kt:82` sets `contentDescription = "Fermer"`. Non-French TalkBack users hear French. Add `R.string.fullscreen_close_a11y` and translate it.
 - **Hardcoded English stamps** — `CardStack.kt:290-291` renders `Stamp("KEEP", …)` / `Stamp("DELETE", …)` as on-card swipe feedback. Should be `stringResource(R.string.stamp_keep)` / `stamp_delete` with French equivalents.
 - **`state.topPhoto!!` force-unwrap** — `SwipeScreen.kt:291-295`. Guarded by a null check immediately above, so safe in practice, but the `!!` should be replaced with the safe-cast pattern (`val top = state.topPhoto ?: return`) to remove the crash vector entirely.
 
@@ -112,7 +112,7 @@ Generated audit of the iOS (`ios/`) and Android (`android/`) clients. Each findi
 - ✅ R8 enabled (`isMinifyEnabled = true`, `isShrinkResources = true`); minimal `proguard-rules.pro` overrides on top of library consumer rules.
 - ✅ Signing fallback: release config falls back to the debug key when `RELEASE_*` Gradle properties are absent, so `assembleRelease` always succeeds locally; Play App Signing then re-signs server-side.
 - ⚠️ **`versionCode = 2` with `versionName = "1.0.0"`** — `app/build.gradle.kts:15-16`. Probably bumped during testing; clarify before the first Play upload (Play won't let you release a lower code later).
-- ⚠️ **`namespace = "dev.rahier.picswipe"` vs `applicationId = "dev.rahier.unrolled"`** — `app/build.gradle.kts:8, 12`. Functionally fine (R class lives under namespace; Play uses applicationId), but the rule file in `.claude/rules/android.md` still references the old `picswipe` applicationId. Update the rule or migrate the namespace for consistency.
+- ✅ **Namespace + applicationId aligned** — both are `dev.rahier.unrolled` after the migration from the legacy `picswipe` namespace.
 
 ### Testing
 

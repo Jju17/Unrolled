@@ -127,7 +127,10 @@ extension PhotoLibraryClient: DependencyKey {
                 assets.append(
                     PhotoAsset(
                         id: asset.localIdentifier,
-                        creationDate: asset.creationDate
+                        creationDate: asset.creationDate,
+                        latitude: asset.location?.coordinate.latitude,
+                        longitude: asset.location?.coordinate.longitude,
+                        isLivePhoto: asset.mediaSubtypes.contains(.photoLive)
                     )
                 )
             }

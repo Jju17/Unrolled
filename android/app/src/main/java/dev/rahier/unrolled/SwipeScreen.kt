@@ -1,4 +1,4 @@
-package dev.rahier.picswipe
+package dev.rahier.unrolled
 
 import android.app.Activity
 import android.content.ContentUris
@@ -156,14 +156,25 @@ fun SwipeScreen(viewModel: SwipeViewModel) {
             }
         },
         onViewInPhotos = { photoUri ->
-            // Opens the photo in the system gallery (Google Photos, etc.)
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(Uri.parse(photoUri), "image/*")
-                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_ACTIVITY_NEW_TASK
+            // Opens the current photo in a system gallery. Resolving the
+            // exact MIME via ContentResolver gives Google Photos the type
+            // it expects (e.g. image/jpeg) — going through "image/*" makes
+            // some viewers fall back to "show all images in this folder"
+            // which is what the user reported as "doesn't deep-link".
+            val uri = Uri.parse(photoUri)
+            val mime = runCatching { context.contentResolver.getType(uri) }
+                .getOrNull() ?: "image/*"
+            val view = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, mime)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            runCatching { context.startActivity(intent) }
-            viewModel.onIntent(SwipeIntent.SettingsDismissed)
+            // Always show the chooser so the user can pick Google Photos /
+            // their preferred gallery — that's the "deep-link to this
+            // exact photo" path the friend was missing on his test build.
+            val chooser = Intent.createChooser(view, null).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            runCatching { context.startActivity(chooser) }
         }
     )
 }
@@ -249,28 +260,15 @@ fun SwipeScreenContent(
                     bgPage = bgPage,
                     surface = surface,
                     border = border,
+                    textSec = textSec,
                     historyEmpty = state.history.isEmpty(),
-                    onIntent = onIntent
+                    showViewInPhotos = state.topPhoto != null,
+                    onIntent = onIntent,
+                    onViewInPhotos = {
+                        state.topPhoto?.let { onViewInPhotos(it.uri) }
+                    }
                 )
             }
-        }
-
-        // Subtle gear in the bottom-left corner — only while cards are
-        // visible, so it doesn't clutter loading/permission/done states.
-        val showGear = state.permissionStatus.grantsRead &&
-                state.loadError == null &&
-                !state.isLoading &&
-                !state.done &&
-                state.photos.isNotEmpty()
-        if (showGear) {
-            SettingsGearButton(
-                darkTheme = darkTheme,
-                tint = textSec,
-                onClick = { onIntent(SwipeIntent.SettingsButtonTapped) },
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(start = 20.dp, bottom = 48.dp)
-            )
         }
 
         // Overlays
@@ -290,18 +288,20 @@ fun SwipeScreenContent(
 
         if (state.fullscreenOpen && state.topPhoto != null) {
             FullscreenPhotoView(
-                photo = state.topPhoto!!,
+                photos = state.photos,
+                startIndex = state.activeIndex,
+                settings = state.settings,
+                onMarkAtRelativeIndex = { localIdx, kept ->
+                    onIntent(SwipeIntent.FullscreenMarkAtRelativeIndex(localIdx, kept))
+                },
                 onClose = { onIntent(SwipeIntent.FullscreenDismissed) }
             )
         }
 
         if (state.settingsOpen) {
             SettingsBottomSheet(
-                hasTopPhoto = state.topPhoto != null,
-                darkTheme = darkTheme,
-                onViewInPhotos = {
-                    state.topPhoto?.let { onViewInPhotos(it.uri) }
-                },
+                settings = state.settings,
+                onShowLocationToggled = { onIntent(SwipeIntent.SettingsShowLocationToggled(it)) },
                 onClose = { onIntent(SwipeIntent.SettingsDismissed) }
             )
         }
