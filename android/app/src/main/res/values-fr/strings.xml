@@ -68,6 +68,11 @@
     <string name="deleted_row_status">Prête à supprimer</string>
     <string name="deleted_row_keep">Garder</string>
     <string name="deleted_footer_button">Mettre à la poubelle (%d)</string>
+    <string name="deleted_reset">Réinitialiser</string>
+    <string name="deleted_reset_title">Réinitialiser toute la progression ?</string>
+    <string name="deleted_reset_body">Efface tous les marqueurs gardé/supprimé pour que le paquet affiche à nouveau toute la photothèque. Les photos elles-mêmes ne sont pas touchées.</string>
+    <string name="deleted_reset_confirm">Réinitialiser</string>
+    <string name="deleted_reset_cancel">Annuler</string>
 
     <!-- Trash error messages -->
     <string name="trash_error_cancelled">Suppression annulée.</string>

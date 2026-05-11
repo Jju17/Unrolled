@@ -54,7 +54,7 @@ class SwipeViewModel(
             is SwipeIntent.AlbumPicked -> {
                 cancelAnimation()
                 _state.update {
-                    resetProgress(it).copy(
+                    resetSession(it).copy(
                         selectedAlbumID = intent.albumId,
                         pickerOpen = false
                     )
@@ -97,14 +97,20 @@ class SwipeViewModel(
 
             is SwipeIntent.DeletedPhotoRestoreTapped -> {
                 val id = intent.id
+                val current = _state.value
+                if (!current.deletedPhotoIDs.contains(id)) return
                 _state.update {
-                    if (!it.deletedPhotoIDs.contains(id)) return@update it
                     it.copy(
                         deletedPhotoIDs = it.deletedPhotoIDs - id,
-                        deleted = (it.deleted - 1).coerceAtLeast(0),
-                        kept = it.kept + 1
+                        // Migrate to the kept list — the photo is still
+                        // classified, just on the other side. Persisted
+                        // so the next session also skips it.
+                        keptPhotoIDs = if (it.keptPhotoIDs.contains(id))
+                            it.keptPhotoIDs
+                        else it.keptPhotoIDs + id
                     )
                 }
+                persistProgress()
             }
 
             SwipeIntent.DeletedSheetButtonTapped ->
@@ -140,8 +146,9 @@ class SwipeViewModel(
                 _state.update {
                     it.copy(
                         history = it.history + SwipeHistoryEntry(targetIdx, intent.kept),
-                        kept = if (intent.kept) it.kept + 1 else it.kept,
-                        deleted = if (!intent.kept) it.deleted + 1 else it.deleted,
+                        keptPhotoIDs = if (intent.kept)
+                            it.keptPhotoIDs + photo.id
+                        else it.keptPhotoIDs,
                         deletedPhotoIDs = if (!intent.kept)
                             it.deletedPhotoIDs + photo.id
                         else it.deletedPhotoIDs,
@@ -149,6 +156,7 @@ class SwipeViewModel(
                         fullscreenOpen = false
                     )
                 }
+                persistProgress()
             }
 
             SwipeIntent.KeepButtonTapped -> startSwipe(direction = 1)
@@ -168,9 +176,17 @@ class SwipeViewModel(
 
             is SwipeIntent.PhotosLoaded ->
                 _state.update {
+                    // Drop already-classified IDs from the deck — kept
+                    // and deleted photos live in their persisted lists
+                    // and don't need a card any more.
+                    val classified =
+                        (it.deletedPhotoIDs.asSequence() + it.keptPhotoIDs.asSequence()).toSet()
+                    val filtered =
+                        if (classified.isEmpty()) intent.photos
+                        else intent.photos.filterNot { p -> p.id in classified }
                     it.copy(
-                        loadedPhotos = intent.photos,
-                        photos = if (it.shuffleEnabled) intent.photos.shuffled() else intent.photos,
+                        loadedPhotos = filtered,
+                        photos = if (it.shuffleEnabled) filtered.shuffled() else filtered,
                         isLoading = false,
                         loadError = null
                     )
@@ -178,7 +194,23 @@ class SwipeViewModel(
 
             SwipeIntent.ResetButtonTapped -> {
                 cancelAnimation()
-                _state.update { resetProgress(it) }
+                _state.update { resetSession(it) }
+            }
+
+            SwipeIntent.ResetProgressTapped -> {
+                cancelAnimation()
+                _state.update {
+                    resetSession(
+                        it.copy(
+                            deletedPhotoIDs = emptyList(),
+                            keptPhotoIDs = emptyList(),
+                            deletedSheetOpen = false
+                        )
+                    )
+                }
+                persistProgress()
+                // Re-fetch so previously-filtered photos rejoin the deck.
+                loadPhotos(_state.value.selectedAlbumID)
             }
 
             SwipeIntent.RetryLoadTapped -> {
@@ -270,6 +302,9 @@ class SwipeViewModel(
                     // our local list so the user doesn't land on an asset
                     // MediaStore no longer returns, and remap activeIndex
                     // by ID so the user keeps their place visually.
+                    // History is wiped (you can't undo a real PhotoKit
+                    // delete) but `keptPhotoIDs` is preserved — those
+                    // photos still exist and the user has classified them.
                     _state.update {
                         val deletedSet = it.deletedPhotoIDs.toSet()
                         val topId = it.photos.getOrNull(it.activeIndex)?.id
@@ -291,11 +326,10 @@ class SwipeViewModel(
                             trashInFlight = false,
                             trashPendingIDs = null,
                             deleteError = null,
-                            kept = 0,
-                            deleted = 0,
                             history = emptyList()
                         )
                     }
+                    persistProgress()
                 } else {
                     _state.update {
                         it.copy(
@@ -326,8 +360,9 @@ class SwipeViewModel(
                     val undoneID = it.photos.getOrNull(last.index)?.id
                     it.copy(
                         history = it.history.dropLast(1),
-                        kept = if (last.kept) (it.kept - 1).coerceAtLeast(0) else it.kept,
-                        deleted = if (!last.kept) (it.deleted - 1).coerceAtLeast(0) else it.deleted,
+                        keptPhotoIDs = if (last.kept && undoneID != null)
+                            it.keptPhotoIDs - undoneID
+                        else it.keptPhotoIDs,
                         deletedPhotoIDs = if (!last.kept && undoneID != null)
                             it.deletedPhotoIDs - undoneID
                         else it.deletedPhotoIDs,
@@ -338,6 +373,7 @@ class SwipeViewModel(
                         exitingStartDragY = 0f
                     )
                 }
+                persistProgress()
             }
 
             SwipeIntent.ViewAllPhotosTapped -> {
@@ -393,8 +429,9 @@ class SwipeViewModel(
         _state.update {
             it.copy(
                 history = it.history + SwipeHistoryEntry(committedIndex, direction == 1),
-                kept = if (direction == 1) it.kept + 1 else it.kept,
-                deleted = if (direction == -1) it.deleted + 1 else it.deleted,
+                keptPhotoIDs = if (direction == 1)
+                    it.keptPhotoIDs + committedPhoto.id
+                else it.keptPhotoIDs,
                 deletedPhotoIDs = if (direction == -1)
                     it.deletedPhotoIDs + committedPhoto.id
                 else it.deletedPhotoIDs,
@@ -408,6 +445,7 @@ class SwipeViewModel(
                 isDragging = false
             )
         }
+        persistProgress()
         cancelAnimation()
         animationJob = viewModelScope.launch {
             delay(EXIT_ANIMATION_DURATION_MS)
@@ -420,12 +458,13 @@ class SwipeViewModel(
         animationJob = null
     }
 
-    private fun resetProgress(state: SwipeState): SwipeState = state.copy(
+    /** Resets the *session* — index, history, drag, exit overlay. Does
+     *  **not** clear the persisted [SwipeState.keptPhotoIDs] /
+     *  [SwipeState.deletedPhotoIDs]; that's the job of
+     *  [SwipeIntent.ResetProgressTapped]. */
+    private fun resetSession(state: SwipeState): SwipeState = state.copy(
         activeIndex = 0,
         history = emptyList(),
-        kept = 0,
-        deleted = 0,
-        deletedPhotoIDs = emptyList(),
         deleteError = null,
         dragX = 0f,
         dragY = 0f,
@@ -439,11 +478,12 @@ class SwipeViewModel(
 
     class Factory(
         private val photoRepository: PhotoRepository,
-        private val settingsRepository: SettingsRepository
+        private val settingsRepository: SettingsRepository,
+        private val progressRepository: SwipeProgressRepository
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            SwipeViewModel(photoRepository, settingsRepository) as T
+            SwipeViewModel(photoRepository, settingsRepository, progressRepository) as T
     }
 
     companion object {

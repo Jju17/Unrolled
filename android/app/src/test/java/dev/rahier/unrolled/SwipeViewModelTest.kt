@@ -54,14 +54,23 @@ class SwipeViewModelTest {
             albums = albums,
             photos = fivePhotos
         ),
-        settingsRepo: SettingsRepository = InMemorySettingsRepository()
-    ): SwipeViewModel = SwipeViewModel(repo, settingsRepo)
+        settingsRepo: SettingsRepository = InMemorySettingsRepository(),
+        progressRepo: SwipeProgressRepository = InMemorySwipeProgressRepository()
+    ): SwipeViewModel = SwipeViewModel(repo, settingsRepo, progressRepo)
 
     private class InMemorySettingsRepository(
         private var current: UserSettings = UserSettings()
     ) : SettingsRepository {
         override fun load(): UserSettings = current
         override fun save(settings: UserSettings) { current = settings }
+    }
+
+    private class InMemorySwipeProgressRepository(
+        var current: SwipeProgress = SwipeProgress()
+    ) : SwipeProgressRepository {
+        override fun load(): SwipeProgress = current
+        override fun save(progress: SwipeProgress) { current = progress }
+        override fun clear() { current = SwipeProgress() }
     }
 
     // MARK: - Initial state
@@ -207,7 +216,7 @@ class SwipeViewModelTest {
     // MARK: - Album picker
 
     @Test
-    fun `AlbumPicked resets progress, swaps albumId, reloads photos`() = runTest(dispatcher) {
+    fun `AlbumPicked resets session, swaps albumId, keeps persisted progress`() = runTest(dispatcher) {
         val repo = FakePhotoRepository(initialHasPermission = true, albums = albums, photos = fivePhotos)
         repo.setPhotosForAlbum("trip", listOf(p1, p2))
         val viewModel = vm(repo)
@@ -222,18 +231,24 @@ class SwipeViewModelTest {
         val mid = viewModel.state.value
         assertEquals(1, mid.activeIndex)
         assertEquals(1, mid.kept)
+        assertEquals(listOf(p1.id), mid.keptPhotoIDs)
 
         viewModel.onIntent(SwipeIntent.AlbumPicked("trip"))
         advanceUntilIdle()
 
+        // Session resets (index, history) so the user lands cleanly on
+        // the new album. Persisted lists *don't* reset — the user's
+        // classification is about the photos, not the album viewport.
+        // Note: photoLoaded then filters the new album's photos against
+        // keptPhotoIDs, so p1 is dropped from `state.photos`.
         val state = viewModel.state.value
         assertEquals("trip", state.selectedAlbumID)
         assertEquals(0, state.activeIndex)
-        assertEquals(0, state.kept)
-        assertEquals(0, state.deleted)
         assertTrue(state.history.isEmpty())
-        assertEquals(listOf(p1, p2), state.photos)
         assertFalse(state.pickerOpen)
+        assertEquals(listOf(p1.id), state.keptPhotoIDs)
+        assertEquals(1, state.kept)
+        assertEquals(listOf(p2), state.photos)  // p1 filtered (already kept)
     }
 
     @Test
@@ -455,7 +470,7 @@ class SwipeViewModelTest {
     }
 
     @Test
-    fun `TrashResult success resets counters, history and closes sheet`() = runTest(dispatcher) {
+    fun `TrashResult success clears trash and history, keeps kept list`() = runTest(dispatcher) {
         val viewModel = vm()
         viewModel.onIntent(SwipeIntent.ScreenAppeared)
         advanceUntilIdle()
@@ -477,9 +492,11 @@ class SwipeViewModelTest {
         assertFalse(s.trashInFlight)
         assertNull(s.trashPendingIDs)
         assertNull(s.deleteError)
-        // Counters + history reset — session is "committed", user
-        // continues on remaining photos with a clean slate.
-        assertEquals(0, s.kept)
+        // History wiped (you can't undo a real MediaStore delete) but
+        // keptPhotoIDs is preserved — those photos still exist and the
+        // user has classified them.
+        assertEquals(listOf(p1.id), s.keptPhotoIDs)
+        assertEquals(1, s.kept)
         assertEquals(0, s.deleted)
         assertTrue(s.history.isEmpty())
         // Deleted photos are pruned locally so we don't show assets that
@@ -574,10 +591,10 @@ class SwipeViewModelTest {
         assertTrue(s.history.isEmpty())
     }
 
-    // MARK: - Reset
+    // MARK: - Reset session vs reset progress
 
     @Test
-    fun `reset wipes progress`() = runTest(dispatcher) {
+    fun `ResetButtonTapped wipes session state but keeps persisted lists`() = runTest(dispatcher) {
         val viewModel = vm()
         viewModel.onIntent(SwipeIntent.ScreenAppeared)
         advanceUntilIdle()
@@ -589,11 +606,43 @@ class SwipeViewModelTest {
         viewModel.onIntent(SwipeIntent.ResetButtonTapped)
 
         val s = viewModel.state.value
+        // Session reset:
         assertEquals(0, s.activeIndex)
-        assertEquals(0, s.kept)
-        assertEquals(0, s.deleted)
         assertTrue(s.history.isEmpty())
         assertEquals(0, s.unshuffledIndex)
+        // Persisted lists untouched:
+        assertEquals(listOf(p1.id), s.keptPhotoIDs)
+        assertEquals(listOf(p2.id), s.deletedPhotoIDs)
+        assertEquals(1, s.kept)
+        assertEquals(1, s.deleted)
+    }
+
+    @Test
+    fun `ResetProgressTapped wipes persisted lists and refetches`() = runTest(dispatcher) {
+        val progressRepo = InMemorySwipeProgressRepository()
+        val viewModel = vm(progressRepo = progressRepo)
+        viewModel.onIntent(SwipeIntent.ScreenAppeared)
+        advanceUntilIdle()
+        viewModel.onIntent(SwipeIntent.KeepButtonTapped)
+        advanceUntilIdle()
+        viewModel.onIntent(SwipeIntent.DeleteButtonTapped)
+        advanceUntilIdle()
+        // Progress is non-empty before reset.
+        assertTrue(viewModel.state.value.kept > 0 || viewModel.state.value.deleted > 0)
+
+        viewModel.onIntent(SwipeIntent.ResetProgressTapped)
+        advanceUntilIdle()
+
+        val s = viewModel.state.value
+        assertTrue(s.keptPhotoIDs.isEmpty())
+        assertTrue(s.deletedPhotoIDs.isEmpty())
+        assertFalse(s.deletedSheetOpen)
+        assertEquals(0, s.activeIndex)
+        assertTrue(s.history.isEmpty())
+        // Persisted blob is wiped.
+        assertEquals(SwipeProgress(), progressRepo.current)
+        // Re-fetch puts the previously-filtered photos back in the deck.
+        assertEquals(fivePhotos, s.photos)
     }
 
     // MARK: - Shuffle
@@ -700,12 +749,18 @@ class SwipeViewModelTest {
         viewModel.onIntent(SwipeIntent.ResetButtonTapped)
 
         // Advance the clock past the animation window — if cancellation
-        // worked, SwipeAnimationCompleted never fires, so kept stays 0.
+        // worked, SwipeAnimationCompleted never fires, so the exit
+        // overlay stays cleared (the keep itself was committed
+        // synchronously, so kept=1 stays in the persisted list).
         advanceTimeBy(SwipeViewModel.EXIT_ANIMATION_DURATION_MS * 5)
         runCurrent()
 
-        assertEquals(0, viewModel.state.value.kept)
-        assertEquals(0, viewModel.state.value.activeIndex)
+        val s = viewModel.state.value
+        assertEquals(0, s.activeIndex)
+        assertEquals(0, s.exitingDirection)
+        assertNull(s.exitingPhoto)
+        // Session was reset, list preserved.
+        assertEquals(listOf(p1.id), s.keptPhotoIDs)
     }
 
     @Test
@@ -718,9 +773,11 @@ class SwipeViewModelTest {
         viewModel.onIntent(SwipeIntent.AlbumPicked(Album.ALL_PHOTOS_ID))
         advanceUntilIdle()
 
-        // Swipe animation should have been cancelled; album change resets.
-        assertEquals(0, viewModel.state.value.kept)
-        assertEquals(0, viewModel.state.value.activeIndex)
+        // Swipe animation cancelled, session resets — but the keep
+        // was committed synchronously so it persists across albums.
+        val s = viewModel.state.value
+        assertEquals(0, s.activeIndex)
+        assertEquals(listOf(p1.id), s.keptPhotoIDs)
     }
 
     @Test

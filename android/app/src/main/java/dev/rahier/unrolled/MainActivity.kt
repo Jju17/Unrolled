@@ -19,9 +19,12 @@ class MainActivity : ComponentActivity() {
         // the reference across config changes.
         val repository: PhotoRepository = MediaStorePhotoRepository(applicationContext)
         val settingsRepository: SettingsRepository = SharedPrefsSettingsRepository(applicationContext)
+        val progressRepository: SwipeProgressRepository =
+            SharedPrefsSwipeProgressRepository(applicationContext)
         val factory = SwipeViewModel.Factory(
             photoRepository = repository,
-            settingsRepository = settingsRepository
+            settingsRepository = settingsRepository,
+            progressRepository = progressRepository
         )
         // Bound to the application context so it survives config changes
         // alongside the VM's repository reference.

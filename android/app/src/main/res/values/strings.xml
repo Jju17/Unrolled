@@ -68,6 +68,11 @@
     <string name="deleted_row_status">Ready to delete</string>
     <string name="deleted_row_keep">Keep</string>
     <string name="deleted_footer_button">Empty trash (%d)</string>
+    <string name="deleted_reset">Reset</string>
+    <string name="deleted_reset_title">Reset all progress?</string>
+    <string name="deleted_reset_body">Clears every kept/deleted marker so the deck shows the full library again. The photos themselves are untouched.</string>
+    <string name="deleted_reset_confirm">Reset</string>
+    <string name="deleted_reset_cancel">Cancel</string>
 
     <!-- Trash error messages -->
     <string name="trash_error_cancelled">Deletion cancelled.</string>
