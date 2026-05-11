@@ -14,11 +14,13 @@ struct SwipeFeature {
         var activeIndex = 0
         var albums: [Album] = []
         var authorizationStatus: PhotoAuthorizationStatus = .notDetermined
-        var deleted = 0
         /// IDs of photos the user has swiped-delete, in deletion order.
         /// These are staged — still in the library, but shown in the
         /// review sheet. Calling `photoLibrary.deleteAssets` with these
         /// IDs actually moves them to the system Recently Deleted bucket.
+        ///
+        /// Persisted via `SwipeProgressClient` so a relaunch resumes the
+        /// trash exactly where the user left it.
         var deletedPhotoIDs: [String] = []
         /// Error surfaced from the Recently-Deleted batch op (permission
         /// denied, network, etc.). Shown as an in-sheet banner.
@@ -42,7 +44,12 @@ struct SwipeFeature {
         var history: [SwipeHistoryEntry] = []
         var isDragging = false
         var isLoading = false
-        var kept = 0
+        /// IDs of photos the user has swiped-keep across all sessions.
+        /// Persisted alongside `deletedPhotoIDs`; used to filter out
+        /// already-decided photos from the freshly-fetched library so
+        /// the deck never re-presents a photo the user has classified.
+        /// Only the explicit `Reset progress` button wipes this list.
+        var keptPhotoIDs: [String] = []
         /// Photos as returned from the library (unshuffled source of truth).
         var loadedPhotos: [PhotoAsset] = []
         /// What the view displays — either `loadedPhotos` or a freshly-
@@ -61,6 +68,14 @@ struct SwipeFeature {
         /// enabled so disabling restores the user to the photo they
         /// were reviewing beforehand.
         var unshuffledIndex: Int = 0
+
+        /// Display counter for the stats pill — derived from the persistent
+        /// `deletedPhotoIDs` so the number always matches what the trash
+        /// sheet shows ("Empty trash (N)" and the pill agree).
+        var deleted: Int { deletedPhotoIDs.count }
+        /// Display counter for the stats pill — derived from `keptPhotoIDs`
+        /// for the same reason as `deleted`.
+        var kept: Int { keptPhotoIDs.count }
 
         /// Photo currently on top of the stack, if any.
         var topPhoto: PhotoAsset? {
@@ -94,13 +109,6 @@ struct SwipeFeature {
         /// "Garder" button next to a photo row in the review sheet —
         /// restores that photo from the trash-staging list back to kept.
         case deletedPhotoRestoreTapped(id: String)
-        /// User tapped keep/delete inside the fullscreen pager. `localIdx`
-        /// is offset from `activeIndex` — i.e. how many pages forward they
-        /// scrolled before deciding. Intermediate photos are skipped for
-        /// this session (re-appear on the next library load) but the
-        /// chosen photo lands in `history` like a normal commit so undo
-        /// works exactly as on the main stack.
-        case fullscreenMarkAtRelativeIndex(localIdx: Int, kept: Bool)
         /// Stats pill in the header tapped — opens the review sheet.
         case deletedSheetButtonTapped
         /// User tapped the big red "Mettre à la poubelle" button.
@@ -108,11 +116,22 @@ struct SwipeFeature {
         /// PhotoKit delete completed. `success` is true if at least some
         /// assets moved; false carries an error message for the banner.
         case emptyTrashResult(success: Bool, message: String?)
+        /// User tapped keep/delete inside the fullscreen pager. `localIdx`
+        /// is offset from `activeIndex` — i.e. how many pages forward they
+        /// scrolled before deciding. Intermediate photos are skipped for
+        /// this session (re-appear on the next library load) but the
+        /// chosen photo lands in `history` like a normal commit so undo
+        /// works exactly as on the main stack.
+        case fullscreenMarkAtRelativeIndex(localIdx: Int, kept: Bool)
         case keepButtonTapped
         case onAppear
         case photosLoaded([PhotoAsset])
         case requestAuthorizationTapped
         case resetButtonTapped
+        /// Tapped from the deleted sheet — wipes the persisted
+        /// `keptPhotoIDs` + `deletedPhotoIDs` so the deck shows the
+        /// full library again as if from scratch.
+        case resetProgressTapped
         case settingsButtonTapped
         /// Toggle for "play live photos" in Settings. Persists via `SettingsClient`.
         case settingsPlayLivePhotosToggled(Bool)
@@ -141,6 +160,7 @@ struct SwipeFeature {
     @Dependency(\.openURL) var openURL
     @Dependency(\.photoLibrary) var photoLibrary
     @Dependency(\.settings) var settings
+    @Dependency(\.swipeProgress) var swipeProgress
 
     var body: some Reducer<State, Action> {
         BindingReducer()
@@ -153,7 +173,7 @@ struct SwipeFeature {
             case .albumPicked(let id):
                 state.selectedAlbumID = id
                 state.pickerOpen = false
-                resetProgress(&state)
+                resetSession(&state)
                 return .merge(
                     .cancel(id: CancelID.swipeAnimation),
                     fetchPhotos(&state, albumID: id)
@@ -202,13 +222,15 @@ struct SwipeFeature {
 
             case .deletedPhotoRestoreTapped(let id):
                 // Unstage from the trash list. The photo counts as
-                // "kept" now so the tallies stay in sync with history
-                // (kept + deleted == history.count).
+                // "kept" now so the user doesn't see it again next
+                // session — moving it from one persisted list to the
+                // other rather than dropping it entirely.
                 guard state.deletedPhotoIDs.contains(id) else { return .none }
                 state.deletedPhotoIDs.removeAll { $0 == id }
-                state.deleted = max(0, state.deleted - 1)
-                state.kept += 1
-                return .none
+                if !state.keptPhotoIDs.contains(id) {
+                    state.keptPhotoIDs.append(id)
+                }
+                return persistProgress(state)
 
             case .deletedSheetButtonTapped:
                 state.deletedSheetOpen = true
@@ -257,13 +279,18 @@ struct SwipeFeature {
                     state.deletedPhotoIDs.removeAll()
                     state.deletedSheetOpen = false
                     state.deleteError = nil
-                    state.kept = 0
-                    state.deleted = 0
+                    // History is wiped: undo can't bring back a photo
+                    // that no longer exists in the system library, and
+                    // mixing keep-undo with deleted-and-gone entries
+                    // would leave the stack in an inconsistent place.
+                    // `keptPhotoIDs` is preserved (those photos are
+                    // still in the library, still classified).
                     state.history.removeAll()
+                    return persistProgress(state)
                 } else {
                     state.deleteError = message ?? String(localized: "Couldn't delete the photos.")
+                    return .none
                 }
-                return .none
 
             case .fullscreenMarkAtRelativeIndex(let localIdx, let kept):
                 let targetIdx = state.activeIndex + localIdx
@@ -271,20 +298,26 @@ struct SwipeFeature {
                 let photo = state.photos[targetIdx]
                 state.history.append(SwipeHistoryEntry(index: targetIdx, kept: kept))
                 if kept {
-                    state.kept += 1
+                    state.keptPhotoIDs.append(photo.id)
                 } else {
-                    state.deleted += 1
                     state.deletedPhotoIDs.append(photo.id)
                 }
                 state.activeIndex = targetIdx + 1
                 state.fullscreenOpen = false
-                return .none
+                return persistProgress(state)
 
             case .keepButtonTapped:
                 return startSwipe(&state, direction: 1)
 
             case .onAppear:
+                // Load both blobs synchronously so the very first
+                // `photosLoaded` already knows which IDs to filter out
+                // (avoids a flash of "all photos" before the persisted
+                // classification trims the deck).
                 state.settings = settings.load()
+                let progress = swipeProgress.load()
+                state.deletedPhotoIDs = progress.deletedIDs
+                state.keptPhotoIDs = progress.keptIDs
                 let current = photoLibrary.authorizationStatus()
                 state.authorizationStatus = current
                 if current.grantsRead {
@@ -293,8 +326,16 @@ struct SwipeFeature {
                 return .none
 
             case .photosLoaded(let photos):
-                state.loadedPhotos = photos
-                state.photos = state.shuffleEnabled ? photos.shuffled() : photos
+                // Drop already-classified IDs from the deck. The deck
+                // is "the work left to do" — kept and deleted photos
+                // live in their persisted lists and don't need a card
+                // any more.
+                let classified = Set(state.deletedPhotoIDs).union(state.keptPhotoIDs)
+                let filtered = classified.isEmpty
+                    ? photos
+                    : photos.filter { !classified.contains($0.id) }
+                state.loadedPhotos = filtered
+                state.photos = state.shuffleEnabled ? filtered.shuffled() : filtered
                 state.isLoading = false
                 return .none
 
@@ -305,8 +346,24 @@ struct SwipeFeature {
                 }
 
             case .resetButtonTapped:
-                resetProgress(&state)
+                resetSession(&state)
                 return .cancel(id: CancelID.swipeAnimation)
+
+            case .resetProgressTapped:
+                state.deletedPhotoIDs.removeAll()
+                state.keptPhotoIDs.removeAll()
+                state.deletedSheetOpen = false
+                state.deleteError = nil
+                resetSession(&state)
+                // Re-fetch so the previously-filtered photos rejoin
+                // the deck. Cancels any in-flight fetch first.
+                let refetch = fetchPhotos(&state, albumID: state.selectedAlbumID)
+                let persist = persistProgress(state)
+                return .merge(
+                    .cancel(id: CancelID.swipeAnimation),
+                    persist,
+                    refetch
+                )
 
             case .settingsButtonTapped:
                 state.settingsOpen = true
@@ -352,15 +409,14 @@ struct SwipeFeature {
 
             case .undoButtonTapped:
                 guard let last = state.history.popLast() else { return .none }
+                let undoneID: String? =
+                    last.index < state.photos.count ? state.photos[last.index].id : nil
                 if last.kept {
-                    state.kept = max(0, state.kept - 1)
+                    if let undoneID {
+                        state.keptPhotoIDs.removeAll { $0 == undoneID }
+                    }
                 } else {
-                    state.deleted = max(0, state.deleted - 1)
-                    // Pull this photo out of the trash-staging list.
-                    // `last.index` is the index in `photos`, so map back
-                    // to the assetID to remove the right entry.
-                    if last.index < state.photos.count {
-                        let undoneID = state.photos[last.index].id
+                    if let undoneID {
                         state.deletedPhotoIDs.removeAll { $0 == undoneID }
                     }
                 }
@@ -368,7 +424,10 @@ struct SwipeFeature {
                 state.exitingPhoto = nil
                 state.exitingDirection = 0
                 state.exitingStartDrag = .zero
-                return .cancel(id: CancelID.swipeAnimation)
+                return .merge(
+                    .cancel(id: CancelID.swipeAnimation),
+                    persistProgress(state)
+                )
 
             case .viewAllPhotosTapped:
                 guard let firstID = state.albums.first?.id else { return .none }
@@ -416,9 +475,8 @@ struct SwipeFeature {
             SwipeHistoryEntry(index: state.activeIndex, kept: direction == 1)
         )
         if direction == 1 {
-            state.kept += 1
+            state.keptPhotoIDs.append(committedPhoto.id)
         } else {
-            state.deleted += 1
             state.deletedPhotoIDs.append(committedPhoto.id)
         }
         state.activeIndex += 1
@@ -427,11 +485,12 @@ struct SwipeFeature {
         state.exitingStartDrag = state.drag
         state.drag = .zero
         state.isDragging = false
-        return .run { send in
+        let animation: Effect<Action> = .run { send in
             try await clock.sleep(for: .milliseconds(Self.exitAnimationDurationMs))
             await send(.swipeExitAnimationCompleted)
         }
         .cancellable(id: CancelID.swipeAnimation)
+        return .merge(animation, persistProgress(state))
     }
 
     /// Fire-and-forget save of the settings blob. Errors are swallowed —
@@ -443,12 +502,25 @@ struct SwipeFeature {
         }
     }
 
-    private func resetProgress(_ state: inout State) {
+    /// Fire-and-forget snapshot of the kept/deleted lists. Called after
+    /// every mutation that touches them so a relaunch picks up the same
+    /// state. Cheap (~hundreds of strings of JSON, written via UserDefaults).
+    private func persistProgress(_ state: State) -> Effect<Action> {
+        let snapshot = SwipeProgress(
+            deletedIDs: state.deletedPhotoIDs,
+            keptIDs: state.keptPhotoIDs
+        )
+        return .run { _ in
+            swipeProgress.save(snapshot)
+        }
+    }
+
+    /// Resets the *session* state — index, history, drag, exit overlay.
+    /// Does **not** clear the persisted `keptPhotoIDs` /
+    /// `deletedPhotoIDs`; that's the job of `.resetProgressTapped`.
+    private func resetSession(_ state: inout State) {
         state.activeIndex = 0
         state.history.removeAll()
-        state.kept = 0
-        state.deleted = 0
-        state.deletedPhotoIDs.removeAll()
         state.deleteError = nil
         state.drag = .zero
         state.exitingDirection = 0

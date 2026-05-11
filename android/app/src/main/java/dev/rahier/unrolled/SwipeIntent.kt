@@ -31,6 +31,10 @@ sealed interface SwipeIntent {
     data class PhotosLoadFailed(val message: String) : SwipeIntent
     data class PhotosLoaded(val photos: List<PhotoAsset>) : SwipeIntent
     data object ResetButtonTapped : SwipeIntent
+    /** Tapped from the deleted sheet — wipes the persisted
+     *  [keptPhotoIDs] + [deletedPhotoIDs] so the deck shows the full
+     *  library again as if from scratch. */
+    data object ResetProgressTapped : SwipeIntent
     data object RetryLoadTapped : SwipeIntent
     data object ScreenAppeared : SwipeIntent
     data object SettingsButtonTapped : SwipeIntent

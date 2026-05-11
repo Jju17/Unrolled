@@ -476,6 +476,7 @@
     },
     "Photos will be moved to the Photos app's trash. You can recover them from \"Recently Deleted\" for 30 days." : {
       "comment" : "Trash confirmation alert message",
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {

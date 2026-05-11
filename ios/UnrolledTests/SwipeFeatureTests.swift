@@ -45,6 +45,42 @@ final class SwipeFeatureTests: XCTestCase {
         }
     }
 
+    func test_onAppear_loadsPersistedProgressAndFiltersDeck() async {
+        // Persisted: a1 was previously kept, a3 was previously deleted.
+        // The fresh fetch returns five photos; a1 and a3 should be
+        // filtered out so the deck only contains the remaining three.
+        let progress = SwipeProgress(
+            deletedIDs: [PhotoAsset.p3.id],
+            keptIDs: [PhotoAsset.p1.id]
+        )
+        let store = TestStore(initialState: SwipeFeature.State()) {
+            SwipeFeature()
+        } withDependencies: {
+            $0.photoLibrary = .stubAuthorized()
+            $0.swipeProgress = SwipeProgressClient(
+                clear: {},
+                load: { progress },
+                save: { _ in }
+            )
+        }
+
+        await store.send(.onAppear) {
+            $0.authorizationStatus = .authorized
+            $0.deletedPhotoIDs = [PhotoAsset.p3.id]
+            $0.keptPhotoIDs = [PhotoAsset.p1.id]
+            $0.isLoading = true
+        }
+        await store.receive(\.photosLoaded) {
+            $0.loadedPhotos = [.p2, .p4, PhotoAsset.five[4]]
+            $0.photos = [.p2, .p4, PhotoAsset.five[4]]
+            $0.isLoading = false
+        }
+        await store.receive(\.albumsLoaded) {
+            $0.albums = Album.three
+            $0.selectedAlbumID = Album.recents.id
+        }
+    }
+
     func test_requestAuthorizationTapped_granted_fetchesLibrary() async {
         let store = TestStore(initialState: SwipeFeature.State()) {
             SwipeFeature()
@@ -97,19 +133,23 @@ final class SwipeFeatureTests: XCTestCase {
         }
     }
 
-    func test_albumPicked_resetsProgressAndRefetches() async {
+    func test_albumPicked_resetsSessionButKeepsPersistedProgress() async {
+        // Album switch is a session boundary: index/history/drag reset
+        // so the user lands cleanly on the new album. The persisted
+        // kept/deleted lists *don't* reset — those are about photos,
+        // not the album viewport.
         let store = TestStore(
             initialState: SwipeFeature.State(
                 activeIndex: 3,
                 albums: Album.three,
                 authorizationStatus: .authorized,
-                deleted: 2,
+                deletedPhotoIDs: ["x"],
                 history: [
                     SwipeHistoryEntry(index: 0, kept: true),
                     SwipeHistoryEntry(index: 1, kept: false),
                     SwipeHistoryEntry(index: 2, kept: true),
                 ],
-                kept: 2,
+                keptPhotoIDs: ["y", "z"],
                 loadedPhotos: PhotoAsset.five,
                 photos: PhotoAsset.five,
                 selectedAlbumID: Album.recents.id
@@ -125,15 +165,14 @@ final class SwipeFeatureTests: XCTestCase {
         await store.send(.albumPicked(Album.favorites.id)) {
             $0.selectedAlbumID = Album.favorites.id
             $0.pickerOpen = false
-            // resetProgress wipes everything:
+            // Session reset:
             $0.activeIndex = 0
             $0.history = []
-            $0.kept = 0
-            $0.deleted = 0
             $0.drag = .zero
             $0.exitingDirection = 0
             $0.isDragging = false
             $0.unshuffledIndex = 0
+            // Persisted lists untouched.
             // fetchPhotos sets loading:
             $0.isLoading = true
         }
@@ -218,14 +257,15 @@ final class SwipeFeatureTests: XCTestCase {
 
         // Commit happens synchronously — the new top card is
         // immediately drag-able while the fly-off overlay renders
-        // `exitingPhoto`.
+        // `exitingPhoto`. The committed photo joins `keptPhotoIDs`,
+        // which is then persisted via a fire-and-forget effect.
         await store.send(.cardDragEnded) {
             $0.isDragging = false
             $0.exitingDirection = 1
             $0.exitingPhoto = PhotoAsset.five[0]
             $0.exitingStartDrag = CGSize(width: 150, height: 0)
             $0.activeIndex = 1
-            $0.kept = 1
+            $0.keptPhotoIDs = [PhotoAsset.five[0].id]
             $0.history = [SwipeHistoryEntry(index: 0, kept: true)]
             $0.drag = .zero
         }
@@ -257,7 +297,6 @@ final class SwipeFeatureTests: XCTestCase {
             $0.exitingPhoto = PhotoAsset.five[0]
             $0.exitingStartDrag = CGSize(width: -150, height: 0)
             $0.activeIndex = 1
-            $0.deleted = 1
             $0.deletedPhotoIDs = [PhotoAsset.five[0].id]
             $0.history = [SwipeHistoryEntry(index: 0, kept: false)]
             $0.drag = .zero
@@ -292,6 +331,8 @@ final class SwipeFeatureTests: XCTestCase {
     // MARK: - Undo
 
     func test_undoButtonTapped_revertsLastKeep() async {
+        // Undoing a kept photo pulls its id back out of `keptPhotoIDs`
+        // (the persistent list), not just a counter.
         let store = TestStore(
             initialState: SwipeFeature.State(
                 activeIndex: 2,
@@ -299,14 +340,14 @@ final class SwipeFeatureTests: XCTestCase {
                     SwipeHistoryEntry(index: 0, kept: true),
                     SwipeHistoryEntry(index: 1, kept: true),
                 ],
-                kept: 2,
+                keptPhotoIDs: [PhotoAsset.p1.id, PhotoAsset.p2.id],
                 photos: PhotoAsset.five
             )
         ) { SwipeFeature() }
 
         await store.send(.undoButtonTapped) {
             $0.history = [SwipeHistoryEntry(index: 0, kept: true)]
-            $0.kept = 1
+            $0.keptPhotoIDs = [PhotoAsset.p1.id]
             $0.activeIndex = 1
         }
     }
@@ -315,7 +356,7 @@ final class SwipeFeatureTests: XCTestCase {
         let store = TestStore(
             initialState: SwipeFeature.State(
                 activeIndex: 1,
-                deleted: 1,
+                deletedPhotoIDs: [PhotoAsset.p1.id],
                 history: [SwipeHistoryEntry(index: 0, kept: false)],
                 photos: PhotoAsset.five
             )
@@ -323,7 +364,7 @@ final class SwipeFeatureTests: XCTestCase {
 
         await store.send(.undoButtonTapped) {
             $0.history = []
-            $0.deleted = 0
+            $0.deletedPhotoIDs = []
             $0.activeIndex = 0
         }
     }
@@ -338,26 +379,26 @@ final class SwipeFeatureTests: XCTestCase {
     }
 
     func test_deletedPhotoRestore_movesFromDeletedToKept() async {
+        // Restoring a previously-deleted photo doesn't drop it on the
+        // floor — it migrates to `keptPhotoIDs` so the next session's
+        // filter still skips it (the user's already classified it).
         let store = TestStore(
             initialState: SwipeFeature.State(
-                deleted: 2,
                 deletedPhotoIDs: ["a1", "a3"],
-                kept: 1,
+                keptPhotoIDs: ["a4"],
                 photos: PhotoAsset.five
             )
         ) { SwipeFeature() }
 
         await store.send(.deletedPhotoRestoreTapped(id: "a1")) {
             $0.deletedPhotoIDs = ["a3"]
-            $0.deleted = 1
-            $0.kept = 2
+            $0.keptPhotoIDs = ["a4", "a1"]
         }
     }
 
     func test_deletedPhotoRestore_unknownID_isNoOp() async {
         let store = TestStore(
             initialState: SwipeFeature.State(
-                deleted: 1,
                 deletedPhotoIDs: ["a1"],
                 photos: PhotoAsset.five
             )
@@ -375,7 +416,6 @@ final class SwipeFeatureTests: XCTestCase {
     func test_emptyTrashButton_withList_kicksOffDelete() async {
         let store = TestStore(
             initialState: SwipeFeature.State(
-                deleted: 1,
                 deletedPhotoIDs: ["a1"]
             )
         ) {
@@ -383,8 +423,8 @@ final class SwipeFeatureTests: XCTestCase {
         } withDependencies: {
             $0.photoLibrary = .stubAuthorized()  // deleteAssets no-op ⇒ success
         }
-        // No in-app alert any more — PhotoKit's own system dialog is the
-        // single confirmation step. Tap goes straight to `trashInFlight`.
+        // Single tap goes straight to "delete in flight" — the OS dialog
+        // (rendered by PhotoKit) is now the only confirmation step.
         await store.send(.emptyTrashButtonTapped) {
             $0.trashInFlight = true
         }
@@ -394,10 +434,13 @@ final class SwipeFeatureTests: XCTestCase {
         }
     }
 
-    func test_emptyTrashButton_success_resetsCountersAndHistory() async {
+    func test_emptyTrashButton_success_clearsTrashAndHistoryButKeepsKeptList() async {
+        // Successful delete: the trash list is cleared (those photos are
+        // gone from the system library), history is wiped (you can't
+        // undo a real PhotoKit delete), but `keptPhotoIDs` stays — those
+        // photos still exist and the user has already classified them.
         let store = TestStore(
             initialState: SwipeFeature.State(
-                deleted: 2,
                 deletedPhotoIDs: ["a1", "a2"],
                 deletedSheetOpen: true,
                 history: [
@@ -405,7 +448,7 @@ final class SwipeFeatureTests: XCTestCase {
                     SwipeHistoryEntry(index: 1, kept: false),
                     SwipeHistoryEntry(index: 2, kept: false),
                 ],
-                kept: 1
+                keptPhotoIDs: ["b1"]
             )
         ) {
             SwipeFeature()
@@ -420,16 +463,14 @@ final class SwipeFeatureTests: XCTestCase {
             $0.trashInFlight = false
             $0.deletedPhotoIDs = []
             $0.deletedSheetOpen = false
-            $0.kept = 0
-            $0.deleted = 0
             $0.history = []
+            // keptPhotoIDs preserved.
         }
     }
 
     func test_emptyTrashButton_failure_surfacesError() async {
         let store = TestStore(
             initialState: SwipeFeature.State(
-                deleted: 1,
                 deletedPhotoIDs: ["a1"],
                 deletedSheetOpen: true
             )
@@ -453,63 +494,29 @@ final class SwipeFeatureTests: XCTestCase {
         }
     }
 
-    func test_undoButtonTapped_afterDelete_alsoRestoresID() async {
-        let store = TestStore(
-            initialState: SwipeFeature.State(
-                activeIndex: 1,
-                deleted: 1,
-                deletedPhotoIDs: [PhotoAsset.five[0].id],
-                history: [SwipeHistoryEntry(index: 0, kept: false)],
-                photos: PhotoAsset.five
-            )
-        ) { SwipeFeature() }
-
-        await store.send(.undoButtonTapped) {
-            $0.history = []
-            $0.deleted = 0
-            $0.deletedPhotoIDs = []
-            $0.activeIndex = 0
-        }
-    }
-
     func test_undoButtonTapped_emptyHistory_isNoOp() async {
         let store = TestStore(initialState: SwipeFeature.State()) { SwipeFeature() }
         await store.send(.undoButtonTapped)
         // popLast() returns nil → early return, no state change.
     }
 
-    func test_undoButtonTapped_neverGoesNegative() async {
-        // State corruption scenario — kept counter out of sync with history.
-        // Undo a "keep" while kept = 0 — max(0, kept - 1) keeps it at 0.
-        let store = TestStore(
-            initialState: SwipeFeature.State(
-                activeIndex: 1,
-                history: [SwipeHistoryEntry(index: 0, kept: true)],
-                kept: 0  // intentionally wrong
-            )
-        ) { SwipeFeature() }
+    // MARK: - Reset session vs reset progress
 
-        await store.send(.undoButtonTapped) {
-            $0.history = []
-            $0.kept = 0  // stays clamped
-            $0.activeIndex = 0
-        }
-    }
-
-    // MARK: - Reset
-
-    func test_resetButtonTapped_wipesProgress() async {
+    func test_resetButtonTapped_wipesSessionStateOnly() async {
+        // resetButton (the in-deck "Start over" affordance) clears the
+        // session — index, history, drag — but NOT the persisted lists
+        // of kept/deleted photo IDs.
         let store = TestStore(
             initialState: SwipeFeature.State(
                 activeIndex: 4,
-                deleted: 2,
+                deletedPhotoIDs: [PhotoAsset.p2.id],
                 drag: CGSize(width: 50, height: 0),
                 history: [
                     SwipeHistoryEntry(index: 0, kept: true),
                     SwipeHistoryEntry(index: 1, kept: false),
                 ],
                 isDragging: true,
-                kept: 2,
+                keptPhotoIDs: [PhotoAsset.p1.id, PhotoAsset.p3.id],
                 photos: PhotoAsset.five,
                 unshuffledIndex: 3
             )
@@ -518,12 +525,52 @@ final class SwipeFeatureTests: XCTestCase {
         await store.send(.resetButtonTapped) {
             $0.activeIndex = 0
             $0.history = []
-            $0.kept = 0
-            $0.deleted = 0
             $0.drag = .zero
             $0.exitingDirection = 0
             $0.isDragging = false
             $0.unshuffledIndex = 0
+            // deletedPhotoIDs / keptPhotoIDs preserved (computed
+            // counters likewise preserved).
+        }
+    }
+
+    func test_resetProgressTapped_wipesPersistedListsAndRefetches() async {
+        // resetProgress (the toolbar button in DeletedPhotosSheet) is
+        // the *destructive* reset: clears both persisted lists + the
+        // session, and re-fetches the album so the previously-filtered
+        // photos rejoin the deck.
+        let store = TestStore(
+            initialState: SwipeFeature.State(
+                activeIndex: 2,
+                deletedPhotoIDs: ["a1"],
+                deletedSheetOpen: true,
+                history: [SwipeHistoryEntry(index: 0, kept: true)],
+                keptPhotoIDs: ["a2", "a3"],
+                photos: PhotoAsset.five,
+                selectedAlbumID: Album.recents.id
+            )
+        ) {
+            SwipeFeature()
+        } withDependencies: {
+            $0.photoLibrary = .stubAuthorized()
+        }
+
+        await store.send(.resetProgressTapped) {
+            $0.deletedPhotoIDs = []
+            $0.keptPhotoIDs = []
+            $0.deletedSheetOpen = false
+            $0.activeIndex = 0
+            $0.history = []
+            $0.drag = .zero
+            $0.exitingDirection = 0
+            $0.isDragging = false
+            $0.unshuffledIndex = 0
+            $0.isLoading = true
+        }
+        await store.receive(\.photosLoaded) {
+            $0.loadedPhotos = PhotoAsset.five
+            $0.photos = PhotoAsset.five
+            $0.isLoading = false
         }
     }
 
@@ -660,10 +707,6 @@ final class SwipeFeatureTests: XCTestCase {
         }
 
         await store.send(.viewInPhotosTapped)
-        // SettingsOpen is NOT mutated by the action itself in the new design —
-        // SwiftUI's sheet dismiss handles it via the binding. State stays true
-        // until the view calls `dismiss()` in production. In the unit test we
-        // only verify the URL was opened.
         await store.finish()
         XCTAssertEqual(openedURL.value, URL(string: "photos-redirect://"))
     }
@@ -693,6 +736,23 @@ final class SwipeFeatureTests: XCTestCase {
         }
     }
 
+    func test_photosLoaded_withClassifiedIDs_filtersThemOut() async {
+        // The deck shouldn't redisplay photos the user already classified
+        // in a previous session.
+        let store = TestStore(
+            initialState: SwipeFeature.State(
+                deletedPhotoIDs: [PhotoAsset.p2.id],
+                keptPhotoIDs: [PhotoAsset.p4.id]
+            )
+        ) { SwipeFeature() }
+
+        await store.send(.photosLoaded(PhotoAsset.five)) {
+            $0.loadedPhotos = [.p1, .p3, PhotoAsset.five[4]]
+            $0.photos = [.p1, .p3, PhotoAsset.five[4]]
+            $0.isLoading = false
+        }
+    }
+
     // MARK: - Cancellation
 
     func test_resetButton_cancelsPendingSwipeAnimation() async {
@@ -716,7 +776,7 @@ final class SwipeFeatureTests: XCTestCase {
             $0.exitingPhoto = PhotoAsset.five[0]
             $0.exitingStartDrag = CGSize(width: 150, height: 0)
             $0.activeIndex = 1
-            $0.kept = 1
+            $0.keptPhotoIDs = [PhotoAsset.five[0].id]
             $0.history = [SwipeHistoryEntry(index: 0, kept: true)]
             $0.drag = .zero
         }
@@ -725,14 +785,13 @@ final class SwipeFeatureTests: XCTestCase {
         await store.send(.resetButtonTapped) {
             $0.activeIndex = 0
             $0.history = []
-            $0.kept = 0
-            $0.deleted = 0
             $0.drag = .zero
             $0.exitingDirection = 0
             $0.exitingPhoto = nil
             $0.exitingStartDrag = .zero
             $0.isDragging = false
             $0.unshuffledIndex = 0
+            // keptPhotoIDs preserved across the session reset.
         }
 
         // Advance the clock — the exit animation effect was cancelled,
@@ -779,5 +838,16 @@ final class SwipeFeatureTests: XCTestCase {
     func test_topPhoto_nilWhenEmpty() {
         let state = SwipeFeature.State()
         XCTAssertNil(state.topPhoto)
+    }
+
+    // MARK: - Computed counter properties
+
+    func test_keptAndDeleted_areDerivedFromLists() {
+        let state = SwipeFeature.State(
+            deletedPhotoIDs: ["a", "b", "c"],
+            keptPhotoIDs: ["x", "y"]
+        )
+        XCTAssertEqual(state.kept, 2)
+        XCTAssertEqual(state.deleted, 3)
     }
 }

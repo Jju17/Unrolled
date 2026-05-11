@@ -15,6 +15,11 @@ struct DeletedPhotosSheet: View {
     @Environment(\.colorScheme) private var colorScheme
     @Bindable var store: StoreOf<SwipeFeature>
 
+    /// Local UI state — the reducer doesn't care whether the
+    /// confirmation dialog is on screen, only what happens when the
+    /// user actually taps "Reset" inside it.
+    @State private var resetConfirmOpen = false
+
     private let keepColor = Color(red: 0.188, green: 0.824, blue: 0.541)
     private let dropColor = Color(red: 0.937, green: 0.243, blue: 0.357)
 
@@ -51,10 +56,27 @@ struct DeletedPhotosSheet: View {
             .navigationTitle("Deleted photos")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Reset") { resetConfirmOpen = true }
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(textSec)
+                        .disabled(store.kept == 0 && store.deleted == 0)
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Close") { dismiss() }
                         .foregroundStyle(textPrim)
                 }
+            }
+            .confirmationDialog(
+                "Reset all progress?",
+                isPresented: $resetConfirmOpen,
+                titleVisibility: .visible
+            ) {
+                Button("Reset", role: .destructive) {
+                    store.send(.resetProgressTapped)
+                }
+            } message: {
+                Text("Clears every kept/deleted marker so the deck shows the full library again. The photos themselves are untouched.")
             }
         }
     }

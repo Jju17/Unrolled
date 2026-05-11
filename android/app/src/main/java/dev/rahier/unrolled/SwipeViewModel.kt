@@ -13,17 +13,35 @@ import kotlinx.coroutines.launch
 
 class SwipeViewModel(
     private val photoRepository: PhotoRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val progressRepository: SwipeProgressRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
-        SwipeState(settings = settingsRepository.load())
+        run {
+            val progress = progressRepository.load()
+            SwipeState(
+                settings = settingsRepository.load(),
+                deletedPhotoIDs = progress.deletedIDs,
+                keptPhotoIDs = progress.keptIDs
+            )
+        }
     )
     val state: StateFlow<SwipeState> = _state.asStateFlow()
 
     private var animationJob: Job? = null
     private var photosJob: Job? = null
     private var albumsJob: Job? = null
+
+    /** Snapshot the persisted lists from the *current* state and write
+     *  them through. Called after every mutation that touches them so
+     *  a relaunch picks up exactly the same trash + kept sets. */
+    private fun persistProgress() {
+        val s = _state.value
+        progressRepository.save(
+            SwipeProgress(deletedIDs = s.deletedPhotoIDs, keptIDs = s.keptPhotoIDs)
+        )
+    }
 
     fun onIntent(intent: SwipeIntent) {
         when (intent) {

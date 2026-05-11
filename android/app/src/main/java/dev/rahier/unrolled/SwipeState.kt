@@ -4,10 +4,12 @@ data class SwipeState(
     val aboutOpen: Boolean = false,
     val activeIndex: Int = 0,
     val albums: List<Album> = emptyList(),
-    val deleted: Int = 0,
     /** IDs of photos staged for deletion via swipe-left. Kept in
      *  deletion order. The big red "Mettre à la poubelle" button in the
-     *  review sheet hands this list to `MediaStore.createTrashRequest`. */
+     *  review sheet hands this list to `MediaStore.createTrashRequest`.
+     *
+     *  Persisted via [SwipeProgressRepository] so a relaunch resumes
+     *  the trash exactly where the user left it. */
     val deletedPhotoIDs: List<Long> = emptyList(),
     val deletedSheetOpen: Boolean = false,
     /** Surfaced when the Recently-Deleted round-trip fails (user declined
@@ -33,7 +35,12 @@ data class SwipeState(
     val history: List<SwipeHistoryEntry> = emptyList(),
     val isDragging: Boolean = false,
     val isLoading: Boolean = false,
-    val kept: Int = 0,
+    /** IDs of photos the user has swiped-keep across all sessions.
+     *  Persisted alongside [deletedPhotoIDs]; used to filter out
+     *  already-decided photos from the freshly-fetched library so the
+     *  deck never re-presents a photo the user has classified. Only the
+     *  explicit `Reset progress` button wipes this list. */
+    val keptPhotoIDs: List<Long> = emptyList(),
     /** Set when the last `loadPhotos` / `loadAlbums` call threw. Shown
      *  in the UI with a Retry button. */
     val loadError: String? = null,
@@ -65,6 +72,15 @@ data class SwipeState(
 
     val topPhoto: PhotoAsset?
         get() = photos.getOrNull(activeIndex)
+
+    /** Display counter for the stats pill — derived from the persistent
+     *  [deletedPhotoIDs] so the number always matches what the trash
+     *  sheet shows. */
+    val deleted: Int get() = deletedPhotoIDs.size
+
+    /** Display counter for the stats pill — derived from [keptPhotoIDs]
+     *  for the same reason as [deleted]. */
+    val kept: Int get() = keptPhotoIDs.size
 
     /**
      * Currently-selected album, resolved from [selectedAlbumID] against
