@@ -1,4 +1,4 @@
-# Release Notes: Unrolled v1.0
+# Release Notes: Unrolled v1.2
 
 Copy-paste reference for App Store Connect (iOS) and Google Play Console (Android) submissions. EN + FR per platform.
 
@@ -357,17 +357,17 @@ Paste the whole fenced block for the target version into **Play Console → [tra
 
 When bumping `versionCode` / `versionName` in `android/app/build.gradle.kts`, **prepend a new block here (newest on top)** and keep the three locales in sync.
 
-#### v1.0.0 (versionCode 2, targetSdk 37)
+#### v1.2.0 (versionCode 3, targetSdk 37)
 
 ```
 <en-US>
-First public release. Sort your gallery pile by pile: this month, on this day, screenshots, videos or any album. Similar shots are grouped, every finished pile shows the storage you free, and an optional daily goal keeps you going. Private and on-device.
+Sort your gallery pile by pile: this month, on this day, screenshots, videos or any album. Similar shots are grouped, every finished pile shows the storage you free, and an optional daily goal keeps you going. Still private and on-device.
 </en-US>
 <fr-FR>
-Première version publique. Trie ta galerie pile par pile : ce mois-ci, ce jour-là, captures d'écran, vidéos ou n'importe quel album. Les photos similaires sont regroupées, chaque pile terminée affiche l'espace libéré, et un objectif quotidien optionnel te motive. Privée et locale.
+Trie ta galerie pile par pile : ce mois-ci, ce jour-là, captures d'écran, vidéos ou n'importe quel album. Les photos similaires sont regroupées, chaque pile terminée affiche l'espace libéré, et un objectif quotidien optionnel te motive. Toujours privée et locale.
 </fr-FR>
 <nl-NL>
-Eerste publieke release. Sorteer je galerij stapel per stapel: deze maand, op deze dag, screenshots, video's of een album. Gelijkaardige foto's worden gegroepeerd, elke afgewerkte stapel toont de vrijgemaakte opslag, en een optioneel dagdoel houdt je bezig. Privé en lokaal op je toestel.
+Sorteer je galerij stapel per stapel: deze maand, op deze dag, screenshots, video's of een album. Gelijkaardige foto's worden gegroepeerd, elke afgewerkte stapel toont de vrijgemaakte opslag, en een optioneel dagdoel houdt je bezig. Nog steeds privé en lokaal op je toestel.
 </nl-NL>
 ```
 
