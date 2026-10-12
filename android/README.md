@@ -38,10 +38,10 @@ adb shell am start -n dev.rahier.unrolled/dev.rahier.unrolled.MainActivity
 Run before every commit and before announcing a fix, then read the output:
 
 ```bash
-./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --warning-mode=all
+./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --warning-mode=fail
 ```
 
-Lint runs with `warningsAsErrors = true`, so a new lint warning fails the build.
+Lint runs with `warningsAsErrors = true`, so a new lint warning fails the build, and `--warning-mode=fail` turns any Gradle deprecation into a failure. CI (`.github/workflows/verify.yml`) runs tests and lint on `ubuntu-latest` only when `android/` changes.
 
 ## Project layout
 
@@ -150,7 +150,8 @@ UI / snapshot tests and instrumented MediaStore tests are not set up yet.
 ## Release builds & signing
 
 ```bash
-./gradlew :app:bundleRelease   # app/build/outputs/bundle/release/app-release.aab
+scripts/release-android.sh <version>   # from the repo root: gate, signed bundle, signature check, tag
+./gradlew :app:bundleRelease           # the bundle alone, app/build/outputs/bundle/release/app-release.aab
 ```
 
 The release `signingConfig` reads three Gradle properties:

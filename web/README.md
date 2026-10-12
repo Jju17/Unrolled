@@ -26,7 +26,8 @@ npm run dev          # http://localhost:5173, HMR on
 ## Production build & preview
 
 ```bash
-npm run build        # tsc + vite build, output in web/dist/
+npm run verify       # typecheck + vite build, what CI runs
+npm run build        # vite build only, output in web/dist/
 npm run preview      # serve the built output locally
 ```
 
@@ -53,9 +54,10 @@ The mobile clients link to `https://unrolled-e4775.web.app/privacy` and `.../sup
 ## Deploy
 
 ```bash
-cd web && npm run build && cd ..
-firebase deploy --only hosting
+scripts/deploy.sh    # from the repo root: gates, waits for CI, deploys hosting and functions
 ```
+
+Never run `firebase deploy` by hand.
 
 Firestore is configured to **deny** all reads and writes (see [`../firestore.rules`](../firestore.rules)) until concrete features need it.
 
@@ -65,4 +67,4 @@ Firestore is configured to **deny** all reads and writes (see [`../firestore.rul
 - Styling is Tailwind utility classes; no `*.module.css` unless absolutely necessary.
 - The privacy policy must describe what the apps really do (local decision storage, optional reverse geocoding); update it in the same change as any client behaviour that touches data.
 - The contact email displayed publicly is **always `julien@rahier.dev`** (never the personal Gmail).
-- Dependencies: `npm outdated` on every pass, bump to the latest (majors included) as long as `npm run build` stays green.
+- Dependencies: `npm outdated` on every pass, bump to the latest (majors included) as long as `npm run verify` stays green.

@@ -8,11 +8,13 @@
 ios/         SwiftUI + The Composable Architecture (TCA), iOS 17+
 android/     Kotlin + Jetpack Compose, MVI, minSdk 26, targetSdk 37
 web/         Vite + React 19 + Tailwind 4 (privacy / support / landing)
-functions/   Firebase Cloud Functions v2 (TypeScript, Node 22)
+functions/   Firebase Cloud Functions v2 (TypeScript, Node 24)
 .firebaserc  Firebase project: unrolled-e4775 (region europe-west1)
 firebase.json, firestore.rules, firestore.indexes.json
 RELEASE_NOTES.md   single source of truth for store copy and release notes
 known-issues.md    living tracker: open items and what was resolved when
+scripts/           release-ios.sh, release-android.sh, deploy.sh, commit message check
+.github/           verify.yml (path-filtered CI) and Dependabot
 .claude/rules/     architecture rules per client, loaded by Claude Code
 ```
 
@@ -83,9 +85,8 @@ The whole repo is wired to a single Firebase project, `unrolled-e4775` (region `
 The mobile clients do **not** initialize Firebase. The web app does not ship the Firebase SDK either; add it back the day a page needs it.
 
 ```bash
-# Deploy hosting + functions
-cd web && npm run build && cd ..
-firebase deploy
+# Deploy hosting + functions (gates, waits for CI, deploys, checks the pages)
+scripts/deploy.sh
 ```
 
 ## Privacy posture
@@ -103,19 +104,31 @@ firebase deploy
 ```bash
 # iOS (the Unrolled scheme runs UnrolledTests; -skipMacroValidation is needed from the CLI for TCA's macros)
 cd ios && xcodegen generate && xcodebuild test -project Unrolled.xcodeproj -scheme Unrolled \
-  -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -skipMacroValidation
+  -destination 'platform=iOS Simulator,OS=latest,name=iPhone 17' -skipMacroValidation
 
 # Android
-cd android && ./gradlew :app:testDebugUnitTest :app:lintDebug
+cd android && ./gradlew :app:testDebugUnitTest :app:lintDebug --warning-mode=fail
 
 # Web
-cd web && npm run build
+cd web && npm ci && npm run verify
 
 # Functions
-cd functions && npm test
+cd functions && npm ci && npm run verify
 ```
 
 Every reducer / ViewModel change ships with its test in the same commit. UI and snapshot tests are not set up yet (see [`known-issues.md`](known-issues.md)).
+
+## Continuous integration
+
+`.github/workflows/verify.yml` runs on every push to `main` and every pull request. A first job lists the paths that changed; the functions, web, Android and iOS jobs only start when their own files did, so a docs-only commit costs a few seconds and the macOS job (ten times the price of a Linux minute) only runs when `ios/` changes. Pull requests also get their commit subjects checked by `scripts/check-commit-messages.sh`.
+
+Keeping the bill low:
+- a newer push to the same branch cancels the running verification (`concurrency`);
+- npm and Gradle caches are restored everywhere and only written from `main`;
+- the iOS job restores `DerivedData` (Swift packages and build products) from the last `main` run and saves it again only when the resolved packages changed;
+- nothing deploys from GitHub: releases and deploys run from the Mac with the scripts below, which wait for the Verify run of the commit before tagging or deploying.
+
+Dependabot opens grouped weekly pull requests for npm (web, functions) and Gradle, and monthly ones for the actions.
 
 ## Dependencies
 
@@ -125,10 +138,11 @@ No pinned versions: every sub-project targets the highest stable version that ke
 
 Both stores get their copy from [`RELEASE_NOTES.md`](RELEASE_NOTES.md). When cutting a build:
 
-1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`, or `MARKETING_VERSION` / `CURRENT_PROJECT_VERSION` in `ios/project.yml`.
+1. Bump `MARKETING_VERSION` in `ios/project.yml` and `versionName` in `android/app/build.gradle.kts` to the same value, and `versionCode` by one; commit and push to `main`.
 2. Prepend a new version block to the "What's new" section, with the `<en-US>`, `<fr-FR>` and `<nl-NL>` tags inside a fenced block.
-3. **iOS**: archive in Xcode, upload via Organizer, paste the matching block.
-4. **Android**: `./gradlew :app:bundleRelease`, upload to Play Console, paste the same block.
+3. **iOS**: `scripts/release-ios.sh <version>` (`--dry-run` stops after the archive). It refuses a dirty tree, a branch other than `main`, a version that differs from the committed ones, an existing tag or a beta Xcode; replays the iOS gate, archives with cloud-managed signing (build number 1000 plus the commit count), waits for the Verify run of the commit, uploads to TestFlight and pushes `ios-v<version>`. Signing uses the App Store Connect key stored in the login keychain under `rahier-dev-app-store-connect`, or the Apple ID signed in to Xcode.
+4. **Android**: `scripts/release-android.sh <version>` replays the Android gate, builds `bundleRelease` signed with the upload key, checks the signature, waits for Verify and pushes `android-v<version>`. Upload the AAB by hand in the Play Console.
+5. **Web and functions**: `scripts/deploy.sh` replays both gates, waits for Verify, deploys hosting, functions, Firestore rules and indexes, then checks the public pages. Never run `firebase deploy` by hand.
 
 ### Android signing
 

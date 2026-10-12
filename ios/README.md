@@ -85,8 +85,10 @@ From the CLI (the `Unrolled` scheme declares `UnrolledTests` as its test target;
 
 ```bash
 xcodebuild test -project Unrolled.xcodeproj -scheme Unrolled \
-  -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -skipMacroValidation
+  -destination 'platform=iOS Simulator,OS=latest,name=iPhone 17' -skipMacroValidation
 ```
+
+CI runs the same command on `macos-latest` only when `ios/` changes, with `DerivedData` restored from the last `main` run. TestFlight builds leave from a Mac with `scripts/release-ios.sh <version>` (see the root README); `Scripts/ci/` holds the archive, upload and build-number helpers it uses. The build number is 1000 plus the commit count, so every `main` commit gets a higher one.
 
 First build takes a few minutes (SPM fetches TCA + transitive deps); subsequent builds are fast.
 

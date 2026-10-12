@@ -4,7 +4,6 @@ Living tracker for the whole repo: what is open, what was resolved and when. His
 
 ## Open
 
-- **[M] No CI.** Nothing runs the three gates (iOS `xcodebuild test`, Android `testDebugUnitTest` + `lintDebug`, web `npm run build`, functions `npm test`) on push. Wire GitHub Actions.
 - **[M] No UI or snapshot tests** on either client (swift-snapshot-testing / Paparazzi). Reducer and ViewModel suites are the only regression net.
 - **[M] No instrumented tests** for `MediaStorePhotoRepository` (cursor lifecycle, partial access, bucket filtering, `loadPhotosByIds` chunking).
 - **[L] Android `versionCode = 2`** must be confirmed against the Play Console release history before the first upload.
@@ -18,6 +17,8 @@ Living tracker for the whole repo: what is open, what was resolved and when. His
 - **[L] iOS byte counts** come from `PHAssetResource` and are fetched lazily; the session summary can briefly show a lower "to free" figure until sizes arrive.
 
 ## Resolved
+
+- 2026-10-12: CI. `verify.yml` runs the four gates on push and pull request, each job only when its paths changed, caches written from `main` only; Dependabot grouped weekly; releases and deploys from the Mac (`scripts/release-ios.sh`, `scripts/release-android.sh`, `scripts/deploy.sh`) after waiting for the Verify run. Functions moved to Node 24. First TestFlight archive still to be run once to confirm the team id in `project.yml`.
 
 - 2026-10-12: product pass. Piles (month, on this day, a year ago, screenshots, videos, albums) with progress, session summary with bytes to free and confetti, lifetime storage-freed counter and stats sheet, similar-photo grouping (on-device dHash), videos in the deck with full-screen playback, daily goal ring, streak with weekly freeze, milestones with shareable cards, optional local reminder, "Goals and streaks" switch. Web landing page written.
 
