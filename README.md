@@ -120,7 +120,7 @@ Every reducer / ViewModel change ships with its test in the same commit. UI and 
 
 ## Continuous integration
 
-`.github/workflows/verify.yml` runs on every push to `main` and every pull request. A first job lists the paths that changed; the functions, web, Android and iOS jobs only start when their own files did, so a docs-only commit costs a few seconds and the macOS job (ten times the price of a Linux minute) only runs when `ios/` changes. Pull requests also get their commit subjects checked by `scripts/check-commit-messages.sh`.
+`.github/workflows/verify.yml` runs on every push to `main` and every pull request. A first job lists the paths that changed; the functions, web, Android and iOS jobs only start when their own files did, so a docs-only commit costs a few seconds. The macOS job (ten times the price of a Linux minute) only runs for pushes to `main` that change `ios/`: a pull request verifies the Linux jobs and its commit subjects (`scripts/check-commit-messages.sh`), the iOS gate runs once the branch lands.
 
 Keeping the bill low:
 - a newer push to the same branch cancels the running verification (`concurrency`);

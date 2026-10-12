@@ -117,7 +117,7 @@ jobs:
 
   ios:
     needs: changes
-    if: needs.changes.outputs.ios == 'true'
+    if: needs.changes.outputs.ios == 'true' && github.event_name == 'push'
     runs-on: macos-latest
     timeout-minutes: 45
     defaults:
@@ -151,7 +151,7 @@ jobs:
         id: resolved
         run: echo "key=ios-deriveddata-${{ steps.xcode.outputs.version }}-$(shasum -a 256 Unrolled.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved | cut -c1-16)" >> "$GITHUB_OUTPUT"
       - name: Save the cache for the next runs
-        if: github.ref == 'refs/heads/main' && steps.cache.outputs.cache-matched-key != steps.resolved.outputs.key
+        if: steps.cache.outputs.cache-matched-key != steps.resolved.outputs.key
         uses: actions/cache/save@v6
         with:
           path: |
