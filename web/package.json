@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "typecheck": "tsc --noEmit -p .",
+    "build": "vite build",
+    "preview": "vite preview",
+    "verify": "npm run typecheck && npm run build"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

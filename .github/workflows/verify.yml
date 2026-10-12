@@ -1,0 +1,160 @@
+name: Verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      android: ${{ steps.filter.outputs.android }}
+      functions: ${{ steps.filter.outputs.functions }}
+      ios: ${{ steps.filter.outputs.ios }}
+      web: ${{ steps.filter.outputs.web }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            android:
+              - android/**
+              - .github/workflows/verify.yml
+            functions:
+              - functions/**
+              - firebase.json
+              - firestore.rules
+              - firestore.indexes.json
+              - .github/workflows/verify.yml
+            ios:
+              - ios/**
+              - .github/workflows/verify.yml
+            web:
+              - web/**
+              - .github/workflows/verify.yml
+
+  commit-messages:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - run: scripts/check-commit-messages.sh "origin/${{ github.base_ref }}..HEAD"
+
+  functions:
+    needs: changes
+    if: needs.changes.outputs.functions == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run verify
+
+  web:
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run verify
+
+  android:
+    needs: changes
+    if: needs.changes.outputs.android == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: jetbrains
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+      - run: ./gradlew :app:testDebugUnitTest :app:lintDebug --warning-mode=fail
+      - name: Upload reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-reports
+          path: android/app/build/reports/
+          retention-days: 7
+
+  ios:
+    needs: changes
+    if: needs.changes.outputs.ios == 'true'
+    runs-on: macos-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: ios
+    steps:
+      - uses: actions/checkout@v7
+      - name: Select the newest Xcode
+        id: xcode
+        run: Scripts/ci/select-xcode.sh
+      - run: brew install xcodegen
+      - run: xcodegen generate
+      - name: Restore Swift packages and build products from the main branch cache
+        id: cache
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            DerivedData
+            !DerivedData/Logs
+          key: ios-deriveddata-${{ steps.xcode.outputs.version }}-
+          restore-keys: ios-deriveddata-${{ steps.xcode.outputs.version }}-
+      - run: >-
+          xcodebuild test
+          -project Unrolled.xcodeproj
+          -scheme Unrolled
+          -destination 'platform=iOS Simulator,OS=latest,name=iPhone 17'
+          -derivedDataPath ../DerivedData
+          -skipPackagePluginValidation -skipMacroValidation
+          COMPILER_INDEX_STORE_ENABLE=NO
+      - name: Key the cache on the resolved packages
+        id: resolved
+        run: echo "key=ios-deriveddata-${{ steps.xcode.outputs.version }}-$(shasum -a 256 Unrolled.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved | cut -c1-16)" >> "$GITHUB_OUTPUT"
+      - name: Save the cache for the next runs
+        if: github.ref == 'refs/heads/main' && steps.cache.outputs.cache-matched-key != steps.resolved.outputs.key
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            DerivedData
+            !DerivedData/Logs
+          key: ${{ steps.resolved.outputs.key }}
