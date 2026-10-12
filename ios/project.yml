@@ -13,7 +13,7 @@ settings:
     MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: 1
     SWIFT_VERSION: "5.9"
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: YXXNH92P5F
     # Disable explicit module builds: with TCA 1.25+ the CasePaths /
     # Perception transitive modules fail to resolve in the testability
     # build variant on Xcode 26 simulator SDKs.

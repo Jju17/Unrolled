@@ -25,6 +25,7 @@ ios/Unrolled.xcodeproj/
 ios/Unrolled.xcworkspace/
 ios/Pods/
 ios/DerivedData/
+DerivedData/
 ios/build/
 
 # === Android ===
