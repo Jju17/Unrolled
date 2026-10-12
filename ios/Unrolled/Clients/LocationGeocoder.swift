@@ -9,7 +9,7 @@ import Foundation
 /// Reverse-geocodes coordinates to a human-readable place name and
 /// caches the result. Designed for the photo card overlay, so:
 ///
-/// - We round the coordinate to ~110 m before keying the cache —
+/// - We round the coordinate to ~110 m before keying the cache ,
 ///   neighbouring shots from the same trip resolve once.
 /// - `CLGeocoder` is rate-limited (~1 req/s per process); the actor
 ///   serializes calls so a fast scroll through the stack doesn't blow

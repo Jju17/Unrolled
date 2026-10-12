@@ -20,7 +20,6 @@ struct SwipeProgress: Equatable, Codable {
 }
 
 struct SwipeProgressClient: Sendable {
-    var clear: @Sendable () -> Void
     var load: @Sendable () -> SwipeProgress
     var save: @Sendable (SwipeProgress) -> Void
 }
@@ -29,7 +28,6 @@ extension SwipeProgressClient: DependencyKey {
     static var liveValue: SwipeProgressClient {
         let key = "swipeProgress.v1"
         return SwipeProgressClient(
-            clear: { UserDefaults.standard.removeObject(forKey: key) },
             load: {
                 guard let data = UserDefaults.standard.data(forKey: key),
                       let decoded = try? JSONDecoder().decode(SwipeProgress.self, from: data)
@@ -47,7 +45,6 @@ extension SwipeProgressClient: DependencyKey {
     static var testValue: SwipeProgressClient {
         let storage = LockIsolated(SwipeProgress.empty)
         return SwipeProgressClient(
-            clear: { storage.setValue(.empty) },
             load: { storage.value },
             save: { storage.setValue($0) }
         )

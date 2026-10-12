@@ -8,16 +8,13 @@ import SwiftUI
 
 /// Review sheet for the trash-staging list (photos the user swiped
 /// "delete" but haven't yet committed to the system Recently Deleted
-/// bucket). Each row has a "Garder" button to pull that photo back out;
+/// bucket). Each row has a "Keep" button to pull that photo back out;
 /// the big red footer actually hands the list over to PhotoKit.
 struct DeletedPhotosSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @Bindable var store: StoreOf<SwipeFeature>
 
-    /// Local UI state — the reducer doesn't care whether the
-    /// confirmation dialog is on screen, only what happens when the
-    /// user actually taps "Reset" inside it.
     @State private var resetConfirmOpen = false
 
     private let keepColor = Color(red: 0.188, green: 0.824, blue: 0.541)
@@ -35,12 +32,10 @@ struct DeletedPhotosSheet: View {
             : Color(red: 0.965, green: 0.961, blue: 0.945)
     }
 
-    /// Resolved once per render — the reducer only knows asset IDs, so
-    /// we map back to the `PhotoAsset` values via `store.photos` for
-    /// the thumbnails + date metadata.
-    private var deletedPhotos: [PhotoAsset] {
-        let byID = Dictionary(uniqueKeysWithValues: store.photos.map { ($0.id, $0) })
-        return store.deletedPhotoIDs.compactMap { byID[$0] }
+    private var deletedPhotos: [PhotoAsset] { store.trashPhotos }
+
+    private var trashBytes: Int64 {
+        deletedPhotos.reduce(0) { $0 + (store.byteCounts[$1.id] ?? 0) }
     }
 
     var body: some View {
@@ -61,6 +56,7 @@ struct DeletedPhotosSheet: View {
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(textSec)
                         .disabled(store.kept == 0 && store.deleted == 0)
+                        .accessibilityLabel(Text("Reset all progress"))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Close") { dismiss() }
@@ -139,9 +135,15 @@ struct DeletedPhotosSheet: View {
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(textPrim)
                 }
-                Text("Ready to delete")
-                    .font(.system(size: 12))
-                    .foregroundStyle(textSec)
+                if let bytes = store.byteCounts[photo.id] {
+                    Text(verbatim: PileTitles.bytes(bytes))
+                        .font(.system(size: 12))
+                        .foregroundStyle(textSec)
+                } else {
+                    Text("Ready to delete")
+                        .font(.system(size: 12))
+                        .foregroundStyle(textSec)
+                }
             }
             Spacer()
             Button {
@@ -158,6 +160,7 @@ struct DeletedPhotosSheet: View {
                 .background(Capsule().fill(keepColor))
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(Text("Keep this photo"))
         }
         .padding(10)
         .background(
@@ -183,6 +186,11 @@ struct DeletedPhotosSheet: View {
                     }
                     Text("Empty trash (\(deletedPhotos.count))")
                         .font(.system(size: 16, weight: .bold))
+                    if trashBytes > 0 {
+                        Text(verbatim: PileTitles.bytes(trashBytes))
+                            .font(.system(size: 13, weight: .medium))
+                            .opacity(0.85)
+                    }
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)

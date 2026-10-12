@@ -9,17 +9,17 @@ import UIKit
 
 struct SwipeScreen: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @Bindable var store: StoreOf<SwipeFeature>
 
     private let stackDepth = 4
-    /// Drives both the stack rise on commit (depth 1 → 0, 2 → 1, …)
+    /// Drives both the stack rise on commit (depth 1 to 0, 2 to 1, …)
     /// AND the spring-back when a drag ends under the threshold. Same
     /// spring in both cases so the whole thing feels coherent.
     private static let stackAnimation: Animation =
         .spring(response: 0.32, dampingFraction: 0.82)
-
-    private var done: Bool { store.activeIndex >= store.photos.count && !store.photos.isEmpty }
 
     private let keepColor = Color(red: 0.188, green: 0.824, blue: 0.541)
     private let dropColor = Color(red: 0.937, green: 0.243, blue: 0.357)
@@ -53,20 +53,59 @@ struct SwipeScreen: View {
                 stackArea
                 actionBar
             }
+
+            if store.goalCelebration {
+                goalToast
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .zIndex(300)
+            }
+
+            if let milestone = store.milestoneReached {
+                MilestoneOverlay(milestone: milestone) {
+                    store.send(.milestoneDismissed)
+                }
+                .zIndex(400)
+            }
         }
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: store.goalCelebration)
+        .sensoryFeedback(.success, trigger: store.goalCelebration) { _, new in new }
+        .sensoryFeedback(.success, trigger: store.milestoneReached) { _, new in new != nil }
+        .sensoryFeedback(.success, trigger: store.isDone) { _, new in new && store.sessionReviewed > 0 }
         .sheet(isPresented: $store.aboutOpen) { AboutSheet() }
         .sheet(isPresented: $store.pickerOpen) {
-            AlbumPickerView(
-                albums: store.albums,
-                currentID: store.currentAlbum?.id ?? "",
-                onPick: { store.send(.albumPicked($0)) }
+            PilePickerView(
+                piles: store.piles,
+                current: store.selectedPile,
+                onPick: { store.send(.pilePicked($0)) }
             )
         }
         .sheet(isPresented: $store.settingsOpen) {
             SettingsSheet(
                 settings: store.settings,
+                onDailyGoalChanged: { store.send(.settingsDailyGoalChanged($0)) },
+                onDetectSimilarToggled: { store.send(.settingsDetectSimilarToggled($0)) },
+                onGamificationToggled: { store.send(.settingsGamificationToggled($0)) },
+                onIncludeVideosToggled: { store.send(.settingsIncludeVideosToggled($0)) },
                 onPlayLivePhotosToggled: { store.send(.settingsPlayLivePhotosToggled($0)) },
+                onReminderHourChanged: { store.send(.settingsReminderHourChanged($0)) },
+                onReminderToggled: { store.send(.settingsReminderToggled($0)) },
                 onShowLocationToggled: { store.send(.settingsShowLocationToggled($0)) }
+            )
+        }
+        .sheet(isPresented: $store.statsOpen) {
+            StatsSheet(
+                stats: store.stats,
+                dailyGoal: store.settings.dailyGoal,
+                gamificationEnabled: store.settings.gamificationEnabled,
+                onReset: { store.send(.statsResetTapped) }
+            )
+        }
+        .sheet(isPresented: $store.similarSheetOpen) {
+            SimilarPhotosSheet(
+                photos: store.topSimilarGroup,
+                onResolve: { kept, deleted in
+                    store.send(.similarGroupResolved(keptIDs: kept, deletedIDs: deleted))
+                }
             )
         }
         .fullScreenCover(isPresented: $store.fullscreenOpen) {
@@ -85,6 +124,11 @@ struct SwipeScreen: View {
             DeletedPhotosSheet(store: store)
         }
         .onAppear { store.send(.onAppear) }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                store.send(.libraryRefreshRequested)
+            }
+        }
         // Light haptic every time a commit fires. `activeIndex` advancing
         // is the authoritative signal (covers gestures, buttons).
         .onChange(of: store.activeIndex) { old, new in
@@ -96,35 +140,69 @@ struct SwipeScreen: View {
 
     // MARK: - Header
 
+    private var pileTitle: String {
+        PileTitles.title(for: store.selectedPile, name: store.currentPile?.name)
+    }
+
+    private var headerSubtitle: String {
+        var parts: [String] = []
+        if store.libraryLoaded, !store.isLoading {
+            parts.append(String(localized: "\(store.remainingCount) left"))
+        }
+        if store.stats.bytesFreed > 0 {
+            parts.append(String(localized: "\(PileTitles.bytes(store.stats.bytesFreed)) freed"))
+        }
+        return parts.joined(separator: ", ")
+    }
+
     private var header: some View {
         HStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("ALBUM")
+                Text("PILE")
                     .font(.system(size: 11, weight: .semibold))
                     .tracking(2)
                     .foregroundStyle(textSec)
                 Button {
-                    store.send(.albumTitleTapped)
+                    store.send(.pileTitleTapped)
                 } label: {
                     HStack(spacing: 6) {
-                        // Album.name comes from PhotoKit which already returns
-                        // the localized smart-album label ("Récents" in fr,
-                        // "Recents" in en). Fallback is a plain key the
-                        // catalog will translate.
-                        Text(store.currentAlbum?.name ?? String(localized: "Photos"))
+                        Text(verbatim: pileTitle)
                             .font(.system(size: 24, weight: .bold))
                             .tracking(-0.5)
                             .foregroundStyle(textPrim)
+                            .lineLimit(1)
                         Image(systemName: "chevron.down")
                             .font(.system(size: 12, weight: .bold))
                             .foregroundStyle(textPrim)
                     }
                 }
                 .buttonStyle(.plain)
-                .accessibilityHint(Text("Open album picker"))
+                .accessibilityHint(Text("Open pile picker"))
+                if !headerSubtitle.isEmpty {
+                    Text(verbatim: headerSubtitle)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(textSec)
+                        .lineLimit(1)
+                }
             }
             Spacer()
             HStack(spacing: 10) {
+                if store.settings.gamificationEnabled {
+                    Button {
+                        store.send(.statsButtonTapped)
+                    } label: {
+                        GoalRing(
+                            count: store.stats.todayCount,
+                            goal: store.settings.dailyGoal,
+                            streak: store.stats.currentStreak,
+                            color: store.goalReachedToday ? keepColor : dropColor,
+                            track: colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08)
+                        )
+                        .foregroundStyle(textPrim)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint(Text("Opens your stats"))
+                }
                 statsPill
                 iconButton(
                     systemImage: "shuffle",
@@ -134,6 +212,11 @@ struct SwipeScreen: View {
                 }
                 .accessibilityLabel(Text("Shuffle photos"))
                 Menu {
+                    Button {
+                        store.send(.statsButtonTapped)
+                    } label: {
+                        Label(String(localized: "Your stats"), systemImage: "chart.bar")
+                    }
                     Button {
                         store.send(.settingsButtonTapped)
                     } label: {
@@ -147,6 +230,7 @@ struct SwipeScreen: View {
                 } label: {
                     iconButton(dots: true)
                 }
+                .accessibilityLabel(Text("More options"))
             }
         }
         .padding(.horizontal, 20)
@@ -154,9 +238,35 @@ struct SwipeScreen: View {
         .padding(.bottom, 12)
     }
 
-    /// Tally pill: ♡ kept   ✗ deleted. Tapping opens the review sheet
-    /// for the trash-staged photos. Hidden while there's nothing to
-    /// show so it doesn't crowd a fresh album.
+    private var goalToast: some View {
+        VStack {
+            HStack(spacing: 8) {
+                Image(systemName: "flame.fill")
+                    .foregroundStyle(keepColor)
+                if store.stats.currentStreak > 1 {
+                    Text("Daily goal reached, \(store.stats.currentStreak) day streak")
+                        .font(.system(size: 14, weight: .semibold))
+                } else {
+                    Text("Daily goal reached")
+                        .font(.system(size: 14, weight: .semibold))
+                }
+            }
+            .foregroundStyle(textPrim)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(Capsule().fill(surface).shadow(color: .black.opacity(0.15), radius: 10, y: 4))
+            .padding(.top, 72)
+            Spacer()
+        }
+        .task {
+            try? await Task.sleep(for: .seconds(2))
+            store.send(.goalCelebrationDismissed)
+        }
+    }
+
+    /// Tally pill: kept / deleted. Tapping opens the review sheet, which
+    /// also hosts the progress reset. Hidden while there's nothing to
+    /// show so it doesn't crowd a fresh pile.
     @ViewBuilder
     private var statsPill: some View {
         if store.kept > 0 || store.deleted > 0 {
@@ -203,17 +313,11 @@ struct SwipeScreen: View {
                 )
             }
             .buttonStyle(.plain)
-            .disabled(store.deleted == 0)
-            .opacity(store.deleted == 0 ? 0.6 : 1)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(
                 Text("\(store.kept) kept, \(store.deleted) deleted")
             )
-            .accessibilityHint(
-                store.deleted > 0
-                    ? Text("Opens the trash list")
-                    : Text("No photos to delete yet")
-            )
+            .accessibilityHint(Text("Opens the trash list"))
         }
     }
 
@@ -243,6 +347,8 @@ struct SwipeScreen: View {
                         .foregroundStyle(foregroundColor)
                 }
             }
+            .frame(width: 44, height: 44)
+            .contentShape(Circle())
         if dots {
             shape
         } else {
@@ -288,6 +394,8 @@ struct SwipeScreen: View {
                             dropColor: dropColor,
                             showLocation: store.settings.showLocation,
                             playLivePhotos: store.settings.playLivePhotos,
+                            similarCount: depth == 0 ? store.topSimilarGroup.count : 0,
+                            onSimilarTapped: { store.send(.similarBadgeTapped) },
                             onDragChanged: { store.send(.cardDragChanged($0)) },
                             onDragEnded: {
                                 store.send(.cardDragEnded, animation: Self.stackAnimation)
@@ -297,7 +405,7 @@ struct SwipeScreen: View {
                         // zIndex must derive from a STABLE identifier,
                         // not from `depth`. `zIndex` isn't `Animatable`,
                         // so SwiftUI applies new values non-atomically
-                        // during a transition — deriving it from depth
+                        // during a transition: deriving it from depth
                         // (which changes on commit) causes cards to
                         // briefly flash in the wrong order. The photo's
                         // absolute index in `store.photos` is stable
@@ -320,7 +428,7 @@ struct SwipeScreen: View {
                     .onAppear { prefetchUpcoming(size: geo.size) }
                     .onChange(of: store.activeIndex) { _, _ in prefetchUpcoming(size: geo.size) }
 
-                    // Fly-off overlay — `id(...)` forces a fresh view
+                    // Fly-off overlay: `id(...)` forces a fresh view
                     // instance per commit so `ExitingCardView.onAppear`
                     // re-runs and drives its `@State` animation.
                     if let exiting = store.exitingPhoto {
@@ -330,7 +438,8 @@ struct SwipeScreen: View {
                             startDrag: store.exitingStartDrag,
                             size: geo.size,
                             keepColor: keepColor,
-                            dropColor: dropColor
+                            dropColor: dropColor,
+                            showLocation: store.settings.showLocation
                         )
                         .id(exiting.id)
                         .zIndex(200)
@@ -349,8 +458,9 @@ struct SwipeScreen: View {
     private var contentState: ContentState {
         if !store.authorizationStatus.grantsRead { return .permissionGate }
         if store.isLoading { return .loading }
-        if store.photos.isEmpty { return .empty }
-        if done { return .done }
+        if store.isPileEmpty { return .empty }
+        if store.isDone { return .done }
+        if store.photos.isEmpty { return .loading }
         return .cards
     }
 
@@ -393,9 +503,7 @@ struct SwipeScreen: View {
                 .padding(.horizontal, 24)
             if store.authorizationStatus == .denied {
                 Button("Open Settings") {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(url)
-                    }
+                    store.send(.openSettingsTapped)
                 }
                 .buttonStyle(PrimaryButtonStyle(color: dropColor))
                 .padding(.top, 8)
@@ -410,59 +518,71 @@ struct SwipeScreen: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
+    @ViewBuilder
     private var emptyState: some View {
-        VStack(spacing: 8) {
-            Text("No photos found")
-                .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(textPrim)
-            Text("Your library is empty.")
-                .font(.system(size: 14))
-                .foregroundStyle(textSec)
+        if store.authorizationStatus == .limited {
+            VStack(spacing: 10) {
+                Image(systemName: "photo.on.rectangle.angled")
+                    .font(.system(size: 42))
+                    .foregroundStyle(textSec)
+                Text("No selected photos")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(textPrim)
+                Text("You only granted Unrolled access to a selection of photos. Pick more to continue.")
+                    .font(.system(size: 14))
+                    .foregroundStyle(textSec)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+                Button("Change selection") {
+                    store.send(.changeSelectionTapped)
+                }
+                .buttonStyle(PrimaryButtonStyle(color: dropColor))
+                .padding(.top, 10)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            VStack(spacing: 8) {
+                Text("No photos found")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(textPrim)
+                if store.selectedPile == .all {
+                    Text("Your library is empty.")
+                        .font(.system(size: 14))
+                        .foregroundStyle(textSec)
+                } else {
+                    Text("This pile is empty.")
+                        .font(.system(size: 14))
+                        .foregroundStyle(textSec)
+                }
+                if store.selectedPile != .all {
+                    Button("Change pile") {
+                        store.send(.pileTitleTapped)
+                    }
+                    .buttonStyle(PrimaryButtonStyle(color: dropColor))
+                    .padding(.top, 10)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var doneView: some View {
-        let isOnAllPhotos = store.currentAlbum?.id == store.albums.first?.id
-
-        return VStack(spacing: 8) {
-            Image(systemName: "checkmark.seal.fill")
-                .font(.system(size: 44))
-                .foregroundStyle(keepColor)
-                .padding(.bottom, 4)
-            Text("Album finished")
-                .font(.system(size: 28, weight: .bold))
-                .tracking(-0.8)
-                .foregroundStyle(textPrim)
-            Text("\(store.kept) kept · \(store.deleted) deleted")
-                .font(.system(size: 14))
-                .foregroundStyle(textSec)
-
-            VStack(spacing: 10) {
-                if !isOnAllPhotos {
-                    Button("View all my photos") {
-                        store.send(.viewAllPhotosTapped)
-                    }
-                    .buttonStyle(PrimaryButtonStyle(color: dropColor))
-                }
-                Button("Change album") {
-                    store.send(.albumTitleTapped)
-                }
-                .buttonStyle(SecondaryButtonStyle(color: textPrim, border: border))
-                Button("Start over") {
-                    store.send(.resetButtonTapped)
-                }
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(textSec)
-                .padding(.top, 2)
-            }
-            .padding(.top, 16)
-        }
-        .padding(24)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .overlay(
-            RoundedRectangle(cornerRadius: 24)
-                .strokeBorder(border, style: StrokeStyle(lineWidth: 2, dash: [8, 6]))
+        SessionSummaryView(
+            reviewed: store.sessionReviewed,
+            kept: store.sessionKeptIDs.count,
+            deleted: store.sessionDeletedIDs.count,
+            bytesToFree: store.sessionBytesToFree,
+            duration: store.sessionDuration,
+            photosPerMinute: store.sessionPhotosPerMinute,
+            isOnAllPhotos: store.selectedPile == .all,
+            keepColor: keepColor,
+            dropColor: dropColor,
+            textPrim: textPrim,
+            textSec: textSec,
+            border: border,
+            onChangePile: { store.send(.pileTitleTapped) },
+            onViewAll: { store.send(.viewAllPhotosTapped) },
+            onStartOver: { store.send(.resetButtonTapped) }
         )
     }
 
@@ -530,6 +650,8 @@ struct SwipeScreen: View {
             .allowsHitTesting(false)
         )
         .opacity(contentState == .cards ? 1 : 0)
+        .allowsHitTesting(contentState == .cards)
+        .accessibilityHidden(contentState != .cards)
     }
 
     private func actionButton<Content: View>(
@@ -554,7 +676,7 @@ struct SwipeScreen: View {
 
 // MARK: - CardSlot
 
-/// One stack card. Pure presentation — transforms follow the drag if
+/// One stack card. Pure presentation: transforms follow the drag if
 /// `depth == 0`, otherwise they settle to their stack position. The
 /// ambient animation installed by `store.send(_:animation:)` drives any
 /// state-change-induced transforms (stack rise, spring-back from
@@ -569,6 +691,8 @@ private struct CardSlot: View {
     let dropColor: Color
     let showLocation: Bool
     let playLivePhotos: Bool
+    let similarCount: Int
+    let onSimilarTapped: () -> Void
     let onDragChanged: (CGSize) -> Void
     let onDragEnded: () -> Void
     let onTap: () -> Void
@@ -605,10 +729,12 @@ private struct CardSlot: View {
             dropOpacity: dropOpacity,
             showLabels: isTop,
             showLocation: showLocation,
-            playLivePhotos: playLivePhotos
+            playLivePhotos: playLivePhotos,
+            similarCount: similarCount,
+            onSimilarTapped: onSimilarTapped
         )
         .frame(width: size.width, height: size.height)
-        // Always pinchable — non-top cards are behind in z-order so
+        // Always pinchable: non-top cards are behind in z-order so
         // they never receive touches anyway. Critically, applying the
         // modifier unconditionally keeps a stable view-tree shape: a
         // previous `if isTop { content.pinchable() } else { content }`
@@ -648,7 +774,7 @@ private struct CardSlot: View {
 
 /// Overlay that flies a just-committed photo off-screen. Uses the
 /// declarative `.animation(_:value:)` pattern rather than `withAnimation`
-/// inside `.onAppear` — the latter is unreliable when SwiftUI happens to
+/// inside `.onAppear`: the latter is unreliable when SwiftUI happens to
 /// be mid-transaction at the moment the overlay first appears, which
 /// manifested as the card "stopping dead" the instant the finger lifted.
 private struct ExitingCardView: View {
@@ -658,6 +784,7 @@ private struct ExitingCardView: View {
     let size: CGSize
     let keepColor: Color
     let dropColor: Color
+    let showLocation: Bool
 
     /// Shorter than the reducer's `exitAnimationDurationMs` so the
     /// overlay always finishes animating before it's cleared from state.
@@ -681,7 +808,8 @@ private struct ExitingCardView: View {
             dropColor: dropColor,
             keepOpacity: direction > 0 ? 1 : 0,
             dropOpacity: direction < 0 ? 1 : 0,
-            showLabels: true
+            showLabels: true,
+            showLocation: showLocation
         )
         .frame(width: size.width, height: size.height)
         .clipShape(RoundedRectangle(cornerRadius: 24))
@@ -716,21 +844,6 @@ private struct PrimaryButtonStyle: ButtonStyle {
             .padding(.horizontal, 22)
             .padding(.vertical, 12)
             .background(Capsule().fill(color))
-            .scaleEffect(configuration.isPressed ? 0.96 : 1)
-            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
-    }
-}
-
-private struct SecondaryButtonStyle: ButtonStyle {
-    let color: Color
-    let border: Color
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.system(size: 14, weight: .semibold))
-            .foregroundStyle(color)
-            .padding(.horizontal, 22)
-            .padding(.vertical, 12)
-            .background(Capsule().stroke(border, lineWidth: 1))
             .scaleEffect(configuration.isPressed ? 0.96 : 1)
             .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
     }

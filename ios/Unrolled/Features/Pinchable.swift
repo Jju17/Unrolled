@@ -8,7 +8,7 @@ import SwiftUI
 /// View modifier that makes its target pinch-to-zoom-able. The zoom is
 /// applied via `scaleEffect` on the modified view, clamped between
 /// [minScale, maxScale]. When the gesture ends the view springs back to
-/// its original scale — we're purely giving the user a moment to
+/// its original scale: we're purely giving the user a moment to
 /// inspect the image, not a persistent zoom mode.
 ///
 /// `@GestureState` auto-resets to its initial value once the gesture

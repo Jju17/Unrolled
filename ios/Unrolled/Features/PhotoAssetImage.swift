@@ -8,11 +8,10 @@ import SwiftUI
 import UIKit
 
 /// Renders a `PHAsset` (looked up by local identifier) using a shared
-/// `PHCachingImageManager`. Reloads when `assetID` or `targetSize`
-/// changes. This is pure presentation — no TCA dependency: given an
-/// ID, load.
+/// `PHCachingImageManager`. Reloads when `assetID` changes. This is pure
+/// presentation, no TCA dependency: given an ID, load.
 ///
-/// Loading is **progressive** — the cache yields a thumbnail first,
+/// Loading is **progressive**: the cache yields a thumbnail first,
 /// then upgrades to the high-quality version as it arrives. For
 /// iCloud-only photos this means the user sees *something* instantly
 /// while the full file streams down (or stays as the thumbnail if
@@ -88,8 +87,8 @@ final class PhotoImageCache: @unchecked Sendable {
     /// Options for fast-path requests where we just want *some* image
     /// quickly. Used as the second tier when prefetching.
     private let fastOptions: PHImageRequestOptions
-    /// Options for the progressive stream — opportunistic delivery
-    /// (degraded → high quality) with network access on for iCloud.
+    /// Options for the progressive stream: opportunistic delivery
+    /// (degraded to high quality) with network access on for iCloud.
     private let progressiveOptions: PHImageRequestOptions
     private let prefetchLock = NSLock()
     private var cachedIDs: Set<String> = []
@@ -126,7 +125,7 @@ final class PhotoImageCache: @unchecked Sendable {
     }
 
     /// Stream of images for `id`, yielded in delivery order:
-    /// 1. A degraded thumbnail (fast — typically already on-device).
+    /// 1. A degraded thumbnail (fast: typically already on-device).
     /// 2. The full-quality version once decoded / downloaded.
     ///
     /// The stream finishes after the non-degraded result, or on
@@ -168,7 +167,7 @@ final class PhotoImageCache: @unchecked Sendable {
                 let isDegraded = (info?[PHImageResultIsDegradedKey] as? Bool) ?? false
                 let isCancelled = (info?[PHImageCancelledKey] as? Bool) ?? false
                 let hasError = info?[PHImageErrorKey] != nil
-                // Non-degraded delivery, or terminal failure → wrap up
+                // Non-degraded delivery, or terminal failure to wrap up
                 // the stream so the consumer's `for await` exits.
                 if !isDegraded || isCancelled || hasError {
                     continuation.finish()
@@ -180,22 +179,7 @@ final class PhotoImageCache: @unchecked Sendable {
         }
     }
 
-    /// Single-shot variant kept for callers that just want one image
-    /// (e.g. the in-memory thumbnail cache used elsewhere). Awaits the
-    /// final non-degraded result.
-    func loadImage(
-        id: String,
-        size: CGSize,
-        contentMode: PHImageContentMode = .aspectFill
-    ) async -> UIImage? {
-        var last: UIImage?
-        for await frame in images(id: id, size: size, contentMode: contentMode) {
-            last = frame
-        }
-        return last
-    }
-
-    /// Hint the cache to preload the given IDs at `size`. Idempotent —
+    /// Hint the cache to preload the given IDs at `size`. Idempotent ,
     /// IDs already in `cachedIDs` are skipped so scrolling forward 1
     /// photo only warms the newcomer, not the whole window.
     func prefetch(ids: [String], size: CGSize) {

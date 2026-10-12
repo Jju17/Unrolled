@@ -9,20 +9,14 @@ import UIKit
 /// Wraps any SwiftUI content inside a `UIScrollView` that does the
 /// classic pinch-at-fingers-midpoint zoom + pan that SwiftUI's own
 /// `MagnificationGesture` can't express. Also bouncy overscroll free.
-///
-/// `zoomScale` is bound out so the parent can gate other gestures
-/// (e.g. hide a dismiss-drag overlay while the user is zoomed in).
 struct ZoomableScrollView<Content: View>: UIViewRepresentable {
-    @Binding var zoomScale: CGFloat
     let maxScale: CGFloat
     let content: () -> Content
 
     init(
-        zoomScale: Binding<CGFloat>,
         maxScale: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) {
-        self._zoomScale = zoomScale
         self.maxScale = maxScale
         self.content = content
     }
@@ -64,24 +58,16 @@ struct ZoomableScrollView<Content: View>: UIViewRepresentable {
         context.coordinator.hostingController?.rootView = content()
     }
 
-    func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
+    func makeCoordinator() -> Coordinator { Coordinator() }
 
     final class Coordinator: NSObject, UIScrollViewDelegate {
-        var parent: ZoomableScrollView
         var hostingController: UIHostingController<Content>?
-
-        init(parent: ZoomableScrollView) { self.parent = parent }
 
         func viewForZooming(in scrollView: UIScrollView) -> UIView? {
             hostingController?.view
         }
 
         func scrollViewDidZoom(_ scrollView: UIScrollView) {
-            // Bubble the current scale up so the parent view can react
-            // (e.g. disable its dismiss-drag while zoomed).
-            if parent.zoomScale != scrollView.zoomScale {
-                parent.zoomScale = scrollView.zoomScale
-            }
             // Pan only makes sense once we're actually zoomed in. Toggle
             // `isScrollEnabled` rather than hijacking the pan gesture's
             // delegate (which UIKit forbids and crashes on).
@@ -101,7 +87,6 @@ struct ZoomableScrollView<Content: View>: UIViewRepresentable {
             with view: UIView?,
             atScale scale: CGFloat
         ) {
-            if parent.zoomScale != scale { parent.zoomScale = scale }
             scrollView.isScrollEnabled = scale > 1.0
         }
     }

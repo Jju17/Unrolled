@@ -28,16 +28,22 @@ struct FullscreenPhotoView: View {
 
     @State private var currentPage: Int = 0
 
+    /// The paged `TabView` builds every page eagerly, so only a short
+    /// window of the undecided tail is handed to it.
+    private static let pageWindow = 20
+
     private let keepColor = Color(red: 0.188, green: 0.824, blue: 0.541)
     private let dropColor = Color(red: 0.937, green: 0.243, blue: 0.357)
 
-    /// Slice of photos the pager renders. We intentionally show only the
-    /// undecided tail so backward scrolling never lands on a photo
-    /// already routed through `history` — the user's tally would lie.
+    /// Slice of photos the pager renders: the undecided tail only, so
+    /// backward scrolling never lands on a photo already in `history`.
     private var visiblePhotos: [PhotoAsset] {
         guard startIndex >= 0, startIndex < photos.count else { return [] }
-        return Array(photos[startIndex...])
+        let end = min(startIndex + Self.pageWindow, photos.count)
+        return Array(photos[startIndex..<end])
     }
+
+    private var remainingCount: Int { max(0, photos.count - startIndex) }
 
     private var currentPhoto: PhotoAsset? {
         guard !visiblePhotos.isEmpty else { return nil }
@@ -73,8 +79,8 @@ struct FullscreenPhotoView: View {
 
     private var topBar: some View {
         HStack {
-            if visiblePhotos.count > 1 {
-                Text("\(currentPage + 1) / \(visiblePhotos.count)")
+            if remainingCount > 1 {
+                Text("\(currentPage + 1) / \(remainingCount)")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(.white.opacity(0.8))
                     .padding(.horizontal, 10)
@@ -88,6 +94,8 @@ struct FullscreenPhotoView: View {
                     .foregroundStyle(.white)
                     .frame(width: 34, height: 34)
                     .background(Circle().fill(Color.black.opacity(0.5)))
+                    .frame(width: 44, height: 44)
+                    .contentShape(Circle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel(Text("Close"))
@@ -140,18 +148,18 @@ struct FullscreenPhotoView: View {
 // MARK: - Single page
 
 /// One TabView page. Owns its own zoom state so each photo can be
-/// pinched independently — switching pages resets to fit-to-screen.
+/// pinched independently: switching pages resets to fit-to-screen.
 private struct FullscreenPhotoPage: View {
     let photo: PhotoAsset
     let playLivePhotos: Bool
 
-    @State private var zoomScale: CGFloat = 1.0
-
     var body: some View {
-        ZoomableScrollView(zoomScale: $zoomScale, maxScale: 4) {
+        ZoomableScrollView(maxScale: 4) {
             GeometryReader { geo in
                 Group {
-                    if playLivePhotos && photo.isLivePhoto {
+                    if photo.isVideo {
+                        VideoPage(assetID: photo.id)
+                    } else if playLivePhotos && photo.isLivePhoto {
                         LivePhotoPlayer(assetID: photo.id)
                     } else {
                         PhotoAssetImage(
@@ -185,6 +193,11 @@ private struct FullscreenMetadataStrip: View {
                 Text(Self.dateFormatter.string(from: date))
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(.white)
+            }
+            if photo.isVideo {
+                Text("Video, \(PileTitles.clock(photo.durationSeconds ?? 0))")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.92))
             }
             if settings.showLocation, let placeName {
                 HStack(spacing: 4) {

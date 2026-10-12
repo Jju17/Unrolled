@@ -20,6 +20,9 @@ struct PhotoCard: View {
     /// hold to play the motion portion (Photos.app-style affordance).
     /// Non-top cards always stay static for performance.
     var playLivePhotos: Bool = false
+    /// Undecided near-duplicates of this photo (top card only).
+    var similarCount: Int = 0
+    var onSimilarTapped: () -> Void = {}
 
     /// Resolved place name, populated asynchronously by the geocoder
     /// task below. Only used by the top card (others wouldn't show
@@ -28,7 +31,7 @@ struct PhotoCard: View {
 
     /// Top card upgrades to `PHLivePhotoView` when the user has the
     /// toggle on and the asset is a Live Photo. The deeper-stack cards
-    /// always stay static — they're not interactable and we don't want
+    /// always stay static: they're not interactable and we don't want
     /// to spin up multiple `PHLivePhotoView` instances at once.
     private var renderAsLivePhoto: Bool {
         showLabels && playLivePhotos && photo.isLivePhoto
@@ -39,13 +42,13 @@ struct PhotoCard: View {
             ZStack {
                 // Static photo is **always** rendered as the base layer.
                 // Its `@State image` is preserved across stack transitions
-                // (depth 1 → 0) and the cache fallback ensures pixels
+                // (depth 1 to 0) and the cache fallback ensures pixels
                 // stay on screen even if SwiftUI tears the view down.
                 //
                 // For Live Photos (top card + toggle on), `PHLivePhotoView`
                 // is overlaid above the static. While it loads its own
                 // copy of the asset, the static below already shows the
-                // exact same still — visually identical, no flash. Once
+                // exact same still: visually identical, no flash. Once
                 // loaded, the user's long-press plays the motion through
                 // the overlay.
                 PhotoAssetImage(
@@ -82,6 +85,21 @@ struct PhotoCard: View {
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundStyle(.white)
                     }
+                    if photo.isVideo {
+                        HStack(spacing: 4) {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 10, weight: .bold))
+                            Text(verbatim: PileTitles.clock(photo.durationSeconds ?? 0))
+                                .font(.system(size: 12, weight: .semibold))
+                                .monospacedDigit()
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Capsule().fill(Color.black.opacity(0.45)))
+                        .padding(.top, 4)
+                        .accessibilityLabel(Text("Video, \(PileTitles.clock(photo.durationSeconds ?? 0))"))
+                    }
                     if showLocation, let placeName {
                         HStack(spacing: 4) {
                             Image(systemName: "location.fill")
@@ -96,10 +114,32 @@ struct PhotoCard: View {
                 .frame(width: geo.size.width, height: geo.size.height,
                        alignment: .bottomLeading)
 
+                if showLabels, similarCount >= 2 {
+                    Button(action: onSimilarTapped) {
+                        HStack(spacing: 5) {
+                            Image(systemName: "square.stack.3d.up.fill")
+                                .font(.system(size: 12, weight: .bold))
+                            Text("\(similarCount) similar")
+                                .font(.system(size: 13, weight: .semibold))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Capsule().fill(Color.black.opacity(0.55)))
+                        .frame(minHeight: 44)
+                        .contentShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(14)
+                    .frame(width: geo.size.width, height: geo.size.height,
+                           alignment: .bottomTrailing)
+                    .accessibilityHint(Text("Review the similar photos together"))
+                }
+
                 // KEEP/DELETE stamps. Rendered unconditionally (opacity
                 // already drives visibility through `keepOpacity`/`dropOpacity`)
                 // so SwiftUI's ZStack child count doesn't fluctuate when
-                // a card transitions from depth 1 → 0. Adding/removing
+                // a card transitions from depth 1 to 0. Adding/removing
                 // siblings during that transition has been observed to
                 // re-key surrounding views and reset the `PhotoAssetImage`
                 // `@State`, producing a half-second black flash.
@@ -122,13 +162,11 @@ struct PhotoCard: View {
             .shadow(color: .black.opacity(0.18), radius: 14, x: 0, y: 14)
             .shadow(color: .black.opacity(0.10), radius: 4, x: 0, y: 4)
         }
-        // Geocoding fires per-photo (not per-`showLabels` flip). The
-        // resolver caches by quantized lat/lng so non-top cards either
-        // hit the cache instantly or warm it for the moment they get
-        // promoted — and we never re-fire the task on a depth 1 → 0
-        // transition, which used to cascade enough state churn to
-        // contribute to the half-second black flash on the new top card.
-        .task(id: photo.id) {
+        // Geocoding fires per photo, not per `showLabels` flip: the
+        // resolver caches by quantized lat/lng, so a depth 1 to 0
+        // transition never re-fires the task (that churn used to cause
+        // a black flash on the promoted card).
+        .task(id: "\(photo.id)|\(showLocation)") {
             placeName = nil
             guard showLocation,
                   let lat = photo.latitude, let lng = photo.longitude
@@ -139,7 +177,7 @@ struct PhotoCard: View {
         }
     }
 
-    private func stamp(text: String, color: Color, opacity: Double, rotation: Double) -> some View {
+    private func stamp(text: LocalizedStringKey, color: Color, opacity: Double, rotation: Double) -> some View {
         Text(text)
             .font(.system(size: 28, weight: .heavy))
             .tracking(2)

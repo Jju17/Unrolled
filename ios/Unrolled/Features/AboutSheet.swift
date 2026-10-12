@@ -5,14 +5,14 @@
 
 import SwiftUI
 
-/// Presented via `.sheet(isPresented:)` — shows the app icon, version
+/// Presented via `.sheet(isPresented:)`: shows the app icon, version
 /// and build, with a system "Close" button.
 struct AboutSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
 
     // Served by Firebase Hosting (see web/src/pages/Privacy.tsx +
-    // Support.tsx). Must be reachable — App Store reviewers tap these.
+    // Support.tsx). Must be reachable: App Store reviewers tap these.
     // Optional + conditional render so a typo in either string can't
     // ship a guaranteed crash on About-sheet open.
     private let privacyPolicyURL = URL(string: "https://unrolled-e4775.web.app/privacy")
@@ -20,12 +20,12 @@ struct AboutSheet: View {
 
     // Version + build are read from the bundle so they can't drift from
     // what's actually shipping. Hardcoded strings drifted by 4 builds
-    // during development — bad look for a reviewer scanning for care.
+    // during development: bad look for a reviewer scanning for care.
     private var versionString: String {
-        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ","
     }
     private var buildString: String {
-        Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "—"
+        Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ","
     }
 
     var body: some View {
