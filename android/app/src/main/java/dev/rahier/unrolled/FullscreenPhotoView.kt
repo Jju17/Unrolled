@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,7 +39,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
+import androidx.core.net.toUri
+import android.widget.MediaController
+import android.widget.VideoView
 import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
 import java.text.DateFormat
@@ -67,7 +75,7 @@ internal fun FullscreenPhotoView(
         else emptyList()
     }
     if (visiblePhotos.isEmpty()) {
-        // Nothing left to show — close immediately.
+        // Nothing left to show: close immediately.
         LaunchedEffect(Unit) { onClose() }
         return
     }
@@ -91,24 +99,29 @@ internal fun FullscreenPhotoView(
                 modifier = Modifier.fillMaxSize()
             ) { page ->
                 val photo = visiblePhotos[page]
-                AsyncImage(
-                    model = photo.uri,
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .zoomableDismissable(
-                            onDismiss = onClose,
-                            onDismissProgress = {},
-                            maxScale = 4f
-                        )
-                )
+                if (photo.isVideo) {
+                    VideoPage(uri = photo.uri, active = pagerState.currentPage == page)
+                } else {
+                    AsyncImage(
+                        model = photo.uri,
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .zoomableDismissable(
+                                onDismiss = onClose,
+                                onDismissProgress = {},
+                                maxScale = 4f
+                            )
+                    )
+                }
             }
 
             Row(
                 Modifier
                     .align(Alignment.TopCenter)
                     .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.statusBars)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -127,18 +140,25 @@ internal fun FullscreenPhotoView(
                 Box(Modifier.weight(1f))
                 Box(
                     Modifier
-                        .size(34.dp)
+                        .size(48.dp)
                         .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.5f))
                         .clickable(onClick = onClose),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(R.string.fullscreen_close_a11y),
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                    )
+                    Box(
+                        Modifier
+                            .size(34.dp)
+                            .clip(CircleShape)
+                            .background(Color.Black.copy(alpha = 0.5f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(R.string.fullscreen_close_a11y),
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
             }
 
@@ -146,6 +166,7 @@ internal fun FullscreenPhotoView(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.navigationBars)
                     .padding(horizontal = 16.dp, vertical = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -177,6 +198,28 @@ internal fun FullscreenPhotoView(
 }
 
 @Composable
+private fun VideoPage(uri: String, active: Boolean) {
+    AndroidView(
+        factory = { context ->
+            VideoView(context).apply {
+                setMediaController(MediaController(context).also { it.setAnchorView(this) })
+                setVideoURI(uri.toUri())
+                setOnPreparedListener { player -> player.isLooping = true }
+            }
+        },
+        update = { view ->
+            if (active) {
+                if (!view.isPlaying) view.start()
+            } else if (view.isPlaying) {
+                view.pause()
+            }
+        },
+        onRelease = { view -> view.stopPlayback() },
+        modifier = Modifier.fillMaxSize()
+    )
+}
+
+@Composable
 private fun MetadataStrip(photo: PhotoAsset, settings: UserSettings) {
     val describer = LocalLocationDescriber.current
     var placeName by remember(photo.id) { mutableStateOf<String?>(null) }
@@ -187,7 +230,7 @@ private fun MetadataStrip(photo: PhotoAsset, settings: UserSettings) {
         }
     }
     val date = photo.creationDate?.let {
-        DateFormat.getDateInstance(DateFormat.MEDIUM).format(it)
+        DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(it)
     }
     if (date == null && (placeName == null || !settings.showLocation)) return
     Column(

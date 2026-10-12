@@ -8,7 +8,7 @@ import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -29,7 +29,7 @@ fun Modifier.pinchable(
     minScale: Float = 1f,
     maxScale: Float = 3f
 ): Modifier = composed {
-    var targetScale by remember { mutableStateOf(1f) }
+    var targetScale by remember { mutableFloatStateOf(1f) }
     val animatedScale by animateFloatAsState(
         targetValue = targetScale,
         animationSpec = spring(
@@ -65,7 +65,7 @@ fun Modifier.pinchable(
                         }
                     }
                 } while (event.changes.any { it.pressed })
-                // All fingers lifted — snap back to 1f.
+                // All fingers lifted: snap back to 1f.
                 targetScale = 1f
             }
         }

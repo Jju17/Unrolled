@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Photo library read permission.
-         - API 33+  : READ_MEDIA_IMAGES for full library
-         - API 34+  : ALSO declare READ_MEDIA_VISUAL_USER_SELECTED so the
-                     system shows the partial-access picker (required by
-                     Google Play's Photo & Video Permissions policy when
-                     keeping full-library access).
-         - API ≤32 : falls back to READ_EXTERNAL_STORAGE. -->
+    <!-- API 33+: READ_MEDIA_IMAGES + READ_MEDIA_VIDEO; API 34+ also
+         READ_MEDIA_VISUAL_USER_SELECTED for the partial-access picker
+         required by Google Play's Photo & Video Permissions policy;
+         API 32 and below: READ_EXTERNAL_STORAGE. -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
-    <!-- Reading EXIF GPS from photos requires the dedicated runtime
-         permission on API 29+ (the legacy MediaStore lat/lng columns
-         are redacted). We request it alongside READ_MEDIA_IMAGES so
-         the user can opt in when first granting library access. -->
+    <!-- EXIF GPS on API 29+ needs this runtime permission; gated by the
+         "Show location" setting. -->
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
 
+    <!-- Optional daily reminder: local notification scheduled with
+         AlarmManager, re-armed after a reboot. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
+        android:name=".UnrolledApp"
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -38,6 +40,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".ReminderReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

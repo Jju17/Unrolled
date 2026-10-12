@@ -8,6 +8,14 @@ import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,10 +70,12 @@ internal fun CardStack(
     // Light haptic on every commit. `activeIndex` going up is the
     // authoritative signal (covers drag gesture + action buttons).
     val haptic = LocalHapticFeedback.current
+    var previousIndex by remember { mutableIntStateOf(state.activeIndex) }
     LaunchedEffect(state.activeIndex) {
-        if (state.activeIndex > 0) {
-            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+        if (state.activeIndex > previousIndex) {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         }
+        previousIndex = state.activeIndex
     }
 
     // Render back-to-front: deepest stack card first, top card last.
@@ -81,6 +92,7 @@ internal fun CardStack(
                 state = state,
                 thresholdPx = thresholdPx,
                 showLocation = state.settings.showLocation,
+                similarCount = if (idx == state.activeIndex) state.topSimilarGroup.size else 0,
                 onIntent = onIntent
             )
         }
@@ -96,7 +108,8 @@ internal fun CardStack(
                 direction = state.exitingDirection,
                 startDragX = state.exitingStartDragX,
                 startDragY = state.exitingStartDragY,
-                exitDistancePx = exitDistancePx
+                exitDistancePx = exitDistancePx,
+                showLocation = state.settings.showLocation
             )
         }
     }
@@ -109,6 +122,7 @@ private fun StackCardSlot(
     state: SwipeState,
     thresholdPx: Float,
     showLocation: Boolean,
+    similarCount: Int,
     onIntent: (SwipeIntent) -> Unit
 ) {
     val density = LocalDensity.current
@@ -127,9 +141,9 @@ private fun StackCardSlot(
     val targetRotation = if (isTop) dragX / 15f else stackRotate
     val targetScale = if (isTop) 1f else stackScale
 
-    // Live drag tracks the finger 1:1 (`snap`). Every other transition —
-    // the stack rise on commit (depth 1 → 0, 2 → 1, …) and the
-    // spring-back from an under-threshold drag — uses the same spring.
+    // Live drag tracks the finger 1:1 (`snap`). Every other transition :
+    // the stack rise on commit (depth 1 to 0, 2 to 1, and so on) and the
+    // spring-back from an under-threshold drag: uses the same spring.
     val cardSpec = if (state.isDragging && isTop) {
         snap<Float>()
     } else {
@@ -150,7 +164,7 @@ private fun StackCardSlot(
     // Entrance animation: runs once per photo (enclosing `key(photo.id)`
     // gives each card a fresh scope). On app launch the whole stack
     // reveals itself; after a commit, only the newcomer at depth = 4
-    // re-runs this — cards already in the composition just slide up.
+    // re-runs this: cards already in the composition just slide up.
     val entrance = remember { Animatable(0f) }
     LaunchedEffect(Unit) {
         entrance.animateTo(
@@ -205,6 +219,55 @@ private fun StackCardSlot(
             isTop = isTop,
             placeName = placeName
         )
+        if (isTop && similarCount >= 2) {
+            SimilarBadge(
+                count = similarCount,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(10.dp),
+                onClick = { onIntent(SwipeIntent.SimilarBadgeTapped) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun SimilarBadge(count: Int, modifier: Modifier, onClick: () -> Unit) {
+    val label = pluralStringResource(R.plurals.similar_badge, count, count)
+    Box(
+        modifier
+            .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .clickable(role = Role.Button, onClick = onClick)
+            .semantics { contentDescription = label },
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.Black.copy(alpha = 0.6f))
+                .padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
+            Icon(Icons.Default.PhotoLibrary, contentDescription = null, tint = Color.White, modifier = Modifier.size(13.dp))
+            Text(label, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+@Composable
+internal fun VideoBadge(durationMs: Long?, modifier: Modifier) {
+    Row(
+        modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.Black.copy(alpha = 0.6f))
+            .padding(horizontal = 10.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        Icon(Icons.Default.PlayArrow, contentDescription = stringResource(R.string.video_badge_a11y), tint = Color.White, modifier = Modifier.size(14.dp))
+        if (durationMs != null) {
+            Text(formatDuration(durationMs), color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+        }
     }
 }
 
@@ -227,9 +290,10 @@ private fun ExitingCardOverlay(
     direction: Int,
     startDragX: Float,
     startDragY: Float,
-    exitDistancePx: Float
+    exitDistancePx: Float,
+    showLocation: Boolean
 ) {
-    // One Animatable from 0 → 1 drives offset/rotation/opacity. Always
+    // One Animatable from 0 to 1 drives offset/rotation/opacity. Always
     // plays its full arc because it's owned by this standalone overlay,
     // not by the stack that's already shifting under it.
     val progress = remember(photo.id) { Animatable(0f) }
@@ -247,7 +311,7 @@ private fun ExitingCardOverlay(
 
     val endX = startDragX + direction * (exitDistancePx + 300f)
 
-    // No alpha fade — pure translation. The card slides fully off
+    // No alpha fade: pure translation. The card slides fully off
     // screen and disappears at its off-screen position, so there's no
     // "fade in/out" artefact visible where the new top lives.
     Box(
@@ -267,7 +331,7 @@ private fun ExitingCardOverlay(
             keepOpacity = if (direction > 0) 1f else 0f,
             dropOpacity = if (direction < 0) 1f else 0f,
             isTop = true,
-            placeName = null
+            placeName = rememberPlaceName(photo, showLocation, isTop = true)
         )
     }
 }
@@ -337,6 +401,9 @@ private fun PhotoCardContent(
                     )
                 }
             }
+        }
+        if (photo.isVideo) {
+            VideoBadge(durationMs = photo.durationMs, modifier = Modifier.align(Alignment.TopEnd).padding(14.dp))
         }
         if (isTop) {
             Stamp(stringResource(R.string.stamp_keep), KeepColor, keepOpacity, -18f, Alignment.TopStart)

@@ -1,64 +1,70 @@
 package dev.rahier.unrolled
 
 /**
- * In-memory [PhotoRepository] for unit tests. Each load method is fully
- * controllable: default lists, per-album mappings, or throw on demand.
- *
- * Usage:
- * ```
- * val repo = FakePhotoRepository(
- *     initialHasPermission = true,
- *     albums = listOf(Album(...)),
- *     photos = listOf(PhotoAsset(...))
- * )
- * // or, to simulate a failure on the next load:
- * repo.photosError = IllegalStateException("cursor closed")
- * ```
+ * In-memory [PhotoRepository] for unit tests: default lists, per-pile
+ * mappings, hash maps and throw-on-demand.
  */
 class FakePhotoRepository(
     var initialHasPermission: Boolean = true,
     var initialHasPartialAccess: Boolean = false,
-    var albums: List<Album> = emptyList(),
+    var piles: List<Pile> = emptyList(),
     var photos: List<PhotoAsset> = emptyList(),
-    private val photosByAlbum: MutableMap<String, List<PhotoAsset>> = mutableMapOf()
+    var hashes: Map<Long, Long> = emptyMap(),
+    private val photosByPile: MutableMap<PileSelector, List<PhotoAsset>> = mutableMapOf()
 ) : PhotoRepository {
 
-    /** Counters — let tests assert the VM called the right thing. */
-    var loadAlbumsCalls: Int = 0
+    var loadPilesCalls: Int = 0
         private set
-    var loadPhotosCalls: MutableList<String?> = mutableListOf()
+    var loadPhotosCalls: MutableList<PileSelector> = mutableListOf()
+        private set
+    var loadPhotosIncludeVideos: MutableList<Boolean> = mutableListOf()
+        private set
+    var loadPhotosByIdsCalls: MutableList<List<Long>> = mutableListOf()
+        private set
+    var loadHashesCalls: MutableList<List<Long>> = mutableListOf()
         private set
 
-    /** Throw from the next `loadPhotos` / `loadAlbums` if set. Cleared after throwing. */
+    /** Throw from the next load if set. Cleared after throwing. */
     var photosError: Throwable? = null
-    var albumsError: Throwable? = null
+    var pilesError: Throwable? = null
 
     override fun hasReadPermission(): Boolean = initialHasPermission
     override fun hasPartialPhotoAccess(): Boolean = initialHasPartialAccess
 
-    override suspend fun loadAlbums(): List<Album> {
-        loadAlbumsCalls++
-        albumsError?.let { e ->
-            albumsError = null
+    override suspend fun loadPiles(nowMillis: Long, classifiedIds: Set<Long>, includeVideos: Boolean): List<Pile> {
+        loadPilesCalls++
+        pilesError?.let { e ->
+            pilesError = null
             throw e
         }
-        return albums
+        return piles
     }
 
-    override suspend fun loadPhotos(albumId: String?): List<PhotoAsset> {
-        loadPhotosCalls += albumId
+    override suspend fun loadPhotos(selector: PileSelector, includeVideos: Boolean): List<PhotoAsset> {
+        loadPhotosCalls += selector
+        loadPhotosIncludeVideos += includeVideos
         photosError?.let { e ->
             photosError = null
             throw e
         }
-        if (albumId != null && albumId != Album.ALL_PHOTOS_ID) {
-            photosByAlbum[albumId]?.let { return it }
-        }
-        return photos
+        photosByPile[selector]?.let { return it }
+        val base = if (includeVideos) photos else photos.filterNot { it.isVideo }
+        return base
     }
 
-    fun setPhotosForAlbum(albumId: String, items: List<PhotoAsset>) {
-        photosByAlbum[albumId] = items
+    fun setPhotosForPile(selector: PileSelector, items: List<PhotoAsset>) {
+        photosByPile[selector] = items
+    }
+
+    override suspend fun loadPhotosByIds(ids: List<Long>): List<PhotoAsset> {
+        loadPhotosByIdsCalls += ids
+        val known = (photos + photosByPile.values.flatten()).associateBy { it.id }
+        return ids.mapNotNull { known[it] }
+    }
+
+    override suspend fun loadSimilarityHashes(ids: List<Long>): Map<Long, Long> {
+        loadHashesCalls += ids
+        return ids.mapNotNull { id -> hashes[id]?.let { id to it } }.toMap()
     }
 
     override suspend fun loadLocation(photoId: Long): GeoPoint? = null

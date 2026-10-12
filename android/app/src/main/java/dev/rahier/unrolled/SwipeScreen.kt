@@ -1,7 +1,9 @@
 package dev.rahier.unrolled
 
+import android.Manifest
 import android.app.Activity
-import android.content.ContentUris
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -20,6 +22,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.runtime.remember
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
+import androidx.activity.compose.BackHandler
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -39,7 +57,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
- * Top-level stateful entry — owns the ActivityResultLauncher for the
+ * Top-level stateful entry: owns the ActivityResultLauncher for the
  * permission prompt, the lifecycle observer that re-checks permission
  * on resume, and the Activity-scoped side-effect for "view in Photos".
  *
@@ -53,19 +71,15 @@ fun SwipeScreen(viewModel: SwipeViewModel) {
     val context = LocalContext.current
     val activity = context.findActivity()
 
-    // Multi-permission contract — on API 34+ both READ_MEDIA_IMAGES AND
+    // Multi-permission contract: on API 34+ both READ_MEDIA_IMAGES AND
     // READ_MEDIA_VISUAL_USER_SELECTED are requested at once, and the system
     // returns a map. Any `true` entry means the user granted SOME scope
     // (full library or selected-only); either is enough for the repo.
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { grants ->
-        val anyGranted = grants.values.any { it }
+    ) { _ ->
         val status = when {
-            anyGranted -> PermissionStatus.Granted
-            // After a denial, if the system says it won't show the rationale
-            // either, the user picked "Don't ask again" / has permanently
-            // denied. The "Open Settings" fallback becomes the only path.
+            viewModel.hasReadPermission() -> PermissionStatus.Granted
             activity != null &&
                 !ActivityCompat.shouldShowRequestPermissionRationale(activity, ReadPermission) ->
                     PermissionStatus.PermanentlyDenied
@@ -74,7 +88,7 @@ fun SwipeScreen(viewModel: SwipeViewModel) {
         viewModel.onIntent(SwipeIntent.PermissionResult(status))
     }
 
-    // Re-check permission every time we resume — covers the "user went
+    // Re-check permission every time we resume: covers the "user went
     // to Settings, granted, came back" flow. The initial composition
     // also hits ON_RESUME so no separate onAppear LaunchedEffect needed.
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -88,65 +102,59 @@ fun SwipeScreen(viewModel: SwipeViewModel) {
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    // Trash launcher: when the user confirms our in-app alert, the VM
-    // sets `trashPendingIDs`; this effect fires the system PendingIntent
-    // and routes the RESULT_OK / RESULT_CANCELED back to the VM.
-    val cancelledMessage = stringResource(R.string.trash_error_cancelled)
     val oldAndroidMessage = stringResource(R.string.trash_error_old_android)
     val genericMessage = stringResource(R.string.trash_error_generic)
     val trashLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
-        val ok = result.resultCode == Activity.RESULT_OK
         viewModel.onIntent(
-            SwipeIntent.TrashResult(
-                success = ok,
-                message = if (ok) null else cancelledMessage
-            )
+            SwipeIntent.TrashResult(success = result.resultCode == Activity.RESULT_OK)
         )
     }
-    LaunchedEffect(state.trashPendingIDs) {
-        val ids = state.trashPendingIDs ?: return@LaunchedEffect
-        // API 30+ has `createTrashRequest` (moves to Recently Deleted).
-        // Below 30 the contract doesn't exist — fall back to a plain
-        // failure so the banner surfaces the limitation.
+    LaunchedEffect(state.trashPendingUris) {
+        val uris = state.trashPendingUris ?: return@LaunchedEffect
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             viewModel.onIntent(SwipeIntent.TrashResult(
                 success = false,
                 message = oldAndroidMessage
             ))
+            viewModel.onIntent(SwipeIntent.TrashPendingConsumed)
             return@LaunchedEffect
         }
-        val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-        } else {
-            @Suppress("DEPRECATION")
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        }
-        val uris = ids.map { ContentUris.withAppendedId(collection, it) }
         try {
             val pending = MediaStore.createTrashRequest(
-                context.contentResolver, uris, true
+                context.contentResolver, uris.map { it.toUri() }, true
             )
             trashLauncher.launch(IntentSenderRequest.Builder(pending.intentSender).build())
         } catch (e: Exception) {
-            viewModel.onIntent(SwipeIntent.TrashResult(
-                success = false,
-                message = e.message ?: genericMessage
-            ))
+            viewModel.onIntent(SwipeIntent.TrashResult(success = false, message = genericMessage))
         } finally {
-            // Mark the pending IDs as consumed regardless of outcome so
-            // this effect doesn't re-fire on the next recomposition.
             viewModel.onIntent(SwipeIntent.TrashPendingConsumed)
         }
+    }
+
+    val notificationLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) viewModel.onIntent(SwipeIntent.SettingsReminderToggled(true))
     }
 
     SwipeScreenContent(
         state = state,
         onIntent = viewModel::onIntent,
+        onReminderToggled = { enabled ->
+            val needsPrompt = enabled && Build.VERSION.SDK_INT >= 33 &&
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
+                PackageManager.PERMISSION_GRANTED
+            if (needsPrompt) {
+                notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                viewModel.onIntent(SwipeIntent.SettingsReminderToggled(enabled))
+            }
+        },
         onRequestPermission = {
             when (state.permissionStatus) {
-                PermissionStatus.PermanentlyDenied, PermissionStatus.Denied -> {
+                PermissionStatus.PermanentlyDenied -> {
                     val intent = Intent(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                         Uri.fromParts("package", context.packageName, null)
@@ -159,7 +167,7 @@ fun SwipeScreen(viewModel: SwipeViewModel) {
         onViewInPhotos = { photoUri ->
             // Opens the current photo in a system gallery. Resolving the
             // exact MIME via ContentResolver gives Google Photos the type
-            // it expects (e.g. image/jpeg) — going through "image/*" makes
+            // it expects (e.g. image/jpeg): going through "image/*" makes
             // some viewers fall back to "show all images in this folder"
             // which is what the user reported as "doesn't deep-link".
             val uri = photoUri.toUri()
@@ -170,7 +178,7 @@ fun SwipeScreen(viewModel: SwipeViewModel) {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
             // Always show the chooser so the user can pick Google Photos /
-            // their preferred gallery — that's the "deep-link to this
+            // their preferred gallery: that's the "deep-link to this
             // exact photo" path the friend was missing on his test build.
             val chooser = Intent.createChooser(view, null).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -184,6 +192,7 @@ fun SwipeScreen(viewModel: SwipeViewModel) {
 fun SwipeScreenContent(
     state: SwipeState,
     onIntent: (SwipeIntent) -> Unit,
+    onReminderToggled: (Boolean) -> Unit,
     onRequestPermission: () -> Unit,
     onViewInPhotos: (String) -> Unit,
     darkTheme: Boolean = isSystemInDarkTheme()
@@ -227,21 +236,21 @@ fun SwipeScreenContent(
                         textSec = textSec,
                         onRequest = onRequestPermission
                     )
-                    state.loadError != null -> LoadErrorState(
-                        message = state.loadError,
+                    state.loadFailed -> LoadErrorState(
                         textPrim = textPrim,
                         textSec = textSec,
                         onRetry = { onIntent(SwipeIntent.RetryLoadTapped) }
                     )
                     state.isLoading -> CircularProgressIndicator(color = textPrim)
-                    state.photos.isEmpty() -> EmptyState(
+                    state.isEmptyPile -> EmptyState(
                         textPrim = textPrim,
                         textSec = textSec,
                         hasPartialAccess = state.hasPartialPhotoAccess,
                         onChangeSelection = onRequestPermission
                     )
-                    state.done -> DoneView(
+                    state.done -> SessionSummary(
                         state = state,
+                        darkTheme = darkTheme,
                         textPrim = textPrim,
                         textSec = textSec,
                         border = border,
@@ -256,7 +265,7 @@ fun SwipeScreenContent(
                 }
             }
 
-            if (state.permissionStatus.grantsRead && state.loadError == null && !state.done && state.photos.isNotEmpty()) {
+            if (state.permissionStatus.grantsRead && !state.loadFailed && !state.isLoading && !state.done && state.photos.isNotEmpty()) {
                 ActionBar(
                     bgPage = bgPage,
                     surface = surface,
@@ -274,12 +283,12 @@ fun SwipeScreenContent(
 
         // Overlays
         AnimatedVisibility(state.pickerOpen, enter = fadeIn(), exit = fadeOut()) {
-            AlbumPickerSheet(
-                albums = state.albums,
-                currentId = state.currentAlbum?.id.orEmpty(),
+            PilePickerSheet(
+                piles = state.piles,
+                currentId = state.selectedPile.id,
                 darkTheme = darkTheme,
-                onPick = { onIntent(SwipeIntent.AlbumPicked(it)) },
-                onClose = { onIntent(SwipeIntent.AlbumPickerDismissed) }
+                onPick = { onIntent(SwipeIntent.PilePicked(it)) },
+                onClose = { onIntent(SwipeIntent.PilePickerDismissed) }
             )
         }
 
@@ -302,8 +311,32 @@ fun SwipeScreenContent(
         if (state.settingsOpen) {
             SettingsBottomSheet(
                 settings = state.settings,
-                onShowLocationToggled = { onIntent(SwipeIntent.SettingsShowLocationToggled(it)) },
+                onIntent = onIntent,
+                onReminderToggled = onReminderToggled,
                 onClose = { onIntent(SwipeIntent.SettingsDismissed) }
+            )
+        }
+
+        AnimatedVisibility(state.similarSheetOpen, enter = fadeIn(), exit = fadeOut()) {
+            SimilarPhotosSheet(
+                group = state.topSimilarGroup,
+                darkTheme = darkTheme,
+                onResolve = { keptIds, deletedIds ->
+                    onIntent(SwipeIntent.SimilarGroupResolved(keptIds, deletedIds))
+                },
+                onClose = { onIntent(SwipeIntent.SimilarSheetDismissed) }
+            )
+        }
+
+        AnimatedVisibility(state.statsOpen, enter = fadeIn(), exit = fadeOut()) {
+            StatsSheet(state = state, darkTheme = darkTheme, onIntent = onIntent)
+        }
+
+        state.milestoneReached?.let { milestone ->
+            MilestoneOverlay(
+                milestone = milestone,
+                darkTheme = darkTheme,
+                onDismiss = { onIntent(SwipeIntent.MilestoneDismissed) }
             )
         }
 
@@ -314,5 +347,70 @@ fun SwipeScreenContent(
                 onIntent = onIntent
             )
         }
+    }
+}
+
+@Composable
+private fun MilestoneOverlay(milestone: Milestone, darkTheme: Boolean, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val surface = if (darkTheme) androidx.compose.ui.graphics.Color(0xFF1A1A20) else androidx.compose.ui.graphics.Color.White
+    val textPrim = if (darkTheme) androidx.compose.ui.graphics.Color.White else androidx.compose.ui.graphics.Color(0xFF1A1A1A)
+    val textSec = (if (darkTheme) androidx.compose.ui.graphics.Color.White else androidx.compose.ui.graphics.Color.Black).copy(alpha = 0.55f)
+    val label = milestoneLabel(milestone)
+    val overlayTitle = stringResource(R.string.milestone_overlay_title)
+    val shareTagline = stringResource(R.string.share_card_tagline)
+    val haptic = LocalHapticFeedback.current
+    LaunchedEffect(milestone) { haptic.performHapticFeedback(HapticFeedbackType.Confirm) }
+
+    BackHandler(onBack = onDismiss)
+
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.45f))
+            .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = onDismiss)
+    ) {
+        Column(
+            Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 32.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(surface)
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                stringResource(R.string.milestone_overlay_title),
+                color = textSec,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 1.sp
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(label, color = textPrim, fontSize = 24.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+            Spacer(Modifier.height(20.dp))
+            PrimaryPillButton(
+                text = stringResource(R.string.milestone_share),
+                onClick = {
+                    shareCard(
+                        context,
+                        ShareCardContent(title = overlayTitle, headline = label, subtitle = shareTagline)
+                    )
+                }
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                stringResource(R.string.milestone_dismiss),
+                color = textSec,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(24.dp))
+                    .clickable(role = Role.Button, onClick = onDismiss)
+                    .minimumInteractiveComponentSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
+        Confetti()
     }
 }

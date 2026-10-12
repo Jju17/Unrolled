@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name" translatable="false">Unrolled</string>
 
     <!-- Header -->
-    <string name="header_album_label">ALBUM</string>
-    <string name="header_album_fallback">Photos</string>
     <string name="header_about_menu_item">About Unrolled</string>
-    <string name="header_stats_pill_a11y" tools:ignore="PluralsCandidate">%1$d kept, %2$d deleted. </string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="one">%d kept</item>
+        <item quantity="other">%d kept</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="one">%d deleted</item>
+        <item quantity="other">%d deleted</item>
+    </plurals>
     <string name="header_stats_pill_a11y_open_hint">Opens the trash list.</string>
-    <string name="header_stats_pill_a11y_empty_hint">No photos to delete yet.</string>
+    <string name="header_shuffle_a11y">Shuffle photos</string>
+    <string name="header_more_a11y">More options</string>
 
     <!-- Action bar -->
     <string name="action_delete_a11y">Delete this photo</string>
@@ -17,7 +23,7 @@
 
     <!-- Permission gate -->
     <string name="permission_gate_title">Photo library access</string>
-    <string name="permission_gate_body">Unrolled needs to read your full photo library so you can browse it card by card. Nothing leaves your device — no network, no account. You can also pick just a few photos and Unrolled will only show those.</string>
+    <string name="permission_gate_body">Unrolled needs to read your full photo library so you can browse it card by card. Nothing leaves your device: no network, no account. If you turn on place names in Settings, photo coordinates are sent to the system geocoding service to get a city name. You can also pick just a few photos and Unrolled will only show those.</string>
     <string name="permission_gate_allow">Allow access</string>
     <string name="permission_gate_open_settings">Open settings</string>
 
@@ -28,25 +34,10 @@
     <string name="empty_partial_body">You only granted Unrolled access to a selection of photos. Pick more to continue.</string>
     <string name="empty_partial_change">Change selection</string>
     <string name="load_error_title">Couldn\'t load your photos</string>
+    <string name="load_error_body">Something went wrong while reading your library.</string>
     <string name="load_error_retry">Retry</string>
-    <string name="done_title">Album finished</string>
-    <plurals name="done_subtitle_kept">
-        <item quantity="one">%d kept</item>
-        <item quantity="other">%d kept</item>
-    </plurals>
-    <plurals name="done_subtitle_deleted">
-        <item quantity="one">%d deleted</item>
-        <item quantity="other">%d deleted</item>
-    </plurals>
-    <string name="done_subtitle_separator" translatable="false"> · </string>
-    <string name="done_view_all">View all my photos</string>
-    <string name="done_change_album">Change album</string>
-    <string name="done_start_over">Start over</string>
 
     <!-- Album picker -->
-    <string name="album_picker_title">Choose an album</string>
-    <string name="album_picker_cancel">Cancel</string>
-    <string name="album_count_photos">%s photos</string>
 
     <!-- Settings sheet -->
     <string name="settings_title">Settings</string>
@@ -58,6 +49,8 @@
     <string name="about_version">Version</string>
     <string name="about_build">Build</string>
     <string name="about_close">Close</string>
+    <string name="about_privacy_policy">Privacy Policy</string>
+    <string name="about_support">Support</string>
 
     <!-- Deleted photos sheet -->
     <string name="deleted_title">Deleted photos</string>
@@ -75,7 +68,6 @@
     <string name="deleted_reset_cancel">Cancel</string>
 
     <!-- Trash error messages -->
-    <string name="trash_error_cancelled">Deletion cancelled.</string>
     <string name="trash_error_old_android">Requires Android 11 or newer.</string>
     <string name="trash_error_generic">Couldn\'t trigger the system trash.</string>
 
@@ -85,4 +77,128 @@
 
     <!-- Fullscreen photo viewer -->
     <string name="fullscreen_close_a11y">Close</string>
+    <!-- Piles -->
+    <string name="header_pile_label">PILE</string>
+    <string name="header_open_picker_a11y">Open pile picker</string>
+    <plurals name="header_remaining">
+        <item quantity="one">%d left</item>
+        <item quantity="other">%d left</item>
+    </plurals>
+    <string name="header_freed">%s freed</string>
+    <string name="header_subtitle_separator" translatable="false"> · </string>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="one">Daily goal: %1$d of %2$d photo. Opens your stats.</item>
+        <item quantity="other">Daily goal: %1$d of %2$d photos. Opens your stats.</item>
+    </plurals>
+    <string name="pile_picker_title">Choose a pile</string>
+    <string name="pile_picker_cancel">Cancel</string>
+    <string name="pile_section_sessions">Sessions</string>
+    <string name="pile_section_months">Months</string>
+    <string name="pile_section_albums">Albums</string>
+    <string name="pile_all">All photos</string>
+    <string name="pile_on_this_day">On this day</string>
+    <string name="pile_one_year_ago">A year ago</string>
+    <string name="pile_screenshots">Screenshots</string>
+    <string name="pile_videos">Videos</string>
+    <string name="pile_count_summary">%1$s photos, %2$s left</string>
+    <string name="pile_done">Done</string>
+    <string name="pile_selected_a11y">Current pile</string>
+    <string name="album_unknown">Unknown</string>
+
+    <!-- Session summary -->
+    <string name="done_title">Pile finished</string>
+    <string name="done_nothing_left_title">Nothing left here</string>
+    <string name="done_nothing_left_body">Every photo of this pile is already sorted.</string>
+    <string name="done_view_all">View all my photos</string>
+    <string name="done_change_pile">Change pile</string>
+    <string name="done_start_over">Start over</string>
+    <string name="summary_reviewed">reviewed</string>
+    <string name="summary_kept">kept</string>
+    <string name="summary_deleted">deleted</string>
+    <string name="summary_to_free">to free</string>
+    <plurals name="summary_pace">
+        <item quantity="one">%1$s at %2$d photo/min</item>
+        <item quantity="other">%1$s at %2$d photos/min</item>
+    </plurals>
+
+    <!-- Goals and stats -->
+    <string name="goal_reached">Daily goal reached</string>
+    <string name="goal_reached_with_streak">Daily goal reached, %d-day streak</string>
+    <string name="stats_title">Your stats</string>
+    <string name="stats_share_a11y">Share your stats</string>
+    <string name="stats_freed_label">freed so far</string>
+    <string name="stats_reviewed">photos reviewed</string>
+    <string name="stats_deleted">photos deleted</string>
+    <plurals name="stats_streak_days">
+        <item quantity="one">%d-day streak</item>
+        <item quantity="other">%d-day streak</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="one">Longest: %d day</item>
+        <item quantity="other">Longest: %d days</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="one">Today: %1$d of %2$d photo</item>
+        <item quantity="other">Today: %1$d of %2$d photos</item>
+    </plurals>
+    <string name="stats_milestones">MILESTONES</string>
+    <string name="stats_milestone_reached_a11y">Reached</string>
+    <string name="stats_reset">Reset stats</string>
+    <string name="stats_reset_title">Reset your stats?</string>
+    <string name="stats_reset_body">Clears the storage counter, the streak and the milestones. Your photos and decisions are untouched.</string>
+    <string name="stats_reset_confirm">Reset</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="one">%d photo sorted</item>
+        <item quantity="other">%d photos sorted</item>
+    </plurals>
+    <string name="milestone_freed">%s freed</string>
+    <string name="milestone_streak">%d-day streak</string>
+    <string name="milestone_overlay_title">MILESTONE</string>
+    <string name="milestone_share">Share</string>
+    <string name="milestone_dismiss">Keep going</string>
+    <string name="share_card_tagline">Sorted with Unrolled</string>
+    <string name="share_card_stats_title">Space freed with Unrolled</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="one">%1$d photo reviewed, %2$d deleted</item>
+        <item quantity="other">%1$d photos reviewed, %2$d deleted</item>
+    </plurals>
+
+    <!-- Similar photos -->
+    <plurals name="similar_badge">
+        <item quantity="one">%d similar</item>
+        <item quantity="other">%d similar</item>
+    </plurals>
+    <string name="similar_title">Similar photos</string>
+    <string name="similar_hint">Tap the ones to keep.</string>
+    <string name="similar_keep_a11y">Kept, tap to delete</string>
+    <string name="similar_delete_a11y">Deleted, tap to keep</string>
+    <string name="similar_confirm">Keep %1$d, delete %2$d</string>
+    <string name="similar_cancel">Cancel</string>
+
+    <!-- Videos -->
+    <string name="video_badge_a11y">Video</string>
+
+    <!-- Settings -->
+    <string name="settings_section_deck">DECK</string>
+    <string name="settings_section_goals">GOALS AND STREAKS</string>
+    <string name="settings_section_display">PHOTO DISPLAY</string>
+    <string name="settings_include_videos">Include videos</string>
+    <string name="settings_detect_similar">Detect similar photos</string>
+    <string name="settings_detect_similar_hint">Groups near-identical shots so you keep the best one.</string>
+    <string name="settings_gamification">Goals and streaks</string>
+    <string name="settings_gamification_hint">Daily goal ring, streak and milestones. Counters stay on this device.</string>
+    <string name="settings_daily_goal">Daily goal (photos)</string>
+    <string name="settings_reminder">Daily reminder</string>
+    <string name="settings_reminder_hint">A local notification, nothing leaves your phone.</string>
+    <string name="settings_reminder_hour">Reminder time</string>
+    <string name="settings_show_location_hint">Sends the photo coordinates to the system geocoder to print a city name.</string>
+    <string name="reminder_channel_name">Reminders</string>
+    <string name="reminder_title">Your gallery is waiting</string>
+    <plurals name="reminder_body">
+        <item quantity="one">%d photo today?</item>
+        <item quantity="other">%d photos today?</item>
+    </plurals>
+
+    <!-- Trash rows -->
+    <string name="deleted_row_status_size">Ready to delete, %s</string>
 </resources>

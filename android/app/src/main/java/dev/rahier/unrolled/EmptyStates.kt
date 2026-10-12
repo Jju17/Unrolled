@@ -1,28 +1,24 @@
 package dev.rahier.unrolled
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.Icon
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -78,7 +74,7 @@ internal fun EmptyState(
     ) {
         if (hasPartialAccess) {
             // User is on Android 14+ and granted only READ_MEDIA_VISUAL_USER_SELECTED
-            // — either they picked zero photos, or they picked a few that
+            //: either they picked zero photos, or they picked a few that
             // all got swiped. Offer a re-pick affordance so the session
             // isn't a dead end.
             Text("📷", fontSize = 42.sp)
@@ -112,7 +108,6 @@ internal fun EmptyState(
 
 @Composable
 internal fun LoadErrorState(
-    message: String,
     textPrim: Color,
     textSec: Color,
     onRetry: () -> Unit
@@ -132,7 +127,7 @@ internal fun LoadErrorState(
         )
         Spacer(Modifier.height(6.dp))
         Text(
-            message,
+            stringResource(R.string.load_error_body),
             color = textSec,
             fontSize = 13.sp,
             textAlign = TextAlign.Center
@@ -143,82 +138,13 @@ internal fun LoadErrorState(
 }
 
 @Composable
-internal fun DoneView(
-    state: SwipeState,
-    textPrim: Color, textSec: Color, border: Color,
-    onIntent: (SwipeIntent) -> Unit
-) {
-    // Hide "View all photos" if we're already on the synthetic all-photos
-    // album so the CTA never fires a no-op album switch.
-    val isOnAllPhotos = state.currentAlbum?.id == state.albums.firstOrNull()?.id
-
-    Box(
-        Modifier
-            .fillMaxSize()
-            .clip(RoundedCornerShape(24.dp))
-            .border(2.dp, border, RoundedCornerShape(24.dp))
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                imageVector = Icons.Default.CheckCircle,
-                contentDescription = null,
-                tint = KeepColor,
-                modifier = Modifier.size(44.dp)
-            )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                stringResource(R.string.done_title),
-                color = textPrim,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = (-0.8).sp
-            )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                pluralStringResource(R.plurals.done_subtitle_kept, state.kept, state.kept) +
-                    stringResource(R.string.done_subtitle_separator) +
-                    pluralStringResource(R.plurals.done_subtitle_deleted, state.deleted, state.deleted),
-                color = textSec,
-                fontSize = 14.sp
-            )
-            Spacer(Modifier.height(20.dp))
-
-            if (!isOnAllPhotos) {
-                PrimaryPillButton(
-                    text = stringResource(R.string.done_view_all),
-                    onClick = { onIntent(SwipeIntent.ViewAllPhotosTapped) }
-                )
-                Spacer(Modifier.height(10.dp))
-            }
-            SecondaryPillButton(
-                text = stringResource(R.string.done_change_album),
-                textColor = textPrim,
-                border = border,
-                onClick = { onIntent(SwipeIntent.AlbumTitleTapped) }
-            )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                stringResource(R.string.done_start_over),
-                color = textSec,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier
-                    .clickable { onIntent(SwipeIntent.ResetButtonTapped) }
-                    .padding(vertical = 6.dp, horizontal = 10.dp)
-            )
-        }
-    }
-}
-
-@Composable
 internal fun PrimaryPillButton(text: String, onClick: () -> Unit) {
     Box(
         Modifier
             .clip(CircleShape)
             .background(DropColor)
-            .clickable(onClick = onClick)
+            .clickable(role = Role.Button, onClick = onClick)
+            .minimumInteractiveComponentSize()
             .padding(horizontal = 22.dp, vertical = 12.dp)
     ) {
         Text(text, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
@@ -236,7 +162,8 @@ internal fun SecondaryPillButton(
         Modifier
             .clip(CircleShape)
             .border(1.dp, border, CircleShape)
-            .clickable(onClick = onClick)
+            .clickable(role = Role.Button, onClick = onClick)
+            .minimumInteractiveComponentSize()
             .padding(horizontal = 22.dp, vertical = 12.dp)
     ) {
         Text(text, color = textColor, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)

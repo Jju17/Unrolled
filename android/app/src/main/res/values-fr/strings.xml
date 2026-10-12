@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- app_name not overridden — same brand in both locales. -->
+    <!-- app_name not overridden: same brand in both locales. -->
 
     <!-- Header -->
-    <string name="header_album_label">ALBUM</string>
-    <string name="header_album_fallback">Photos</string>
     <string name="header_about_menu_item">À propos d\'Unrolled</string>
-    <string name="header_stats_pill_a11y">%1$d gardées, %2$d supprimées. </string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="one">%d gardée</item>
+        <item quantity="many">%d gardées</item>
+        <item quantity="other">%d gardées</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="one">%d supprimée</item>
+        <item quantity="many">%d supprimées</item>
+        <item quantity="other">%d supprimées</item>
+    </plurals>
     <string name="header_stats_pill_a11y_open_hint">Ouvre la liste des photos à supprimer.</string>
-    <string name="header_stats_pill_a11y_empty_hint">Aucune photo à supprimer pour l\'instant.</string>
+    <string name="header_shuffle_a11y">Mélanger les photos</string>
+    <string name="header_more_a11y">Plus d\'options</string>
 
     <!-- Action bar -->
     <string name="action_delete_a11y">Supprimer cette photo</string>
@@ -17,7 +25,7 @@
 
     <!-- Permission gate -->
     <string name="permission_gate_title">Accès à tes photos</string>
-    <string name="permission_gate_body">Unrolled a besoin de lire toute ta bibliothèque photo pour que tu puisses la parcourir carte par carte. Rien ne quitte ton appareil — aucun réseau, aucun compte. Tu peux aussi ne sélectionner que quelques photos, Unrolled ne te proposera alors que celles-là.</string>
+    <string name="permission_gate_body">Unrolled a besoin de lire toute ta bibliothèque photo pour que tu puisses la parcourir carte par carte. Rien ne quitte ton appareil : aucun réseau, aucun compte. Si tu actives les noms de lieux dans les réglages, les coordonnées des photos sont envoyées au service de géocodage du système pour obtenir un nom de ville. Tu peux aussi ne sélectionner que quelques photos, Unrolled ne te proposera alors que celles-là.</string>
     <string name="permission_gate_allow">Autoriser l\'accès</string>
     <string name="permission_gate_open_settings">Ouvrir les paramètres</string>
 
@@ -28,27 +36,10 @@
     <string name="empty_partial_body">Tu as autorisé Unrolled à ne voir qu\'une sélection de photos. Choisis-en d\'autres pour continuer.</string>
     <string name="empty_partial_change">Modifier la sélection</string>
     <string name="load_error_title">Impossible de charger tes photos</string>
+    <string name="load_error_body">Une erreur est survenue en lisant ta photothèque.</string>
     <string name="load_error_retry">Réessayer</string>
-    <string name="done_title">Album terminé</string>
-    <plurals name="done_subtitle_kept">
-        <item quantity="one">%d gardée</item>
-        <item quantity="many">%d gardées</item>
-        <item quantity="other">%d gardées</item>
-    </plurals>
-    <plurals name="done_subtitle_deleted">
-        <item quantity="one">%d supprimée</item>
-        <item quantity="many">%d supprimées</item>
-        <item quantity="other">%d supprimées</item>
-    </plurals>
-    <!-- done_subtitle_separator unchanged -->
-    <string name="done_view_all">Voir toutes mes photos</string>
-    <string name="done_change_album">Changer d\'album</string>
-    <string name="done_start_over">Tout refaire</string>
 
     <!-- Album picker -->
-    <string name="album_picker_title">Choisir un album</string>
-    <string name="album_picker_cancel">Annuler</string>
-    <string name="album_count_photos">%s photos</string>
 
     <!-- Settings sheet -->
     <string name="settings_title">Réglages</string>
@@ -60,6 +51,8 @@
     <string name="about_version">Version</string>
     <string name="about_build">Build</string>
     <string name="about_close">Fermer</string>
+    <string name="about_privacy_policy">Politique de confidentialité</string>
+    <string name="about_support">Support</string>
 
     <!-- Deleted photos sheet -->
     <string name="deleted_title">Photos supprimées</string>
@@ -77,7 +70,6 @@
     <string name="deleted_reset_cancel">Annuler</string>
 
     <!-- Trash error messages -->
-    <string name="trash_error_cancelled">Suppression annulée.</string>
     <string name="trash_error_old_android">Nécessite Android 11 ou plus récent.</string>
     <string name="trash_error_generic">Impossible de déclencher la corbeille.</string>
 
@@ -87,4 +79,137 @@
 
     <!-- Fullscreen photo viewer -->
     <string name="fullscreen_close_a11y">Fermer</string>
+    <!-- Piles -->
+    <string name="header_pile_label">PILE</string>
+    <string name="header_open_picker_a11y">Choisir une pile</string>
+    <plurals name="header_remaining">
+        <item quantity="one">%d restante</item>
+        <item quantity="many">%d restantes</item>
+        <item quantity="other">%d restantes</item>
+    </plurals>
+    <string name="header_freed">%s libérés</string>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="one">Objectif du jour : %1$d photo sur %2$d. Ouvre tes statistiques.</item>
+        <item quantity="many">Objectif du jour : %1$d photos sur %2$d. Ouvre tes statistiques.</item>
+        <item quantity="other">Objectif du jour : %1$d photos sur %2$d. Ouvre tes statistiques.</item>
+    </plurals>
+    <string name="pile_picker_title">Choisir une pile</string>
+    <string name="pile_picker_cancel">Annuler</string>
+    <string name="pile_section_sessions">Sessions</string>
+    <string name="pile_section_months">Mois</string>
+    <string name="pile_section_albums">Albums</string>
+    <string name="pile_all">Toutes les photos</string>
+    <string name="pile_on_this_day">Ce jour-là</string>
+    <string name="pile_one_year_ago">Il y a un an</string>
+    <string name="pile_screenshots">Captures d\'écran</string>
+    <string name="pile_videos">Vidéos</string>
+    <string name="pile_count_summary">%1$s photos, %2$s restantes</string>
+    <string name="pile_done">Terminée</string>
+    <string name="pile_selected_a11y">Pile en cours</string>
+    <string name="album_unknown">Sans nom</string>
+
+    <!-- Session summary -->
+    <string name="done_title">Pile terminée</string>
+    <string name="done_nothing_left_title">Plus rien ici</string>
+    <string name="done_nothing_left_body">Toutes les photos de cette pile sont déjà triées.</string>
+    <string name="done_view_all">Voir toutes mes photos</string>
+    <string name="done_change_pile">Changer de pile</string>
+    <string name="done_start_over">Tout refaire</string>
+    <string name="summary_reviewed">passées en revue</string>
+    <string name="summary_kept">gardées</string>
+    <string name="summary_deleted">supprimées</string>
+    <string name="summary_to_free">à libérer</string>
+    <plurals name="summary_pace">
+        <item quantity="one">%1$s à %2$d photo/min</item>
+        <item quantity="many">%1$s à %2$d photos/min</item>
+        <item quantity="other">%1$s à %2$d photos/min</item>
+    </plurals>
+
+    <!-- Goals and stats -->
+    <string name="goal_reached">Objectif du jour atteint</string>
+    <string name="goal_reached_with_streak">Objectif du jour atteint, série de %d jours</string>
+    <string name="stats_title">Tes statistiques</string>
+    <string name="stats_share_a11y">Partager tes statistiques</string>
+    <string name="stats_freed_label">libérés jusqu\'ici</string>
+    <string name="stats_reviewed">photos passées en revue</string>
+    <string name="stats_deleted">photos supprimées</string>
+    <plurals name="stats_streak_days">
+        <item quantity="one">Série de %d jour</item>
+        <item quantity="many">Série de %d jours</item>
+        <item quantity="other">Série de %d jours</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="one">Record : %d jour</item>
+        <item quantity="many">Record : %d jours</item>
+        <item quantity="other">Record : %d jours</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="one">Aujourd\'hui : %1$d photo sur %2$d</item>
+        <item quantity="many">Aujourd\'hui : %1$d photos sur %2$d</item>
+        <item quantity="other">Aujourd\'hui : %1$d photos sur %2$d</item>
+    </plurals>
+    <string name="stats_milestones">PALIERS</string>
+    <string name="stats_milestone_reached_a11y">Atteint</string>
+    <string name="stats_reset">Réinitialiser les statistiques</string>
+    <string name="stats_reset_title">Réinitialiser tes statistiques ?</string>
+    <string name="stats_reset_body">Remet à zéro le compteur d\'espace libéré, la série et les paliers. Tes photos et tes décisions ne sont pas touchées.</string>
+    <string name="stats_reset_confirm">Réinitialiser</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="one">%d photo triée</item>
+        <item quantity="many">%d photos triées</item>
+        <item quantity="other">%d photos triées</item>
+    </plurals>
+    <string name="milestone_freed">%s libérés</string>
+    <string name="milestone_streak">Série de %d jours</string>
+    <string name="milestone_overlay_title">PALIER</string>
+    <string name="milestone_share">Partager</string>
+    <string name="milestone_dismiss">Continuer</string>
+    <string name="share_card_tagline">Trié avec Unrolled</string>
+    <string name="share_card_stats_title">Espace libéré avec Unrolled</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="one">%1$d photo passée en revue, %2$d supprimées</item>
+        <item quantity="many">%1$d photos passées en revue, %2$d supprimées</item>
+        <item quantity="other">%1$d photos passées en revue, %2$d supprimées</item>
+    </plurals>
+
+    <!-- Similar photos -->
+    <plurals name="similar_badge">
+        <item quantity="one">%d similaire</item>
+        <item quantity="many">%d similaires</item>
+        <item quantity="other">%d similaires</item>
+    </plurals>
+    <string name="similar_title">Photos similaires</string>
+    <string name="similar_hint">Touche celles à garder.</string>
+    <string name="similar_keep_a11y">Gardée, toucher pour supprimer</string>
+    <string name="similar_delete_a11y">Supprimée, toucher pour garder</string>
+    <string name="similar_confirm">Garder %1$d, supprimer %2$d</string>
+    <string name="similar_cancel">Annuler</string>
+
+    <!-- Videos -->
+    <string name="video_badge_a11y">Vidéo</string>
+
+    <!-- Settings -->
+    <string name="settings_section_deck">PAQUET</string>
+    <string name="settings_section_goals">OBJECTIFS ET SÉRIES</string>
+    <string name="settings_section_display">AFFICHAGE</string>
+    <string name="settings_include_videos">Inclure les vidéos</string>
+    <string name="settings_detect_similar">Détecter les photos similaires</string>
+    <string name="settings_detect_similar_hint">Regroupe les clichés quasi identiques pour garder le meilleur.</string>
+    <string name="settings_gamification">Objectifs et séries</string>
+    <string name="settings_gamification_hint">Anneau d\'objectif quotidien, série et paliers. Les compteurs restent sur cet appareil.</string>
+    <string name="settings_daily_goal">Objectif quotidien (photos)</string>
+    <string name="settings_reminder">Rappel quotidien</string>
+    <string name="settings_reminder_hint">Une notification locale, rien ne quitte ton téléphone.</string>
+    <string name="settings_reminder_hour">Heure du rappel</string>
+    <string name="settings_show_location_hint">Envoie les coordonnées de la photo au géocodeur du système pour afficher un nom de ville.</string>
+    <string name="reminder_channel_name">Rappels</string>
+    <string name="reminder_title">Ta galerie t\'attend</string>
+    <plurals name="reminder_body">
+        <item quantity="one">%d photo aujourd\'hui ?</item>
+        <item quantity="many">%d photos aujourd\'hui ?</item>
+        <item quantity="other">%d photos aujourd\'hui ?</item>
+    </plurals>
+
+    <!-- Trash rows -->
+    <string name="deleted_row_status_size">Prête à supprimer, %s</string>
 </resources>

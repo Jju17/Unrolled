@@ -6,11 +6,8 @@ import androidx.core.content.edit
 
 /**
  * Persistent record of which photos the user has already classified.
- * Survives the process so a relaunch doesn't re-present photos the
- * user has already kept or staged for deletion. Emptying the trash
- * clears [deletedIDs] (those assets are gone from the system library);
- * only the explicit `Reset progress` button in the trash sheet wipes
- * [keptIDs] as well.
+ * Emptying the trash clears [deletedIDs]; `Reset progress` wipes both
+ * lists; `Start over` wipes the entries of the current album only.
  */
 data class SwipeProgress(
     val deletedIDs: List<Long> = emptyList(),
@@ -20,7 +17,6 @@ data class SwipeProgress(
 interface SwipeProgressRepository {
     fun load(): SwipeProgress
     fun save(progress: SwipeProgress)
-    fun clear()
 }
 
 class SharedPrefsSwipeProgressRepository(context: Context) : SwipeProgressRepository {
@@ -40,18 +36,11 @@ class SharedPrefsSwipeProgressRepository(context: Context) : SwipeProgressReposi
         }
     }
 
-    override fun clear() {
-        prefs.edit { clear() }
-    }
-
     companion object {
         private const val PREFS_NAME = "swipe_progress"
         private const val KEY_DELETED = "deleted_ids"
         private const val KEY_KEPT = "kept_ids"
 
-        // Plain comma-separated Long list. Avoids pulling in a JSON
-        // dependency just to persist two flat lists. Empty / null
-        // strings round-trip to an empty list.
         private fun List<Long>.encodeIDs(): String =
             joinToString(separator = ",")
 

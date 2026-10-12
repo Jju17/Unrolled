@@ -9,6 +9,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,6 +31,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,18 +71,11 @@ internal fun DeletedPhotosSheet(
     val border = (if (darkTheme) Color.White else Color.Black)
         .copy(alpha = if (darkTheme) 0.08f else 0.06f)
 
-    // Map IDs → PhotoAsset so we can render thumbnails + dates without
-    // carrying them in state (the VM only tracks IDs).
-    val photoByID = state.photos.associateBy { it.id }
-    val rows = state.deletedPhotoIDs.mapNotNull { photoByID[it] }
+    val rows = state.trashPhotos
 
-    // Local UI state — the VM doesn't care whether the confirmation
-    // dialog is on screen, only what happens when the user taps
-    // "Reset" inside it.
     var resetConfirmOpen by remember { mutableStateOf(false) }
     val hasAnyProgress = state.kept > 0 || state.deleted > 0
 
-    // System back should dismiss the sheet, not the whole Activity.
     BackHandler {
         onIntent(SwipeIntent.DeletedSheetDismissed)
     }
@@ -87,11 +86,11 @@ internal fun DeletedPhotosSheet(
             .background(bgPage)
     ) {
         Column(Modifier.fillMaxSize()) {
-            // Top bar
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 48.dp, bottom = 12.dp),
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -109,28 +108,36 @@ internal fun DeletedPhotosSheet(
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .clickable { resetConfirmOpen = true }
+                            .clickable(role = Role.Button) { resetConfirmOpen = true }
+                            .minimumInteractiveComponentSize()
                             .padding(horizontal = 10.dp, vertical = 6.dp)
                     )
                     Spacer(Modifier.size(8.dp))
                 }
                 Box(
                     Modifier
-                        .size(32.dp)
+                        .size(48.dp)
                         .clip(CircleShape)
-                        .background(
-                            if (darkTheme) Color.White.copy(alpha = 0.08f)
-                            else Color.Black.copy(alpha = 0.05f)
-                        )
-                        .clickable { onIntent(SwipeIntent.DeletedSheetDismissed) },
+                        .clickable(role = Role.Button) { onIntent(SwipeIntent.DeletedSheetDismissed) },
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = stringResource(R.string.deleted_close_a11y),
-                        tint = textPrim,
-                        modifier = Modifier.size(14.dp)
-                    )
+                    Box(
+                        Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (darkTheme) Color.White.copy(alpha = 0.08f)
+                                else Color.Black.copy(alpha = 0.05f)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = stringResource(R.string.deleted_close_a11y),
+                            tint = textPrim,
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
                 }
             }
 
@@ -223,7 +230,6 @@ internal fun DeletedPhotosSheet(
                     }
                 }
 
-                // Big red footer button.
                 TrashFooter(
                     count = rows.size,
                     inFlight = state.trashInFlight,
@@ -274,7 +280,11 @@ private fun DeletedRow(
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                stringResource(R.string.deleted_row_status),
+                if (photo.sizeBytes > 0) {
+                    stringResource(R.string.deleted_row_status_size, formatBytes(photo.sizeBytes))
+                } else {
+                    stringResource(R.string.deleted_row_status)
+                },
                 color = textSec,
                 fontSize = 12.sp
             )
@@ -283,7 +293,8 @@ private fun DeletedRow(
             Modifier
                 .clip(RoundedCornerShape(20.dp))
                 .background(KeepColor)
-                .clickable(onClick = onRestore)
+                .clickable(role = Role.Button, onClick = onRestore)
+                .minimumInteractiveComponentSize()
                 .padding(horizontal = 14.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -326,10 +337,11 @@ private fun TrashFooter(
         Row(
             Modifier
                 .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.navigationBars)
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .clip(RoundedCornerShape(28.dp))
                 .background(DropColor)
-                .clickable(enabled = !inFlight && count > 0, onClick = onClick)
+                .clickable(enabled = !inFlight && count > 0, role = Role.Button, onClick = onClick)
                 .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically

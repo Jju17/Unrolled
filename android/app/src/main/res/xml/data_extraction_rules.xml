@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Android 12+ (API 31+) replaces the legacy `allowBackup`/`fullBackupContent`
-  pair with these split rules. Both blocks are empty — Unrolled has no
+  pair with these split rules. Both blocks are empty: Unrolled has no
   app-private state that should survive a transfer/restore. Photo library
   access lives in the user's library (not our sandbox) and the swipe
   session is intentionally ephemeral, so exclude everything.

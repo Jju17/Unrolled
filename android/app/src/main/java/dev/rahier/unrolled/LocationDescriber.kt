@@ -21,7 +21,7 @@ import kotlin.coroutines.resume
  *   failure (no service, throttled, no result) and cache the absent
  *   value so recompositions don't retry.
  * - The cache lives for the lifetime of the singleton instance held
- *   by the Activity — restarting the app clears it, which is fine.
+ *   by the Activity: restarting the app clears it, which is fine.
  */
 class LocationDescriber(
     private val context: Context,
@@ -49,9 +49,15 @@ class LocationDescriber(
             runCatching {
                 if (Build.VERSION.SDK_INT >= 33) {
                     suspendCancellableCoroutine { cont ->
-                        geocoder.getFromLocation(lat, lng, 1) { addresses ->
-                            cont.resume(addresses.firstOrNull()?.let(::format))
-                        }
+                        geocoder.getFromLocation(lat, lng, 1, object : Geocoder.GeocodeListener {
+                            override fun onGeocode(addresses: MutableList<android.location.Address>) {
+                                if (cont.isActive) cont.resume(addresses.firstOrNull()?.let(::format))
+                            }
+
+                            override fun onError(errorMessage: String?) {
+                                if (cont.isActive) cont.resume(null)
+                            }
+                        })
                     }
                 } else {
                     @Suppress("DEPRECATION")
@@ -75,6 +81,6 @@ class LocationDescriber(
 /**
  * Composition-scoped accessor for the shared [LocationDescriber].
  * `null` when location resolution isn't available (e.g. previews,
- * unit-test composables) — callers must treat that as "no location".
+ * unit-test composables): callers must treat that as "no location".
  */
 val LocalLocationDescriber = staticCompositionLocalOf<LocationDescriber?> { null }

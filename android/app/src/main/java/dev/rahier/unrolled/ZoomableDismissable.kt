@@ -10,7 +10,7 @@ import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.input.pointer.pointerInput
+import kotlin.math.abs
 import kotlin.math.hypot
 
 /**
@@ -28,9 +29,10 @@ import kotlin.math.hypot
  *   user can aim at a detail while scaling in (see the transform math
  *   inside the gesture loop).
  * - **Pan during pinch**: two-finger midpoint drag moves the image.
- * - **Single-finger drag** (not pinched): pulls the photo and reports
- *   progress via [onDismissProgress]; past [dismissThresholdPx],
- *   triggers [onDismiss] on release.
+ * - **Single-finger vertical drag** (not pinched): pulls the photo and
+ *   reports progress via [onDismissProgress]; past [dismissThresholdPx],
+ *   triggers [onDismiss] on release. Horizontal drags are left to the
+ *   enclosing pager.
  * - **Release**: springs back to scale 1 and offset (0, 0).
  *
  * The view uses `transformOrigin = (0, 0)` so the zoom-around-centroid
@@ -44,9 +46,9 @@ fun Modifier.zoomableDismissable(
     maxScale: Float = 4f,
     dismissThresholdPx: Float = 300f
 ): Modifier = composed {
-    var scale by remember { mutableStateOf(1f) }
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offsetX by remember { mutableFloatStateOf(0f) }
+    var offsetY by remember { mutableFloatStateOf(0f) }
 
     val animatedScale by animateFloatAsState(
         targetValue = scale,
@@ -87,8 +89,11 @@ fun Modifier.zoomableDismissable(
             awaitEachGesture {
                 awaitFirstDown(requireUnconsumed = false)
                 var becamePinch = false
+                var passThrough = false
+                var verticalDrag = false
                 var singleDragX = 0f
                 var singleDragY = 0f
+                val slop = viewConfiguration.touchSlop
 
                 while (true) {
                     val event = awaitPointerEvent()
@@ -115,23 +120,28 @@ fun Modifier.zoomableDismissable(
                             scale = newScale
                             event.changes.forEach { it.consume() }
                         }
-                    } else if (pressedCount == 1 && !becamePinch) {
+                    } else if (pressedCount == 1 && !becamePinch && !passThrough) {
                         val change = event.changes.first()
                         val delta = change.positionChange()
                         singleDragX += delta.x
                         singleDragY += delta.y
-                        offsetX = singleDragX
+                        if (!verticalDrag) {
+                            if (hypot(singleDragX, singleDragY) < slop) continue
+                            if (abs(singleDragX) >= abs(singleDragY)) {
+                                passThrough = true
+                                continue
+                            }
+                            verticalDrag = true
+                        }
                         offsetY = singleDragY
                         onDismissProgress(
-                            (hypot(singleDragX, singleDragY) / dismissThresholdPx)
-                                .coerceIn(0f, 1f)
+                            (abs(singleDragY) / dismissThresholdPx).coerceIn(0f, 1f)
                         )
                         change.consume()
                     }
                 }
 
-                val singleDragDistance = hypot(singleDragX, singleDragY)
-                if (!becamePinch && singleDragDistance > dismissThresholdPx) {
+                if (verticalDrag && abs(singleDragY) > dismissThresholdPx) {
                     onDismiss()
                 }
                 // Spring back. The animateFloatAsState above handles the

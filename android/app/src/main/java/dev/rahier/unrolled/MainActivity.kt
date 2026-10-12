@@ -15,19 +15,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Repository wraps applicationContext — safe to let the VM hold
-        // the reference across config changes.
         val repository: PhotoRepository = MediaStorePhotoRepository(applicationContext)
         val settingsRepository: SettingsRepository = SharedPrefsSettingsRepository(applicationContext)
         val progressRepository: SwipeProgressRepository =
             SharedPrefsSwipeProgressRepository(applicationContext)
+        val statsRepository: StatsRepository = SharedPrefsStatsRepository(applicationContext)
+        val reminderScheduler: ReminderScheduler = AlarmReminderScheduler(applicationContext)
         val factory = SwipeViewModel.Factory(
             photoRepository = repository,
             settingsRepository = settingsRepository,
-            progressRepository = progressRepository
+            progressRepository = progressRepository,
+            statsRepository = statsRepository,
+            reminderScheduler = reminderScheduler
         )
-        // Bound to the application context so it survives config changes
-        // alongside the VM's repository reference.
         val locationDescriber = LocationDescriber(applicationContext, repository)
 
         setContent {
