@@ -1,6 +1,6 @@
 # Functions: Unrolled
 
-Firebase **Cloud Functions v2** in TypeScript, Node 22, region `europe-west1`. Currently a placeholder surface (`ping` callable) reserved for server-side helpers when the mobile clients start needing them.
+Firebase **Cloud Functions v2** in TypeScript, Node 24, region `europe-west1`. Currently a placeholder surface (`ping` callable) reserved for server-side helpers when the mobile clients start needing them.
 
 ## Stack
 
@@ -8,7 +8,7 @@ Firebase **Cloud Functions v2** in TypeScript, Node 22, region `europe-west1`. C
 - [`firebase-functions`](https://github.com/firebase/firebase-functions) v7 (modular SDK, v2 triggers)
 - [`firebase-admin`](https://github.com/firebase/firebase-admin-node) 14
 - [Vitest](https://vitest.dev/) 5 for tests
-- Node 22 (declared in `engines.node`, matches `firebase.json`'s runtime)
+- Node 24 (declared in `engines.node`, matches `firebase.json`'s runtime)
 
 ## Install
 
@@ -34,9 +34,10 @@ Or, from the repo root, `firebase emulators:start` to run hosting + firestore + 
 ## Deploy
 
 ```bash
-cd functions && npm run build
-firebase deploy --only functions
+scripts/deploy.sh        # from the repo root: gates, waits for CI, deploys everything
 ```
+
+Never run `firebase deploy` by hand.
 
 The Firebase project id (`unrolled-e4775`) lives in the root [`../.firebaserc`](../.firebaserc).
 
@@ -69,5 +70,6 @@ functions/
 ## Tests
 
 ```bash
+npm run verify       # typecheck + vitest, what CI runs
 npm test             # vitest run
 ```
