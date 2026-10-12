@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -161,7 +162,7 @@ fun SwipeScreen(viewModel: SwipeViewModel) {
             // it expects (e.g. image/jpeg) — going through "image/*" makes
             // some viewers fall back to "show all images in this folder"
             // which is what the user reported as "doesn't deep-link".
-            val uri = Uri.parse(photoUri)
+            val uri = photoUri.toUri()
             val mime = runCatching { context.contentResolver.getType(uri) }
                 .getOrNull() ?: "image/*"
             val view = Intent(Intent.ACTION_VIEW).apply {

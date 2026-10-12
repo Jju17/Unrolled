@@ -2,6 +2,7 @@ package dev.rahier.unrolled
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 /**
  * Persisted user preferences. Backed by [SharedPreferences] in
@@ -30,9 +31,7 @@ class SharedPrefsSettingsRepository(context: Context) : SettingsRepository {
     )
 
     override fun save(settings: UserSettings) {
-        prefs.edit()
-            .putBoolean(KEY_SHOW_LOCATION, settings.showLocation)
-            .apply()
+        prefs.edit { putBoolean(KEY_SHOW_LOCATION, settings.showLocation) }
     }
 
     companion object {

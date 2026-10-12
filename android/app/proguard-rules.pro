@@ -1,7 +1,4 @@
-# Add project specific ProGuard rules here.
-
--dontwarn androidx.compose.**
--keep class androidx.compose.** { *; }
+# Library consumer rules (Compose, Coil, AndroidX) cover the rest.
 
 -keepclassmembers enum * {
     public static **[] values();

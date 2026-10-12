@@ -32,10 +32,12 @@
     <string name="done_title">Album terminé</string>
     <plurals name="done_subtitle_kept">
         <item quantity="one">%d gardée</item>
+        <item quantity="many">%d gardées</item>
         <item quantity="other">%d gardées</item>
     </plurals>
     <plurals name="done_subtitle_deleted">
         <item quantity="one">%d supprimée</item>
+        <item quantity="many">%d supprimées</item>
         <item quantity="other">%d supprimées</item>
     </plurals>
     <!-- done_subtitle_separator unchanged -->

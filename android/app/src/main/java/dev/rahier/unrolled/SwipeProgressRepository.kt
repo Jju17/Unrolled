@@ -2,6 +2,7 @@ package dev.rahier.unrolled
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 /**
  * Persistent record of which photos the user has already classified.
@@ -33,14 +34,14 @@ class SharedPrefsSwipeProgressRepository(context: Context) : SwipeProgressReposi
     )
 
     override fun save(progress: SwipeProgress) {
-        prefs.edit()
-            .putString(KEY_DELETED, progress.deletedIDs.encodeIDs())
-            .putString(KEY_KEPT, progress.keptIDs.encodeIDs())
-            .apply()
+        prefs.edit {
+            putString(KEY_DELETED, progress.deletedIDs.encodeIDs())
+            putString(KEY_KEPT, progress.keptIDs.encodeIDs())
+        }
     }
 
     override fun clear() {
-        prefs.edit().clear().apply()
+        prefs.edit { clear() }
     }
 
     companion object {

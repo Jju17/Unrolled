@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">Unrolled</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" translatable="false">Unrolled</string>
 
     <!-- Header -->
     <string name="header_album_label">ALBUM</string>
     <string name="header_album_fallback">Photos</string>
     <string name="header_about_menu_item">About Unrolled</string>
-    <string name="header_stats_pill_a11y">%1$d kept, %2$d deleted. </string>
+    <string name="header_stats_pill_a11y" tools:ignore="PluralsCandidate">%1$d kept, %2$d deleted. </string>
     <string name="header_stats_pill_a11y_open_hint">Opens the trash list.</string>
     <string name="header_stats_pill_a11y_empty_hint">No photos to delete yet.</string>
 
@@ -38,7 +38,7 @@
         <item quantity="one">%d deleted</item>
         <item quantity="other">%d deleted</item>
     </plurals>
-    <string name="done_subtitle_separator"> · </string>
+    <string name="done_subtitle_separator" translatable="false"> · </string>
     <string name="done_view_all">View all my photos</string>
     <string name="done_change_album">Change album</string>
     <string name="done_start_over">Start over</string>
