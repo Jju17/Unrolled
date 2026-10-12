@@ -1,22 +1,22 @@
-# Release Notes — Unrolled v1.0
+# Release Notes: Unrolled v1.0
 
 Copy-paste reference for App Store Connect (iOS) and Google Play Console (Android) submissions. EN + FR per platform.
 
 ---
 
-## iOS — App Store Connect
+## iOS: App Store Connect
 
 ### Metadata · English (U.S.)
 
-**Subtitle** (30 chars max — shows under the app name in the App Store)
+**Subtitle** (30 chars max: shows under the app name in the App Store)
 ```
 Swipe your camera roll clean.
 ```
 → 29 chars (cohérent avec la tagline déjà affichée dans l'About sheet in-app)
 
-**Promotional Text** (170 chars max — editable post-release without re-review)
+**Promotional Text** (170 chars max: editable post-release without re-review)
 ```
-Tinder for your camera roll. Swipe through every photo, keep what you love, send the rest to the trash. Fully private, offline, fast.
+Tinder for your camera roll. Swipe through every photo, keep what you love, send the rest to the trash. Private, on-device, fast.
 ```
 
 **Description** (4000 chars max)
@@ -25,25 +25,29 @@ Unrolled is the fastest way to clean up your camera roll.
 
 Tap. Swipe. Done.
 
-Open the app, pick an album, and start sorting. Swipe right to keep a photo, swipe left to send it to a review pile. When you're ready, hit "Empty trash" and Unrolled hands the whole batch to iOS — your photos go to the standard Recently Deleted album, recoverable for 30 days.
+Open the app, pick a pile, and start sorting. Swipe right to keep a photo, swipe left to send it to a review pile. When you're ready, hit "Empty trash" and Unrolled hands the whole batch to iOS: your photos go to the standard Recently Deleted album, recoverable for 30 days.
 
 WHY YOU'LL LIKE IT
 
-• Zero-loss design — nothing gets deleted until you confirm twice (in-app + iOS dialog). Restore any photo from the review sheet before you commit.
+• Piles you can finish: this month, on this day, a year ago, screenshots, videos, any calendar month or album. Each pile shows how many photos are left.
 
-• Fast — pre-loaded thumbnails, smooth fly-off animation, light haptic on every swipe. Built for muscle memory.
+• Zero-loss design: nothing gets deleted until you confirm in the iOS system dialog. Restore any photo from the review sheet before you commit.
 
-• Every album — Recents, Favorites, Screenshots, Selfies, Panoramas, Bursts, Live Photos, plus all your custom albums.
+• Similar shots grouped: bursts and near-duplicates are detected on your device, keep the best one and drop the rest in one tap.
 
-• Shuffle — randomize the order when chronological feels endless. Your place is saved.
+• Videos too: the heaviest files in your library are part of the deck, with playback in full screen.
 
-• Pinch to zoom — tap any card to go full-screen, two-finger zoom anchored on your fingers.
+• A real finish line: every finished pile shows what you reviewed, kept, dropped and how much storage you are about to free.
 
-• Undo — one tap brings back your last decision.
+• Calm goals: a daily goal ring, a streak with one forgiven day per week, milestones you can share. All optional, all local.
 
-100% PRIVATE
+• Fast: pre-loaded thumbnails, smooth fly-off animation, light haptic on every swipe. Undo brings back your last decision.
 
-Unrolled never touches the internet. Your photos stay on your device. No accounts. No tracking. No ads. No analytics. No third-party SDKs. The only network call the app could ever make is the Privacy Policy link in the About sheet — and only if you tap it.
+• Pinch to zoom: tap any card to go full-screen, two-finger zoom anchored on your fingers.
+
+PRIVATE BY CONSTRUCTION
+
+Your photos stay on your device. No accounts. No tracking. No ads. No analytics. No third-party SDKs. The only data that can leave your phone is the GPS position of the photo on screen, sent to Apple's geocoding service to print a city name, and you can switch that off in Settings. Reminders are local notifications, off by default.
 
 Free. No in-app purchases. No subscription. No upsells.
 
@@ -72,9 +76,9 @@ https://unrolled-e4775.web.app
 © 2026 Julien Rahier
 ```
 
-**What's New in This Version** (v1.0 — first release)
+**What's New in This Version** (v1.0: first release)
 ```
-First public release. Sort your camera roll by swiping — keep what you love, send the rest to the iOS trash. Fully private, fully offline.
+First public release. Sort your camera roll pile by pile: this month, on this day, screenshots, videos or any album. Similar shots are grouped, every finished pile shows the storage you free, and an optional daily goal keeps you going. Private and on-device.
 ```
 
 ---
@@ -89,7 +93,7 @@ Range ta pellicule en swipant
 
 **Promotional Text**
 ```
-Tinder pour ta photothèque. Swipe sur chaque photo, garde celles que tu aimes, envoie le reste à la poubelle. 100% privée, offline, rapide.
+Tinder pour ta photothèque. Swipe sur chaque photo, garde celles que tu aimes, envoie le reste à la poubelle. Privée, locale, rapide.
 ```
 
 **Description**
@@ -98,25 +102,29 @@ Unrolled est la façon la plus rapide de faire le tri dans ta photothèque.
 
 Tap. Swipe. Done.
 
-Ouvre l'app, choisis un album, et commence à trier. Swipe à droite pour garder une photo, à gauche pour l'envoyer dans la corbeille. Quand t'es prêt, tape « Mettre à la poubelle » et Unrolled passe le lot à iOS — tes photos vont dans « Récemment supprimées », récupérables pendant 30 jours.
+Ouvre l'app, choisis une pile, et commence à trier. Swipe à droite pour garder une photo, à gauche pour l'envoyer dans la corbeille. Quand t'es prêt, tape « Mettre à la poubelle » et Unrolled passe le lot à iOS : tes photos vont dans « Récemment supprimées », récupérables pendant 30 jours.
 
 POURQUOI TU VAS AIMER
 
-• Aucun risque de perte — rien n'est supprimé tant que tu ne valides pas deux fois (alerte in-app + dialogue iOS). Tu peux ressortir n'importe quelle photo de la corbeille avant de confirmer.
+• Des piles qu'on finit : ce mois-ci, ce jour-là, il y a un an, captures d'écran, vidéos, n'importe quel mois ou album. Chaque pile affiche ce qu'il reste.
 
-• Rapide — thumbnails préchargés, animation de fly-off fluide, retour haptique léger à chaque swipe. Pensée pour la mémoire musculaire.
+• Aucun risque de perte : rien n'est supprimé tant que tu ne valides pas dans le dialogue système iOS. Tu peux ressortir n'importe quelle photo de la corbeille avant de confirmer.
 
-• Tous tes albums — Récents, Favoris, Captures d'écran, Selfies, Panoramas, Rafales, Live Photos, plus tous tes albums perso.
+• Les photos similaires regroupées : rafales et quasi-doublons sont détectés sur ton appareil, garde la meilleure et jette le reste en un tap.
 
-• Mode aléatoire — quand l'ordre chronologique te paraît interminable. Ta position est sauvegardée.
+• Les vidéos aussi : les fichiers les plus lourds de ta photothèque font partie du paquet, avec lecture en plein écran.
 
-• Zoom au pinch — tap pour passer une photo en plein écran, zoom à deux doigts ancré sur tes doigts.
+• Une vraie ligne d'arrivée : chaque pile terminée montre ce que tu as revu, gardé, jeté et combien d'espace tu vas libérer.
 
-• Annuler — une tap pour récupérer ton dernier choix.
+• Des objectifs calmes : un anneau d'objectif quotidien, une série avec un jour pardonné par semaine, des paliers à partager. Tout est optionnel, tout reste local.
 
-100% PRIVÉE
+• Rapide : miniatures préchargées, animation fluide, retour haptique léger à chaque swipe. Annuler ramène ton dernier choix.
 
-Unrolled ne touche jamais à internet. Tes photos restent sur ton appareil. Pas de compte. Pas de tracking. Pas de pub. Pas d'analytics. Pas de SDK tiers. Le seul appel réseau possible est le lien Privacy Policy dans l'About — et seulement si tu tapes dessus.
+• Zoom au pinch : tap pour passer une photo en plein écran, zoom à deux doigts ancré sur tes doigts.
+
+PRIVÉE PAR CONSTRUCTION
+
+Tes photos restent sur ton appareil. Pas de compte. Pas de tracking. Pas de pub. Pas d'analytics. Pas de SDK tiers. La seule donnée qui peut quitter ton téléphone est la position GPS de la photo affichée, envoyée au service de géocodage d'Apple pour afficher un nom de ville, et tu peux le désactiver dans les réglages. Les rappels sont des notifications locales, désactivées par défaut.
 
 Gratuite. Pas d'achats intégrés. Pas d'abonnement. Pas d'upsell.
 
@@ -132,17 +140,17 @@ photothèque,nettoyer,supprimer photos,swipe,trier,stockage,galerie,organiser,ra
 
 **Nouveautés**
 ```
-Première version publique. Trie ta pellicule en swipant — garde celles que tu aimes, envoie le reste à la corbeille iOS. 100% privée, 100% offline.
+Première version publique. Trie ta pellicule pile par pile : ce mois-ci, ce jour-là, captures d'écran, vidéos ou n'importe quel album. Les photos similaires sont regroupées, chaque pile terminée affiche l'espace libéré, et un objectif quotidien optionnel te motive. Privée et locale.
 ```
 
 ---
 
 ### App Privacy
 
-Section "App Privacy" (sidebar) → **Data Not Collected** sur tous les types. Aucune permission tracking, aucun SDK analytics, aucune connexion réseau (sauf ouverture de URL externe via `openURL` quand l'utilisateur tape un lien).
+Section "App Privacy" (sidebar) : **Data Not Collected** sur tous les types. Aucune permission tracking, aucun SDK analytics. Le reverse geocoding (CLGeocoder, optionnel via le réglage « Afficher la localisation ») est un service système qui ne nous transmet rien, les compteurs d'activité (revues, supprimées, octets libérés, série) restent dans UserDefaults, le rappel quotidien est une notification locale : pas de collecte à déclarer.
 
 ### Age Rating
-**4+** — aucun contenu sensible. Réponds "None" à toutes les catégories du questionnaire.
+**4+**: aucun contenu sensible. Réponds "None" à toutes les catégories du questionnaire.
 
 ### Pricing and Availability
 - **Price**: Free
@@ -154,7 +162,7 @@ Section "App Privacy" (sidebar) → **Data Not Collected** sur tous les types. A
 - **Demo account**: Not applicable (no login)
 - **Attachment**: screen recording (see "Screen recording checklist" below)
 
-#### Notes (≤4000 chars — paste verbatim into App Store Connect)
+#### Notes (≤4000 chars: paste verbatim into App Store Connect)
 
 App Store Connect's App Review Information notes field caps at 4000
 characters, so this template is condensed. It still covers all 6
@@ -163,10 +171,10 @@ topics App Review requests under Guideline 2.1.
 ```
 Hi App Review,
 
-Re: Guideline 2.1 — full info for Unrolled.
+Re: Guideline 2.1: full info for Unrolled.
 
 1) SCREEN RECORDING
-Attached: physical-device recording showing cold launch, Photos permission prompt (Allow), card stack swipe right=keep / left=delete, stats pill → trash review sheet, "Keep" restore, "Empty trash" → in-app alert → iOS system delete dialog → photos in Recently Deleted, About sheet (~45s total).
+Attached: physical-device recording showing cold launch, Photos permission prompt (Allow), pile picker, card stack swipe right=keep / left=delete, similar badge and sheet, session summary on pile finished, stats pill then trash review sheet, "Keep" restore, "Empty trash" then iOS system delete dialog, photos in Recently Deleted, stats sheet, About sheet (~60s total).
 
 2) APP PURPOSE
 Unrolled is a photo-cleanup utility. Users with thousands of unsorted photos swipe through their library card-by-card (right=keep, left=delete). When ready, a single confirmation moves the batch to iOS Recently Deleted (recoverable 30 days). Solves the "Photos app makes deleting one-by-one too tedious" problem. Audience: anyone with 5,000+ photos, no technical knowledge needed.
@@ -177,15 +185,14 @@ No login or test credentials required. To test:
 2. Tap "Allow Full Access" on the Photos permission prompt. (Limited Access also works.)
 3. Card stack appears with Recents.
 4. Swipe right = keep. Swipe left = trash review pile.
-5. Tap the heart/X stats pill (top right) → trash review sheet.
+5. Tap the heart/X stats pill (top right) to open the trash review sheet.
 6. Tap "Keep" on a row to restore. Tap "Empty trash" footer button.
-7. In-app confirmation alert → tap "Delete".
-8. iOS native PhotoKit confirmation → tap "Delete".
-9. Photos move to iOS Recently Deleted (recoverable 30 days).
-Other features: album picker (top-left), shuffle (top-right), undo (bottom center), tap card for full-screen pinch-zoom, settings gear (bottom-left), "..." menu → About.
+7. iOS native PhotoKit confirmation: tap "Delete".
+8. Photos move to iOS Recently Deleted (recoverable 30 days).
+Other features: pile picker (top-left: this month, on this day, a year ago, screenshots, videos, months, albums), progress ring (top-right, opens the stats sheet), shuffle, undo (bottom center), "N similar" badge on a card opens the similar-photos sheet, tap card for full-screen pinch-zoom (videos play with AVKit), "..." menu for Settings and About. Finishing a pile shows a session summary with confetti.
 
 4) EXTERNAL SERVICES
-None. Unrolled has no backend, analytics, ads, login, payments, or AI services. The app does not include an HTTP client. The only network calls are openURL handoffs to Safari for the Privacy and Support links in the About sheet (https://unrolled-e4775.web.app/privacy and /support). Third-party SPM dependencies: swift-composable-architecture (state management library, Point-Free) — no network behavior. System frameworks: PhotoKit (read + delete), SwiftUI/UIKit. NOT used: StoreKit, CloudKit, Network, UserNotifications.
+None of our own. Unrolled has no backend, analytics, ads, login, payments, or AI services. The app does not include an HTTP client. Network use is limited to (a) openURL handoffs to Safari for the Privacy and Support links in the About sheet (https://unrolled-e4775.web.app/privacy and /support) and (b) the system CLGeocoder reverse-geocoding call that turns a photo's GPS coordinates into a city name for the optional location label (user-toggleable in Settings, off means no call). Third-party SPM dependencies: swift-composable-architecture (state management library, Point-Free): no network behavior. System frameworks: PhotoKit (read + delete), AVKit (video playback), UserNotifications (optional local daily reminder, off by default, scheduled on device only), SwiftUI/UIKit. NOT used: StoreKit, CloudKit, Network.
 
 5) REGIONAL DIFFERENCES
 None. Identical features and content in every region. Only locale-driven difference is UI language (English base, French translation), following the device's preferred language.
@@ -196,10 +203,10 @@ Not applicable. Personal photo-organization utility. Not in healthcare, finance,
 PURPOSE STRING (NSPhotoLibraryUsageDescription)
 EN: "Unrolled needs access to your photos so you can sort them by swiping."
 FR: "Unrolled a besoin d'accéder à tes photos pour que tu puisses les trier en swipant."
-Photos access is used solely to (a) display thumbnails on swipe cards, (b) read creation-date metadata for the date overlay, (c) call PHAssetChangeRequest.deleteAssets when the user explicitly confirms an empty-trash action. No photo data is stored, copied, transmitted, or analyzed beyond display.
+Photos access is used solely to (a) display thumbnails on swipe cards, (b) read creation-date and location metadata for the overlay, (c) call PHAssetChangeRequest.deleteAssets when the user explicitly confirms an empty-trash action. Similar-photo detection computes a 64-bit perceptual hash from a 9x8 thumbnail in memory, on device, and stores nothing. No photo data is stored, copied, transmitted, or analyzed beyond that; only the local identifiers of kept/staged photos and a few activity counters (reviewed, deleted, bytes freed, streak) are saved in UserDefaults.
 
 Best,
-Julien Rahier — julien@rahier.dev
+Julien Rahier: julien@rahier.dev
 ```
 
 #### Screen recording checklist (capture on a physical iPhone)
@@ -212,7 +219,7 @@ Julien Rahier — julien@rahier.dev
 4. Hit record, then on the iPhone follow the timeline above (~45 sec
    total).
 5. Stop recording, File → Export As → 1080p, save as `.mov`.
-6. Upload via App Store Connect — the App Review Information notes
+6. Upload via App Store Connect: the App Review Information notes
    field accepts attachments up to 500 MB.
 
 ### Build & Submission Checklist
@@ -228,7 +235,7 @@ Julien Rahier — julien@rahier.dev
 
 ---
 
-## Android — Google Play Console
+## Android: Google Play Console
 
 ### Store Listing · English
 
@@ -239,7 +246,7 @@ Unrolled
 
 **Short description** (80 chars max)
 ```
-Tinder for your gallery. Swipe to keep, swipe to delete. Private and offline.
+Tinder for your gallery. Swipe to keep, swipe to delete. Private and on-device.
 ```
 
 **Full description** (4000 chars max)
@@ -248,29 +255,35 @@ Unrolled is the fastest way to clean up your gallery.
 
 Tap. Swipe. Done.
 
-Open the app, pick an album, and start sorting. Swipe right to keep a photo, swipe left to send it to a review pile. When you're ready, hit "Empty trash" and Unrolled hands the whole batch to Android — your photos go to the system trash, recoverable for 30 days.
+Open the app, pick a pile, and start sorting. Swipe right to keep a photo, swipe left to send it to a review pile. When you're ready, hit "Empty trash" and Unrolled hands the whole batch to Android: your photos go to the system trash, recoverable for 30 days.
 
 WHY YOU'LL LIKE IT
 
-• Zero-loss design — nothing gets deleted until you confirm twice (in-app + Android system dialog). Restore any photo from the review sheet before you commit.
+• Piles you can finish: this month, on this day, a year ago, screenshots, videos, any calendar month or folder. Each pile shows how many photos are left.
 
-• Fast — async thumbnail loading via Coil, smooth fly-off animation, haptic feedback on every swipe.
+• Zero-loss design: nothing gets deleted until you confirm in the Android system dialog. Restore any photo from the review sheet before you commit.
 
-• Every album — All Photos plus every folder Android exposes via MediaStore.
+• Similar shots grouped: bursts and near-duplicates are detected on your device, keep the best one and drop the rest in one tap.
 
-• Shuffle — randomize the order when chronological feels endless. Your place is saved.
+• Videos too: the heaviest files in your gallery are part of the deck, with playback in full screen.
 
-• Pinch to zoom — tap any card to go full-screen, two-finger zoom anchored on your fingers, swipe down to dismiss.
+• A real finish line: every finished pile shows what you reviewed, kept, dropped and how much storage you are about to free.
 
-• Undo — one tap brings back your last decision.
+• Calm goals: a daily goal ring, a streak with one forgiven day per week, milestones you can share. All optional, all local.
 
-100% PRIVATE
+• Fast: async thumbnail loading via Coil, smooth fly-off animation, haptic feedback on every swipe. Undo brings back your last decision.
 
-Unrolled never touches the internet. Your photos stay on your device. No accounts. No tracking. No ads. No analytics. No third-party SDKs beyond Coil (image loading, on-device only). The app does not even include a network HTTP client.
+• Pinch to zoom: tap any card to go full-screen, two-finger zoom anchored on your fingers, swipe down to dismiss.
+
+PRIVATE BY CONSTRUCTION
+
+Your photos stay on your device. No accounts. No tracking. No ads. No analytics. No third-party SDKs beyond Coil (image loading, on-device only). The app does not even include a network HTTP client. The only data that can leave your phone is the GPS position of the photo on screen, sent to the Android geocoding service to print a city name, and you can switch that off in Settings. Reminders are local notifications, off by default.
 
 Permissions:
-• Photos and videos (READ_MEDIA_IMAGES) — to show your photos so you can sort them. Required.
-• Visual user-selected media (Android 14+) — supported, so you can grant access to a subset of your library if you prefer.
+• Photos and videos (READ_MEDIA_IMAGES, READ_MEDIA_VIDEO): to show your library so you can sort it. Required.
+• Visual user-selected media (Android 14+): supported, so you can grant access to a subset of your library if you prefer.
+• Media location (ACCESS_MEDIA_LOCATION): to read the GPS tag of a photo for the optional place name. Optional.
+• Notifications (POST_NOTIFICATIONS): only if you enable the daily reminder. Optional.
 
 Free. No in-app purchases. No subscription. No upsells.
 
@@ -290,7 +303,7 @@ Unrolled
 
 **Short description**
 ```
-Tinder pour ta galerie. Swipe pour garder, swipe pour supprimer. Privée et offline.
+Tinder pour ta galerie. Swipe pour garder, swipe pour supprimer. Privée et locale.
 ```
 
 **Full description**
@@ -299,29 +312,35 @@ Unrolled est la façon la plus rapide de faire le tri dans ta galerie.
 
 Tap. Swipe. Done.
 
-Ouvre l'app, choisis un album, et commence à trier. Swipe à droite pour garder une photo, à gauche pour l'envoyer dans la corbeille. Quand t'es prêt, tape « Mettre à la poubelle » et Unrolled passe le lot à Android — tes photos vont dans la corbeille système, récupérables pendant 30 jours.
+Ouvre l'app, choisis une pile, et commence à trier. Swipe à droite pour garder une photo, à gauche pour l'envoyer dans la corbeille. Quand t'es prêt, tape « Mettre à la poubelle » et Unrolled passe le lot à Android : tes photos vont dans la corbeille système, récupérables pendant 30 jours.
 
 POURQUOI TU VAS AIMER
 
-• Aucun risque de perte — rien n'est supprimé tant que tu ne valides pas deux fois (alerte in-app + dialogue système Android). Tu peux ressortir n'importe quelle photo de la corbeille avant de confirmer.
+• Des piles qu'on finit : ce mois-ci, ce jour-là, il y a un an, captures d'écran, vidéos, n'importe quel mois ou dossier. Chaque pile affiche ce qu'il reste.
 
-• Rapide — thumbnails chargés en async via Coil, animation de fly-off fluide, retour haptique à chaque swipe.
+• Aucun risque de perte : rien n'est supprimé tant que tu ne valides pas dans le dialogue système Android. Tu peux ressortir n'importe quelle photo de la corbeille avant de confirmer.
 
-• Tous tes albums — Toutes les photos plus chaque dossier exposé par MediaStore.
+• Les photos similaires regroupées : rafales et quasi-doublons sont détectés sur ton appareil, garde la meilleure et jette le reste en un tap.
 
-• Mode aléatoire — quand l'ordre chronologique te paraît interminable. Ta position est sauvegardée.
+• Les vidéos aussi : les fichiers les plus lourds de ta galerie font partie du paquet, avec lecture en plein écran.
 
-• Zoom au pinch — tap pour passer une photo en plein écran, zoom à deux doigts ancré sur tes doigts, swipe vers le bas pour fermer.
+• Une vraie ligne d'arrivée : chaque pile terminée montre ce que tu as revu, gardé, jeté et combien d'espace tu vas libérer.
 
-• Annuler — une tap pour récupérer ton dernier choix.
+• Des objectifs calmes : un anneau d'objectif quotidien, une série avec un jour pardonné par semaine, des paliers à partager. Tout est optionnel, tout reste local.
 
-100% PRIVÉE
+• Rapide : miniatures chargées en asynchrone via Coil, animation fluide, retour haptique à chaque swipe. Annuler ramène ton dernier choix.
 
-Unrolled ne touche jamais à internet. Tes photos restent sur ton appareil. Pas de compte. Pas de tracking. Pas de pub. Pas d'analytics. Pas de SDK tiers (sauf Coil pour le chargement d'image, on-device only). L'app n'embarque même pas de client HTTP réseau.
+• Zoom au pinch : tap pour passer une photo en plein écran, zoom à deux doigts ancré sur tes doigts, swipe vers le bas pour fermer.
+
+PRIVÉE PAR CONSTRUCTION
+
+Tes photos restent sur ton appareil. Pas de compte. Pas de tracking. Pas de pub. Pas d'analytics. Pas de SDK tiers (sauf Coil pour le chargement d'image, local uniquement). L'app n'embarque même pas de client HTTP. La seule donnée qui peut quitter ton téléphone est la position GPS de la photo affichée, envoyée au service de géocodage Android pour afficher un nom de ville, et tu peux le désactiver dans les réglages. Les rappels sont des notifications locales, désactivées par défaut.
 
 Permissions :
-• Photos et vidéos (READ_MEDIA_IMAGES) — pour afficher tes photos et te laisser les trier. Obligatoire.
-• Médias sélectionnés (Android 14+) — supporté, tu peux n'accorder l'accès qu'à une sélection de photos.
+• Photos et vidéos (READ_MEDIA_IMAGES, READ_MEDIA_VIDEO) : pour afficher ta galerie et te laisser la trier. Obligatoire.
+• Médias sélectionnés (Android 14+) : supporté, tu peux n'accorder l'accès qu'à une sélection.
+• Localisation des médias (ACCESS_MEDIA_LOCATION) : pour lire la position GPS d'une photo et afficher le nom du lieu. Optionnel.
+• Notifications (POST_NOTIFICATIONS) : seulement si tu actives le rappel quotidien. Optionnel.
 
 Gratuite. Pas d'achats intégrés. Pas d'abonnement. Pas d'upsell.
 
@@ -332,23 +351,23 @@ Faite avec soin pour les gens qui ont 50 000 photos dans leur galerie.
 
 ---
 
-### Release notes — "What's new" per release (Play Console, copy-paste)
+### Release notes: "What's new" per release (Play Console, copy-paste)
 
 Paste the whole fenced block for the target version into **Play Console → [track] → Create new release → What's new in this release**. Play Console parses each `<locale>` tag and routes the copy to the matching Play Store locale. Cap: 500 chars per locale.
 
 When bumping `versionCode` / `versionName` in `android/app/build.gradle.kts`, **prepend a new block here (newest on top)** and keep the three locales in sync.
 
-#### v1.0.0 (versionCode 2)
+#### v1.0.0 (versionCode 2, targetSdk 37)
 
 ```
 <en-US>
-First public release. Sort your gallery by swiping — keep what you love, send the rest to the system trash. Fully private, fully offline.
+First public release. Sort your gallery pile by pile: this month, on this day, screenshots, videos or any album. Similar shots are grouped, every finished pile shows the storage you free, and an optional daily goal keeps you going. Private and on-device.
 </en-US>
 <fr-FR>
-Première version publique. Trie ta galerie en swipant — garde celles que tu aimes, envoie le reste à la corbeille système. 100% privée, 100% offline.
+Première version publique. Trie ta galerie pile par pile : ce mois-ci, ce jour-là, captures d'écran, vidéos ou n'importe quel album. Les photos similaires sont regroupées, chaque pile terminée affiche l'espace libéré, et un objectif quotidien optionnel te motive. Privée et locale.
 </fr-FR>
 <nl-NL>
-Eerste publieke release. Sorteer je galerij door te swipen — bewaar wat je mooi vindt, stuur de rest naar de systeemprullenbak. Volledig privé, volledig offline.
+Eerste publieke release. Sorteer je galerij stapel per stapel: deze maand, op deze dag, screenshots, video's of een album. Gelijkaardige foto's worden gegroepeerd, elke afgewerkte stapel toont de vrijgemaakte opslag, en een optioneel dagdoel houdt je bezig. Privé en lokaal op je toestel.
 </nl-NL>
 ```
 
@@ -394,15 +413,15 @@ https://unrolled-e4775.web.app/privacy
 
 ### Photo and Video Permissions Policy
 
-Google Play exige une déclaration spécifique parce que tu demandes `READ_MEDIA_IMAGES` (full access). Justification à fournir :
+Google Play exige une déclaration spécifique parce que tu demandes `READ_MEDIA_IMAGES` et `READ_MEDIA_VIDEO` (full access). Justification à fournir :
 
 ```
-Unrolled is a photo organizer. Its sole core feature is letting users swipe through their photo library to keep or delete each photo. Reading the entire image library (READ_MEDIA_IMAGES) is required so the user can sort across all their albums (Recents, custom folders, etc.) — restricting to user-selected photos (READ_MEDIA_VISUAL_USER_SELECTED only) would prevent the user from sorting photos they didn't pre-select, which defeats the entire purpose of the app.
+Unrolled is a photo organizer. Its sole core feature is letting users swipe through their photo and video library to keep or delete each item. Reading the entire library (READ_MEDIA_IMAGES, READ_MEDIA_VIDEO) is required so the user can sort across all their piles (months, screenshots, videos, folders): restricting to user-selected items (READ_MEDIA_VISUAL_USER_SELECTED only) would prevent the user from sorting items they didn't pre-select, which defeats the entire purpose of the app.
 
 The app:
 - Reads photo metadata and pixel data only on the user's device.
 - Never uploads, shares, or transmits any image data.
-- Has no network capability beyond opening external URLs (Privacy Policy, Support) when the user taps them.
+- Has no network capability beyond opening external URLs (Privacy Policy, Support) when the user taps them and the optional system reverse-geocoding call (city name under a photo, user-toggleable).
 - Supports the partial-access flow (READ_MEDIA_VISUAL_USER_SELECTED) for users who prefer to grant access to a subset.
 ```
 
@@ -435,7 +454,7 @@ The app:
 ## Notes communes
 
 ### Domaine Firebase
-Les URL Privacy / Support pointent vers `unrolled-e4775.web.app/privacy` et `.../support`, sur le projet Firebase `unrolled-e4775` (région `europe-west1`). Avant la première soumission Store, vérifier que le site web a bien été déployé sur ce projet (`cd web && npm run build && firebase deploy --only hosting`) — sinon Apple / Google testent l'URL et la trouvent en 404. Migration future possible vers un domaine custom (`unrolled.app` ou similaire) — chantier séparé (DNS + Firebase Hosting custom domain + redirect).
+Les URL Privacy / Support pointent vers `unrolled-e4775.web.app/privacy` et `.../support`, sur le projet Firebase `unrolled-e4775` (région `europe-west1`). Avant la première soumission Store, vérifier que le site web a bien été déployé sur ce projet (`cd web && npm run build && firebase deploy --only hosting`): sinon Apple / Google testent l'URL et la trouvent en 404. Migration future possible vers un domaine custom (`unrolled.app` ou similaire): chantier séparé (DNS + Firebase Hosting custom domain + redirect).
 
 ### Ce qui change par plateforme
 | | iOS | Android |
@@ -443,5 +462,5 @@ Les URL Privacy / Support pointent vers `unrolled-e4775.web.app/privacy` et `...
 | Vocabulaire | "camera roll", "Recently Deleted" | "gallery", "system trash" |
 | Trash recovery | iOS Photos → Recently Deleted (30j) | MediaStore.createTrashRequest → Bin (30j) |
 | Permission justification | Implicite (NSPhotoLibraryUsageDescription) | Explicite (Photo & Video Permissions Policy declaration) |
-| Keywords | 100 chars dédiés | Pas de champ — Google extrait du titre + description |
+| Keywords | 100 chars dédiés | Pas de champ: Google extrait du titre + description |
 | Adaptive icon | Light + Dark + Tinted | mipmap-anydpi-v26 background + foreground |
