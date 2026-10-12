@@ -14,14 +14,14 @@ settings:
     CURRENT_PROJECT_VERSION: 1
     SWIFT_VERSION: "5.9"
     DEVELOPMENT_TEAM: ""
-    # Disable explicit module builds — with TCA 1.25+ the CasePaths /
+    # Disable explicit module builds: with TCA 1.25+ the CasePaths /
     # Perception transitive modules fail to resolve in the testability
     # build variant on Xcode 26 simulator SDKs.
     SWIFT_ENABLE_EXPLICIT_MODULES: NO
 packages:
   ComposableArchitecture:
     url: https://github.com/pointfreeco/swift-composable-architecture
-    from: "1.17.0"
+    from: "1.26.2"
 targets:
   Unrolled:
     type: application
@@ -37,7 +37,7 @@ targets:
         CFBundleDisplayName: Unrolled
         # Substituted from build settings (MARKETING_VERSION /
         # CURRENT_PROJECT_VERSION below) so a version bump in project.yml
-        # is the single source of truth — no more drift between the
+        # is the single source of truth: no more drift between the
         # plist and what ships.
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
@@ -48,7 +48,7 @@ targets:
       base:
         # Bundle ID matches the brand. Must also be registered as an
         # explicit App ID in the Apple Developer Portal AND attached to
-        # the App Store Connect listing — both are looked up at archive
+        # the App Store Connect listing: both are looked up at archive
         # time. Don't change without aligning all three.
         PRODUCT_BUNDLE_IDENTIFIER: dev.rahier.unrolled
         TARGETED_DEVICE_FAMILY: "1"
@@ -59,7 +59,7 @@ targets:
     type: bundle.unit-test
     platform: iOS
     # Sources compiled directly into the test target instead of depending
-    # on the main app — avoids the `Unrolled.debug.dylib` build step that
+    # on the main app: avoids the `Unrolled.debug.dylib` build step that
     # fails to link TCA's transitive SPM packages (CasePathsCore,
     # PerceptionCore) on recent Xcode/TCA combos. The reducer + its
     # models/clients are pure Swift value types with no UIKit/Photos
@@ -77,3 +77,15 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.rahier.unrolled.tests
         GENERATE_INFOPLIST_FILE: YES
+schemes:
+  Unrolled:
+    build:
+      targets:
+        Unrolled: all
+        UnrolledTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - UnrolledTests
