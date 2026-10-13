@@ -357,6 +357,20 @@ Paste the whole fenced block for the target version into **Play Console → [tra
 
 When bumping `versionCode` / `versionName` in `android/app/build.gradle.kts`, **prepend a new block here (newest on top)** and keep the three locales in sync.
 
+#### v1.2.2 (versionCode 5, targetSdk 37)
+
+```
+<en-US>
+Swipe down to leave the full-screen photo, on videos too. The controls fade out as you pull.
+</en-US>
+<fr-FR>
+Swipe vers le bas pour quitter la photo en plein écran, sur les vidéos aussi. Les contrôles s'effacent pendant le geste.
+</fr-FR>
+<nl-NL>
+Veeg omlaag om de foto op volledig scherm te sluiten, ook bij video's. De knoppen vervagen terwijl je trekt.
+</nl-NL>
+```
+
 #### v1.2.1 (versionCode 4, targetSdk 37)
 
 ```
