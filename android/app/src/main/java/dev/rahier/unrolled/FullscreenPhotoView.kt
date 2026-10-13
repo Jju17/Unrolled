@@ -27,9 +27,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -81,6 +83,8 @@ internal fun FullscreenPhotoView(
     }
     val pagerState = rememberPagerState(initialPage = 0) { visiblePhotos.size }
     val currentPhoto = visiblePhotos.getOrNull(pagerState.currentPage)
+    var dismissProgress by remember { mutableFloatStateOf(0f) }
+    val chromeAlpha = (1f - dismissProgress * 2f).coerceIn(0f, 1f)
 
     Dialog(
         onDismissRequest = onClose,
@@ -99,20 +103,23 @@ internal fun FullscreenPhotoView(
                 modifier = Modifier.fillMaxSize()
             ) { page ->
                 val photo = visiblePhotos[page]
+                val pageModifier = Modifier
+                    .fillMaxSize()
+                    .zoomableDismissable(
+                        onDismiss = onClose,
+                        onDismissProgress = { dismissProgress = it },
+                        maxScale = 4f
+                    )
                 if (photo.isVideo) {
-                    VideoPage(uri = photo.uri, active = pagerState.currentPage == page)
+                    Box(pageModifier) {
+                        VideoPage(uri = photo.uri, active = pagerState.currentPage == page)
+                    }
                 } else {
                     AsyncImage(
                         model = photo.uri,
                         contentDescription = null,
                         contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .zoomableDismissable(
-                                onDismiss = onClose,
-                                onDismissProgress = {},
-                                maxScale = 4f
-                            )
+                        modifier = pageModifier
                     )
                 }
             }
@@ -121,6 +128,7 @@ internal fun FullscreenPhotoView(
                 Modifier
                     .align(Alignment.TopCenter)
                     .fillMaxWidth()
+                    .graphicsLayer { alpha = chromeAlpha }
                     .windowInsetsPadding(WindowInsets.statusBars)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -166,6 +174,7 @@ internal fun FullscreenPhotoView(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
+                    .graphicsLayer { alpha = chromeAlpha }
                     .windowInsetsPadding(WindowInsets.navigationBars)
                     .padding(horizontal = 16.dp, vertical = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,

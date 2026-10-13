@@ -27,6 +27,11 @@ struct FullscreenPhotoView: View {
     let onMarkAtRelativeIndex: (_ localIdx: Int, _ kept: Bool) -> Void
 
     @State private var currentPage: Int = 0
+    @State private var dismissDrag: CGFloat = 0
+    @State private var dragAxis: Axis?
+    @State private var zoomedPhotoIDs: Set<String> = []
+
+    private static let dismissThreshold: CGFloat = 120
 
     /// The paged `TabView` builds every page eagerly, so only a short
     /// window of the undecided tail is handed to it.
@@ -51,18 +56,36 @@ struct FullscreenPhotoView: View {
         return visiblePhotos[clamped]
     }
 
+    private var dismissProgress: CGFloat { min(1, max(0, dismissDrag / 300)) }
+    private var chromeOpacity: Double { 1 - min(1, Double(dismissProgress) * 2) }
+    private var currentPhotoZoomed: Bool {
+        currentPhoto.map { zoomedPhotoIDs.contains($0.id) } ?? false
+    }
+
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
 
             TabView(selection: $currentPage) {
                 ForEach(Array(visiblePhotos.enumerated()), id: \.element.id) { offset, photo in
-                    FullscreenPhotoPage(photo: photo, playLivePhotos: settings.playLivePhotos)
-                        .tag(offset)
+                    FullscreenPhotoPage(
+                        photo: photo,
+                        playLivePhotos: settings.playLivePhotos,
+                        onZoomChanged: { zoomed in
+                            if zoomed {
+                                zoomedPhotoIDs.insert(photo.id)
+                            } else {
+                                zoomedPhotoIDs.remove(photo.id)
+                            }
+                        }
+                    )
+                    .tag(offset)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .ignoresSafeArea()
+            .offset(y: dismissDrag)
+            .scaleEffect(1 - dismissProgress * 0.15)
 
             VStack {
                 topBar
@@ -73,8 +96,36 @@ struct FullscreenPhotoView: View {
             .padding(.horizontal, 16)
             .padding(.top, 12)
             .padding(.bottom, 28)
+            .opacity(chromeOpacity)
         }
         .statusBarHidden()
+        .simultaneousGesture(dismissGesture)
+    }
+
+    private var dismissGesture: some Gesture {
+        DragGesture(minimumDistance: 12)
+            .onChanged { value in
+                guard !currentPhotoZoomed else { return }
+                if dragAxis == nil {
+                    dragAxis = abs(value.translation.height) > abs(value.translation.width)
+                        ? .vertical : .horizontal
+                }
+                guard dragAxis == .vertical else { return }
+                dismissDrag = max(0, value.translation.height)
+            }
+            .onEnded { value in
+                let axis = dragAxis
+                dragAxis = nil
+                guard axis == .vertical, !currentPhotoZoomed else { return }
+                if value.translation.height > Self.dismissThreshold
+                    || value.predictedEndTranslation.height > 300 {
+                    dismiss()
+                } else {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                        dismissDrag = 0
+                    }
+                }
+            }
     }
 
     private var topBar: some View {
@@ -152,9 +203,10 @@ struct FullscreenPhotoView: View {
 private struct FullscreenPhotoPage: View {
     let photo: PhotoAsset
     let playLivePhotos: Bool
+    let onZoomChanged: (Bool) -> Void
 
     var body: some View {
-        ZoomableScrollView(maxScale: 4) {
+        ZoomableScrollView(maxScale: 4, onZoomChanged: onZoomChanged) {
             GeometryReader { geo in
                 Group {
                     if photo.isVideo {

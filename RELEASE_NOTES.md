@@ -43,7 +43,7 @@ WHY YOU'LL LIKE IT
 
 • Fast: pre-loaded thumbnails, smooth fly-off animation, light haptic on every swipe. Undo brings back your last decision.
 
-• Pinch to zoom: tap any card to go full-screen, two-finger zoom anchored on your fingers.
+• Pinch to zoom: tap any card to go full-screen, two-finger zoom anchored on your fingers, swipe down to dismiss.
 
 PRIVATE BY CONSTRUCTION
 
@@ -120,7 +120,7 @@ POURQUOI TU VAS AIMER
 
 • Rapide : miniatures préchargées, animation fluide, retour haptique léger à chaque swipe. Annuler ramène ton dernier choix.
 
-• Zoom au pinch : tap pour passer une photo en plein écran, zoom à deux doigts ancré sur tes doigts.
+• Zoom au pinch : tap pour passer une photo en plein écran, zoom à deux doigts ancré sur tes doigts, swipe vers le bas pour fermer.
 
 PRIVÉE PAR CONSTRUCTION
 

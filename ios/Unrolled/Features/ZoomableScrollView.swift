@@ -11,13 +11,16 @@ import UIKit
 /// `MagnificationGesture` can't express. Also bouncy overscroll free.
 struct ZoomableScrollView<Content: View>: UIViewRepresentable {
     let maxScale: CGFloat
+    let onZoomChanged: (Bool) -> Void
     let content: () -> Content
 
     init(
         maxScale: CGFloat = 4,
+        onZoomChanged: @escaping (Bool) -> Void = { _ in },
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.maxScale = maxScale
+        self.onZoomChanged = onZoomChanged
         self.content = content
     }
 
@@ -41,6 +44,7 @@ struct ZoomableScrollView<Content: View>: UIViewRepresentable {
         host.view.backgroundColor = .clear
         scrollView.addSubview(host.view)
         context.coordinator.hostingController = host
+        context.coordinator.onZoomChanged = onZoomChanged
 
         NSLayoutConstraint.activate([
             host.view.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
@@ -56,12 +60,14 @@ struct ZoomableScrollView<Content: View>: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIScrollView, context: Context) {
         context.coordinator.hostingController?.rootView = content()
+        context.coordinator.onZoomChanged = onZoomChanged
     }
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
     final class Coordinator: NSObject, UIScrollViewDelegate {
         var hostingController: UIHostingController<Content>?
+        var onZoomChanged: (Bool) -> Void = { _ in }
 
         func viewForZooming(in scrollView: UIScrollView) -> UIView? {
             hostingController?.view
@@ -72,6 +78,7 @@ struct ZoomableScrollView<Content: View>: UIViewRepresentable {
             // `isScrollEnabled` rather than hijacking the pan gesture's
             // delegate (which UIKit forbids and crashes on).
             scrollView.isScrollEnabled = scrollView.zoomScale > 1.0
+            onZoomChanged(scrollView.zoomScale > 1.0)
             // Keep the content centered when smaller than the viewport.
             let bounds = scrollView.bounds
             let size = scrollView.contentSize
@@ -88,6 +95,7 @@ struct ZoomableScrollView<Content: View>: UIViewRepresentable {
             atScale scale: CGFloat
         ) {
             scrollView.isScrollEnabled = scale > 1.0
+            onZoomChanged(scale > 1.0)
         }
     }
 }
