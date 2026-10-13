@@ -357,6 +357,20 @@ Paste the whole fenced block for the target version into **Play Console → [tra
 
 When bumping `versionCode` / `versionName` in `android/app/build.gradle.kts`, **prepend a new block here (newest on top)** and keep the three locales in sync.
 
+#### v1.2.1 (versionCode 4, targetSdk 37)
+
+```
+<en-US>
+Fixes the header buttons that could stay out of reach behind a tall photo.
+</en-US>
+<fr-FR>
+Corrige les boutons du haut qui pouvaient rester inaccessibles derrière une photo en hauteur.
+</fr-FR>
+<nl-NL>
+Lost de knoppen bovenaan op die onbereikbaar konden blijven achter een hoge foto.
+</nl-NL>
+```
+
 #### v1.2.0 (versionCode 3, targetSdk 37)
 
 ```
