@@ -9,7 +9,7 @@ Read `ios/README.md` first; this file holds the hard rules reviewers enforce.
 - No force unwraps in production code. No `.catch` that swallows a failure silently.
 - Persisted lists (`keptPhotoIDs`, `deletedPhotoIDs`) are sets in spirit: a photo lives in at most one of them, the last decision wins. `history` references photo IDs, never indexes.
 - Every reducer change ships with a `TestStore` test in `UnrolledTests/SwipeFeatureTests.swift` in the same commit.
-- User-visible strings go through the string catalog with a French translation added in the same change. No em dashes, no unicode arrows in copy.
+- User-visible strings go through the string catalog, translated into every language of the catalog in the same change (`StringCatalogTests` fails otherwise). No em dashes, no unicode arrows in copy.
 - Regenerate the project with `xcodegen generate` after touching files; the `.xcodeproj` is never edited by hand.
 - `history` entries hold one or more `PhotoDecision`s; undo restores the whole entry.
 - Pure logic (`ActivityTracker`, `SimilarityGrouper`) lives in `Models/` with no framework import and its own test file.

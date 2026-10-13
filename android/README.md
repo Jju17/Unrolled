@@ -71,7 +71,7 @@ app/src/main/java/dev/rahier/unrolled/
 
 app/src/main/res/
 ├── values/strings.xml        en (source of truth)
-├── values-fr/strings.xml     fr (must stay in sync, key-for-key)
+├── values-<locale>/strings.xml   20 locales (StringsParityTest keeps them key-for-key with values/)
 ├── values-night/themes.xml
 ├── drawable/ic_notification.xml
 ├── mipmap-anydpi/            adaptive icons (with monochrome layer)

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_about_menu_item">Unrolled hakkında</string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="one">%d saklandı</item>
+        <item quantity="other">%d saklandı</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="one">%d silindi</item>
+        <item quantity="other">%d silindi</item>
+    </plurals>
+    <string name="header_stats_pill_a11y_open_hint">Çöp listesini açar.</string>
+    <string name="header_shuffle_a11y">Fotoğrafları karıştır</string>
+    <string name="header_more_a11y">Diğer seçenekler</string>
+    <string name="action_delete_a11y">Bu fotoğrafı sil</string>
+    <string name="action_undo_a11y">Son seçimi geri al</string>
+    <string name="action_keep_a11y">Bu fotoğrafı sakla</string>
+    <string name="permission_gate_title">Fotoğraf erişimi</string>
+    <string name="permission_gate_body">Unrolled\'ın fotoğraflarını kartları sırayla gezebilmen için tüm fotoğraf kitaplığını okuması gerekiyor. Hiçbir şey cihazından çıkmaz: ağ yok, hesap yok. Ayarlarda yer adlarını açarsan, şehir adını almak için fotoğraf koordinatları sistemin coğrafi kodlama servisine gönderilir. Sadece birkaç fotoğraf da seçebilirsin, Unrolled o zaman yalnızca onları gösterir.</string>
+    <string name="permission_gate_allow">Erişime izin ver</string>
+    <string name="permission_gate_open_settings">Ayarları aç</string>
+    <string name="empty_state_title">Fotoğraf bulunamadı</string>
+    <string name="empty_state_body">Kitaplığın boş.</string>
+    <string name="empty_partial_title">Seçili fotoğraf yok</string>
+    <string name="empty_partial_body">Unrolled\'a yalnızca seçtiğin fotoğraflar için erişim verdin. Devam etmek için daha fazlasını seç.</string>
+    <string name="empty_partial_change">Seçimi değiştir</string>
+    <string name="load_error_title">Fotoğrafların yüklenemedi</string>
+    <string name="load_error_body">Kitaplığın okunurken bir şeyler ters gitti.</string>
+    <string name="load_error_retry">Tekrar dene</string>
+    <string name="settings_title">Ayarlar</string>
+    <string name="settings_show_location">Konumu göster</string>
+    <string name="header_view_in_photos_a11y">Bu fotoğrafı galeride gör</string>
+    <string name="about_tagline">Kaydırarak galerini temizle.</string>
+    <string name="about_version">Sürüm</string>
+    <string name="about_build">Derleme</string>
+    <string name="about_close">Kapat</string>
+    <string name="about_privacy_policy">Gizlilik politikası</string>
+    <string name="about_support">Destek</string>
+    <string name="deleted_title">Silinen fotoğraflar</string>
+    <string name="deleted_close_a11y">Kapat</string>
+    <string name="deleted_empty_title">Silinecek fotoğraf yok</string>
+    <string name="deleted_empty_body">Çöpü doldurmak için sola kaydır.</string>
+    <string name="deleted_row_fallback_title">Fotoğraf</string>
+    <string name="deleted_row_status">Silinmeye hazır</string>
+    <string name="deleted_row_keep">Sakla</string>
+    <string name="deleted_row_preview_a11y">Bu fotoğrafı tam ekranda gör</string>
+    <string name="deleted_footer_button">Çöpü boşalt (%d)</string>
+    <string name="deleted_reset">Sıfırla</string>
+    <string name="deleted_reset_title">Tüm ilerleme sıfırlansın mı?</string>
+    <string name="deleted_reset_body">Tüm saklandı/silindi işaretlerini temizler, deste yeniden tüm kitaplığı gösterir. Fotoğrafların kendisine dokunulmaz.</string>
+    <string name="deleted_reset_confirm">Sıfırla</string>
+    <string name="deleted_reset_cancel">İptal</string>
+    <string name="trash_error_old_android">Android 11 veya üstü gerekir.</string>
+    <string name="trash_error_generic">Sistem çöp kutusu tetiklenemedi.</string>
+    <string name="stamp_keep">SAKLA</string>
+    <string name="stamp_delete">SİL</string>
+    <string name="fullscreen_close_a11y">Kapat</string>
+    <string name="header_pile_label">YIĞIN</string>
+    <string name="header_open_picker_a11y">Yığın seçiciyi aç</string>
+    <plurals name="header_remaining">
+        <item quantity="one">%d kaldı</item>
+        <item quantity="other">%d kaldı</item>
+    </plurals>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="one">Günlük hedef: %2$d fotoğraftan %1$d. İstatistiklerini açar.</item>
+        <item quantity="other">Günlük hedef: %2$d fotoğraftan %1$d. İstatistiklerini açar.</item>
+    </plurals>
+    <string name="pile_picker_title">Bir yığın seç</string>
+    <string name="pile_picker_cancel">İptal</string>
+    <string name="pile_section_sessions">Oturumlar</string>
+    <string name="pile_section_months">Aylar</string>
+    <string name="pile_section_albums">Albümler</string>
+    <string name="pile_all">Tüm fotoğraflar</string>
+    <string name="pile_on_this_day">Geçmişte bugün</string>
+    <string name="pile_one_year_ago">Bir yıl önce</string>
+    <string name="pile_screenshots">Ekran görüntüleri</string>
+    <string name="pile_videos">Videolar</string>
+    <string name="pile_count_summary">%1$s fotoğraf, %2$s kaldı</string>
+    <string name="pile_done">Bitti</string>
+    <string name="pile_selected_a11y">Geçerli yığın</string>
+    <string name="album_unknown">Adsız</string>
+    <string name="done_title">Yığın bitti</string>
+    <string name="done_nothing_left_title">Burada bir şey kalmadı</string>
+    <string name="done_nothing_left_body">Bu yığındaki her fotoğraf zaten ayıklandı.</string>
+    <string name="done_view_all">Tüm fotoğraflarımı gör</string>
+    <string name="done_change_pile">Yığını değiştir</string>
+    <string name="done_start_over">Baştan başla</string>
+    <string name="summary_reviewed">incelendi</string>
+    <string name="summary_kept">saklandı</string>
+    <string name="summary_deleted">silindi</string>
+    <string name="summary_to_free">boşalacak</string>
+    <plurals name="summary_pace">
+        <item quantity="one">%1$s, dakikada %2$d fotoğraf</item>
+        <item quantity="other">%1$s, dakikada %2$d fotoğraf</item>
+    </plurals>
+    <string name="goal_reached">Günlük hedefe ulaşıldı</string>
+    <string name="goal_reached_with_streak">Günlük hedefe ulaşıldı, %d günlük seri</string>
+    <string name="stats_title">İstatistiklerin</string>
+    <string name="stats_share_a11y">İstatistiklerini paylaş</string>
+    <string name="stats_freed_label">şimdiye kadar boşaltıldı</string>
+    <string name="stats_reviewed">fotoğraf incelendi</string>
+    <string name="stats_deleted">fotoğraf silindi</string>
+    <plurals name="stats_streak_days">
+        <item quantity="one">%d günlük seri</item>
+        <item quantity="other">%d günlük seri</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="one">En uzun: %d gün</item>
+        <item quantity="other">En uzun: %d gün</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="one">Bugün: %2$d fotoğraftan %1$d</item>
+        <item quantity="other">Bugün: %2$d fotoğraftan %1$d</item>
+    </plurals>
+    <string name="stats_milestones">KİLOMETRE TAŞLARI</string>
+    <string name="stats_milestone_reached_a11y">Ulaşıldı</string>
+    <string name="stats_reset">İstatistikleri sıfırla</string>
+    <string name="stats_reset_title">İstatistiklerin sıfırlansın mı?</string>
+    <string name="stats_reset_body">Alan sayacını, seriyi ve kilometre taşlarını temizler. Fotoğraflarına ve kararlarına dokunulmaz.</string>
+    <string name="stats_reset_confirm">Sıfırla</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="one">%d fotoğraf ayıklandı</item>
+        <item quantity="other">%d fotoğraf ayıklandı</item>
+    </plurals>
+    <string name="milestone_freed">%s boşaltıldı</string>
+    <string name="milestone_streak">%d günlük seri</string>
+    <string name="milestone_overlay_title">KİLOMETRE TAŞI</string>
+    <string name="milestone_share">Paylaş</string>
+    <string name="milestone_dismiss">Devam et</string>
+    <string name="share_card_tagline">Unrolled ile ayıklandı</string>
+    <string name="share_card_stats_title">Unrolled ile boşaltılan alan</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="one">%1$d fotoğraf incelendi, %2$d silindi</item>
+        <item quantity="other">%1$d fotoğraf incelendi, %2$d silindi</item>
+    </plurals>
+    <plurals name="similar_badge">
+        <item quantity="one">%d benzer</item>
+        <item quantity="other">%d benzer</item>
+    </plurals>
+    <string name="similar_title">Benzer fotoğraflar</string>
+    <string name="similar_hint">Saklamak istediklerine dokun.</string>
+    <string name="similar_keep_a11y">Saklandı, silmek için dokun</string>
+    <string name="similar_delete_a11y">Silindi, saklamak için dokun</string>
+    <string name="similar_confirm">%1$d sakla, %2$d sil</string>
+    <string name="similar_cancel">İptal</string>
+    <string name="video_badge_a11y">Video</string>
+    <string name="settings_section_deck">DESTE</string>
+    <string name="settings_section_goals">HEDEFLER VE SERİLER</string>
+    <string name="settings_section_display">FOTOĞRAF GÖRÜNÜMÜ</string>
+    <string name="settings_include_videos">Videoları dahil et</string>
+    <string name="settings_detect_similar">Benzer fotoğrafları bul</string>
+    <string name="settings_detect_similar_hint">Neredeyse aynı kareleri gruplar, en iyisini saklarsın.</string>
+    <string name="settings_gamification">Hedefler ve seriler</string>
+    <string name="settings_gamification_hint">Günlük hedef halkası, seri ve kilometre taşları. Sayaçlar bu cihazda kalır.</string>
+    <string name="settings_daily_goal">Günlük hedef (fotoğraf)</string>
+    <string name="settings_reminder">Günlük hatırlatıcı</string>
+    <string name="settings_reminder_hint">Yerel bir bildirim, hiçbir şey telefonundan çıkmaz.</string>
+    <string name="settings_reminder_hour">Hatırlatma saati</string>
+    <string name="settings_show_location_hint">Şehir adını göstermek için fotoğraf koordinatlarını sistemin coğrafi kodlayıcısına gönderir.</string>
+    <string name="reminder_channel_name">Hatırlatıcılar</string>
+    <string name="reminder_title">Galerin seni bekliyor</string>
+    <plurals name="reminder_body">
+        <item quantity="one">Bugün %d fotoğraf?</item>
+        <item quantity="other">Bugün %d fotoğraf?</item>
+    </plurals>
+    <string name="deleted_row_status_size">Silinmeye hazır, %s</string>
+</resources>

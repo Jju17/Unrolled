@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_about_menu_item">Unrolled کے بارے میں</string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="one">%d رکھی گئی</item>
+        <item quantity="other">%d رکھی گئیں</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="one">%d حذف ہوئی</item>
+        <item quantity="other">%d حذف ہوئیں</item>
+    </plurals>
+    <string name="header_stats_pill_a11y_open_hint">ٹریش کی فہرست کھولتا ہے۔</string>
+    <string name="header_shuffle_a11y">تصاویر شفل کریں</string>
+    <string name="header_more_a11y">مزید اختیارات</string>
+    <string name="action_delete_a11y">یہ تصویر حذف کریں</string>
+    <string name="action_undo_a11y">آخری فیصلہ واپس لیں</string>
+    <string name="action_keep_a11y">یہ تصویر رکھیں</string>
+    <string name="permission_gate_title">فوٹو لائبریری تک رسائی</string>
+    <string name="permission_gate_body">Unrolled کو آپ کی پوری فوٹو لائبریری پڑھنے کی ضرورت ہے تاکہ آپ اسے ایک ایک کارڈ کر کے دیکھ سکیں۔ کچھ بھی آپ کے ڈیوائس سے باہر نہیں جاتا: نہ نیٹ ورک، نہ اکاؤنٹ۔ اگر آپ ترتیبات میں جگہوں کے نام آن کریں تو شہر کا نام حاصل کرنے کے لیے تصویر کے کوآرڈینیٹس سسٹم کی جیوکوڈنگ سروس کو بھیجے جاتے ہیں۔ آپ چاہیں تو صرف چند تصاویر منتخب کر سکتے ہیں، پھر Unrolled صرف وہی دکھائے گا۔</string>
+    <string name="permission_gate_allow">رسائی کی اجازت دیں</string>
+    <string name="permission_gate_open_settings">ترتیبات کھولیں</string>
+    <string name="empty_state_title">کوئی تصویر نہیں ملی</string>
+    <string name="empty_state_body">آپ کی لائبریری خالی ہے۔</string>
+    <string name="empty_partial_title">کوئی تصویر منتخب نہیں</string>
+    <string name="empty_partial_body">آپ نے Unrolled کو صرف چند منتخب تصاویر تک رسائی دی ہے۔ جاری رکھنے کے لیے مزید تصاویر منتخب کریں۔</string>
+    <string name="empty_partial_change">انتخاب بدلیں</string>
+    <string name="load_error_title">آپ کی تصاویر لوڈ نہیں ہو سکیں</string>
+    <string name="load_error_body">آپ کی لائبریری پڑھتے ہوئے کچھ غلط ہو گیا۔</string>
+    <string name="load_error_retry">دوبارہ کوشش کریں</string>
+    <string name="settings_title">ترتیبات</string>
+    <string name="settings_show_location">مقام دکھائیں</string>
+    <string name="header_view_in_photos_a11y">یہ تصویر گیلری میں دیکھیں</string>
+    <string name="about_tagline">سوائپ کر کے کیمرا رول صاف کریں۔</string>
+    <string name="about_version">ورژن</string>
+    <string name="about_build">بلڈ</string>
+    <string name="about_close">بند کریں</string>
+    <string name="about_privacy_policy">رازداری کی پالیسی</string>
+    <string name="about_support">معاونت</string>
+    <string name="deleted_title">حذف شدہ تصاویر</string>
+    <string name="deleted_close_a11y">بند کریں</string>
+    <string name="deleted_empty_title">حذف کرنے کے لیے کوئی تصویر نہیں</string>
+    <string name="deleted_empty_body">ٹریش بھرنے کے لیے بائیں سوائپ کریں۔</string>
+    <string name="deleted_row_fallback_title">تصویر</string>
+    <string name="deleted_row_status">حذف کے لیے تیار</string>
+    <string name="deleted_row_keep">رکھیں</string>
+    <string name="deleted_row_preview_a11y">یہ تصویر بڑی کر کے دیکھیں</string>
+    <string name="deleted_footer_button">ٹریش خالی کریں (%d)</string>
+    <string name="deleted_reset">ری سیٹ کریں</string>
+    <string name="deleted_reset_title">ساری پیش رفت ری سیٹ کریں؟</string>
+    <string name="deleted_reset_body">رکھی/حذف شدہ ہر نشانی مٹ جاتی ہے تاکہ ڈیک میں دوبارہ پوری لائبریری نظر آئے۔ تصاویر خود جوں کی توں رہتی ہیں۔</string>
+    <string name="deleted_reset_confirm">ری سیٹ کریں</string>
+    <string name="deleted_reset_cancel">منسوخ کریں</string>
+    <string name="trash_error_old_android">Android 11 یا اس سے نیا ورژن درکار ہے۔</string>
+    <string name="trash_error_generic">سسٹم ٹریش شروع نہیں ہو سکا۔</string>
+    <string name="stamp_keep">رکھیں</string>
+    <string name="stamp_delete">حذف کریں</string>
+    <string name="fullscreen_close_a11y">بند کریں</string>
+    <string name="header_pile_label">ڈھیر</string>
+    <string name="header_open_picker_a11y">ڈھیر منتخب کریں</string>
+    <plurals name="header_remaining">
+        <item quantity="one">%d باقی</item>
+        <item quantity="other">%d باقی</item>
+    </plurals>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="one">روزانہ کا ہدف: %2$d میں سے %1$d تصویر۔ آپ کے اعداد و شمار کھولتا ہے۔</item>
+        <item quantity="other">روزانہ کا ہدف: %2$d میں سے %1$d تصاویر۔ آپ کے اعداد و شمار کھولتا ہے۔</item>
+    </plurals>
+    <string name="pile_picker_title">ایک ڈھیر منتخب کریں</string>
+    <string name="pile_picker_cancel">منسوخ کریں</string>
+    <string name="pile_section_sessions">سیشنز</string>
+    <string name="pile_section_months">مہینے</string>
+    <string name="pile_section_albums">البمز</string>
+    <string name="pile_all">تمام تصاویر</string>
+    <string name="pile_on_this_day">اسی دن</string>
+    <string name="pile_one_year_ago">ایک سال پہلے</string>
+    <string name="pile_screenshots">اسکرین شاٹس</string>
+    <string name="pile_videos">ویڈیوز</string>
+    <string name="pile_count_summary">%1$s تصاویر، %2$s باقی</string>
+    <string name="pile_done">مکمل</string>
+    <string name="pile_selected_a11y">موجودہ ڈھیر</string>
+    <string name="album_unknown">بے نام</string>
+    <string name="done_title">ڈھیر مکمل</string>
+    <string name="done_nothing_left_title">یہاں کچھ باقی نہیں</string>
+    <string name="done_nothing_left_body">اس ڈھیر کی ہر تصویر پہلے ہی چھانٹی جا چکی ہے۔</string>
+    <string name="done_view_all">میری تمام تصاویر دیکھیں</string>
+    <string name="done_change_pile">ڈھیر بدلیں</string>
+    <string name="done_start_over">دوبارہ شروع کریں</string>
+    <string name="summary_reviewed">دیکھی گئیں</string>
+    <string name="summary_kept">رکھی گئیں</string>
+    <string name="summary_deleted">حذف ہوئیں</string>
+    <string name="summary_to_free">خالی ہوگی</string>
+    <plurals name="summary_pace">
+        <item quantity="one">%1$s، %2$d تصویر فی منٹ</item>
+        <item quantity="other">%1$s، %2$d تصاویر فی منٹ</item>
+    </plurals>
+    <string name="goal_reached">آج کا ہدف مکمل</string>
+    <string name="goal_reached_with_streak">آج کا ہدف مکمل، %d دن کی اسٹریک</string>
+    <string name="stats_title">آپ کے اعداد و شمار</string>
+    <string name="stats_share_a11y">اپنے اعداد و شمار شیئر کریں</string>
+    <string name="stats_freed_label">اب تک خالی ہوئی</string>
+    <string name="stats_reviewed">تصاویر دیکھی گئیں</string>
+    <string name="stats_deleted">تصاویر حذف ہوئیں</string>
+    <plurals name="stats_streak_days">
+        <item quantity="one">%d دن کی اسٹریک</item>
+        <item quantity="other">%d دن کی اسٹریک</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="one">سب سے لمبی: %d دن</item>
+        <item quantity="other">سب سے لمبی: %d دن</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="one">آج: %2$d میں سے %1$d تصویر</item>
+        <item quantity="other">آج: %2$d میں سے %1$d تصاویر</item>
+    </plurals>
+    <string name="stats_milestones">سنگ میل</string>
+    <string name="stats_milestone_reached_a11y">حاصل</string>
+    <string name="stats_reset">اعداد و شمار ری سیٹ کریں</string>
+    <string name="stats_reset_title">اپنے اعداد و شمار ری سیٹ کریں؟</string>
+    <string name="stats_reset_body">اسٹوریج کاؤنٹر، اسٹریک اور سنگ میل مٹ جاتے ہیں۔ آپ کی تصاویر اور فیصلے جوں کے توں رہتے ہیں۔</string>
+    <string name="stats_reset_confirm">ری سیٹ کریں</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="one">%d تصویر چھانٹی گئی</item>
+        <item quantity="other">%d تصاویر چھانٹی گئیں</item>
+    </plurals>
+    <string name="milestone_freed">%s خالی ہوئی</string>
+    <string name="milestone_streak">%d دن کی اسٹریک</string>
+    <string name="milestone_overlay_title">سنگ میل</string>
+    <string name="milestone_share">شیئر کریں</string>
+    <string name="milestone_dismiss">جاری رکھیں</string>
+    <string name="share_card_tagline">Unrolled سے چھانٹا گیا</string>
+    <string name="share_card_stats_title">Unrolled سے خالی ہوئی جگہ</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="one">%1$d تصویر دیکھی گئی، %2$d حذف ہوئی</item>
+        <item quantity="other">%1$d تصاویر دیکھی گئیں، %2$d حذف ہوئیں</item>
+    </plurals>
+    <plurals name="similar_badge">
+        <item quantity="one">%d ملتی جلتی</item>
+        <item quantity="other">%d ملتی جلتی</item>
+    </plurals>
+    <string name="similar_title">ملتی جلتی تصاویر</string>
+    <string name="similar_hint">جنہیں رکھنا ہے ان پر ٹیپ کریں۔</string>
+    <string name="similar_keep_a11y">رکھی گئی، حذف کرنے کے لیے ٹیپ کریں</string>
+    <string name="similar_delete_a11y">حذف شدہ، رکھنے کے لیے ٹیپ کریں</string>
+    <string name="similar_confirm">%1$d رکھیں، %2$d حذف کریں</string>
+    <string name="similar_cancel">منسوخ کریں</string>
+    <string name="video_badge_a11y">ویڈیو</string>
+    <string name="settings_section_deck">ڈیک</string>
+    <string name="settings_section_goals">اہداف اور اسٹریکس</string>
+    <string name="settings_section_display">تصویر کی نمائش</string>
+    <string name="settings_include_videos">ویڈیوز شامل کریں</string>
+    <string name="settings_detect_similar">ملتی جلتی تصاویر پہچانیں</string>
+    <string name="settings_detect_similar_hint">تقریباً ایک جیسی تصاویر کو ایک ساتھ دکھاتا ہے تاکہ آپ بہترین رکھ سکیں۔</string>
+    <string name="settings_gamification">اہداف اور اسٹریکس</string>
+    <string name="settings_gamification_hint">روزانہ کے ہدف کی رنگ، اسٹریک اور سنگ میل۔ کاؤنٹر اسی ڈیوائس پر رہتے ہیں۔</string>
+    <string name="settings_daily_goal">روزانہ کا ہدف (تصاویر)</string>
+    <string name="settings_reminder">روزانہ یاد دہانی</string>
+    <string name="settings_reminder_hint">ایک لوکل نوٹیفکیشن، کچھ بھی آپ کے فون سے باہر نہیں جاتا۔</string>
+    <string name="settings_reminder_hour">یاد دہانی کا وقت</string>
+    <string name="settings_show_location_hint">شہر کا نام دکھانے کے لیے تصویر کے کوآرڈینیٹس سسٹم کے جیوکوڈر کو بھیجتا ہے۔</string>
+    <string name="reminder_channel_name">یاد دہانیاں</string>
+    <string name="reminder_title">آپ کی گیلری انتظار میں ہے</string>
+    <plurals name="reminder_body">
+        <item quantity="one">آج %d تصویر؟</item>
+        <item quantity="other">آج %d تصاویر؟</item>
+    </plurals>
+    <string name="deleted_row_status_size">حذف کے لیے تیار، %s</string>
+</resources>

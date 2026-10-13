@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_about_menu_item">Unrolled பற்றி</string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="one">%d வைத்தது</item>
+        <item quantity="other">%d வைத்தவை</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="one">%d நீக்கியது</item>
+        <item quantity="other">%d நீக்கியவை</item>
+    </plurals>
+    <string name="header_stats_pill_a11y_open_hint">குப்பைப் பட்டியலைத் திறக்கும்.</string>
+    <string name="header_shuffle_a11y">புகைப்படங்களைக் கலக்கு</string>
+    <string name="header_more_a11y">மேலும் விருப்பங்கள்</string>
+    <string name="action_delete_a11y">இந்தப் புகைப்படத்தை நீக்கு</string>
+    <string name="action_undo_a11y">கடைசித் தேர்வைச் செயல்தவிர்</string>
+    <string name="action_keep_a11y">இந்தப் புகைப்படத்தை வைத்திரு</string>
+    <string name="permission_gate_title">புகைப்பட லைப்ரரி அணுகல்</string>
+    <string name="permission_gate_body">உங்கள் புகைப்படங்களை அட்டை அட்டையாகப் பார்க்க Unrolled உங்கள் முழு புகைப்பட லைப்ரரியையும் படிக்க வேண்டும். உங்கள் சாதனத்திலிருந்து எதுவும் வெளியே செல்லாது: நெட்வொர்க் இல்லை, கணக்கு இல்லை. அமைப்புகளில் இடப் பெயர்களை இயக்கினால், நகரத்தின் பெயரைப் பெற புகைப்பட ஆயத்தொலைவுகள் சிஸ்டம் ஜியோகோடிங் சேவைக்கு அனுப்பப்படும். சில புகைப்படங்களை மட்டும் தேர்ந்தெடுக்கவும் முடியும், அப்போது Unrolled அவற்றை மட்டுமே காட்டும்.</string>
+    <string name="permission_gate_allow">அணுகலை அனுமதி</string>
+    <string name="permission_gate_open_settings">அமைப்புகளைத் திற</string>
+    <string name="empty_state_title">புகைப்படங்கள் எதுவும் இல்லை</string>
+    <string name="empty_state_body">உங்கள் லைப்ரரி காலியாக உள்ளது.</string>
+    <string name="empty_partial_title">தேர்ந்தெடுத்த புகைப்படங்கள் இல்லை</string>
+    <string name="empty_partial_body">சில புகைப்படங்களுக்கு மட்டுமே Unrolled-க்கு அணுகல் கொடுத்துள்ளீர்கள். தொடர மேலும் சிலவற்றைத் தேர்ந்தெடுங்கள்.</string>
+    <string name="empty_partial_change">தேர்வை மாற்று</string>
+    <string name="load_error_title">உங்கள் புகைப்படங்களை ஏற்ற முடியவில்லை</string>
+    <string name="load_error_body">உங்கள் லைப்ரரியைப் படிக்கும்போது ஏதோ தவறு நடந்தது.</string>
+    <string name="load_error_retry">மீண்டும் முயல்</string>
+    <string name="settings_title">அமைப்புகள்</string>
+    <string name="settings_show_location">இடத்தைக் காட்டு</string>
+    <string name="header_view_in_photos_a11y">இந்தப் புகைப்படத்தை கேலரியில் பார்</string>
+    <string name="about_tagline">ஸ்வைப் செய்து உங்கள் கேமரா ரோலைச் சுத்தம் செய்யுங்கள்.</string>
+    <string name="about_version">பதிப்பு</string>
+    <string name="about_build">பில்ட்</string>
+    <string name="about_close">மூடு</string>
+    <string name="about_privacy_policy">தனியுரிமைக் கொள்கை</string>
+    <string name="about_support">ஆதரவு</string>
+    <string name="deleted_title">நீக்கிய புகைப்படங்கள்</string>
+    <string name="deleted_close_a11y">மூடு</string>
+    <string name="deleted_empty_title">நீக்க புகைப்படங்கள் இல்லை</string>
+    <string name="deleted_empty_body">குப்பையை நிரப்ப இடப்புறம் ஸ்வைப் செய்யுங்கள்.</string>
+    <string name="deleted_row_fallback_title">புகைப்படம்</string>
+    <string name="deleted_row_status">நீக்கத் தயார்</string>
+    <string name="deleted_row_keep">வைத்திரு</string>
+    <string name="deleted_row_preview_a11y">இந்தப் புகைப்படத்தை முன்னோட்டமாகப் பார்</string>
+    <string name="deleted_footer_button">குப்பையைக் காலி செய் (%d)</string>
+    <string name="deleted_reset">மீட்டமை</string>
+    <string name="deleted_reset_title">எல்லா முன்னேற்றத்தையும் மீட்டமைக்கவா?</string>
+    <string name="deleted_reset_body">வைத்திருந்த/நீக்கிய குறிகள் அனைத்தையும் அழிக்கும், டெக் மீண்டும் முழு லைப்ரரியையும் காட்டும். புகைப்படங்கள் அப்படியே இருக்கும்.</string>
+    <string name="deleted_reset_confirm">மீட்டமை</string>
+    <string name="deleted_reset_cancel">ரத்துசெய்</string>
+    <string name="trash_error_old_android">Android 11 அல்லது அதற்குப் புதிய பதிப்பு தேவை.</string>
+    <string name="trash_error_generic">சிஸ்டம் குப்பையைத் தொடங்க முடியவில்லை.</string>
+    <string name="stamp_keep">வைத்திரு</string>
+    <string name="stamp_delete">நீக்கு</string>
+    <string name="fullscreen_close_a11y">மூடு</string>
+    <string name="header_pile_label">குவியல்</string>
+    <string name="header_open_picker_a11y">குவியல் தேர்வைத் திற</string>
+    <plurals name="header_remaining">
+        <item quantity="one">%d மீதம்</item>
+        <item quantity="other">%d மீதம்</item>
+    </plurals>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="one">தினசரி இலக்கு: %2$d புகைப்படத்தில் %1$d. உங்கள் புள்ளிவிவரங்களைத் திறக்கும்.</item>
+        <item quantity="other">தினசரி இலக்கு: %2$d புகைப்படங்களில் %1$d. உங்கள் புள்ளிவிவரங்களைத் திறக்கும்.</item>
+    </plurals>
+    <string name="pile_picker_title">ஒரு குவியலைத் தேர்ந்தெடுங்கள்</string>
+    <string name="pile_picker_cancel">ரத்துசெய்</string>
+    <string name="pile_section_sessions">அமர்வுகள்</string>
+    <string name="pile_section_months">மாதங்கள்</string>
+    <string name="pile_section_albums">ஆல்பங்கள்</string>
+    <string name="pile_all">எல்லா புகைப்படங்களும்</string>
+    <string name="pile_on_this_day">இதே நாளில்</string>
+    <string name="pile_one_year_ago">ஓராண்டுக்கு முன்</string>
+    <string name="pile_screenshots">ஸ்கிரீன்ஷாட்கள்</string>
+    <string name="pile_videos">வீடியோக்கள்</string>
+    <string name="pile_count_summary">%1$s புகைப்படங்கள், %2$s மீதம்</string>
+    <string name="pile_done">முடிந்தது</string>
+    <string name="pile_selected_a11y">தற்போதைய குவியல்</string>
+    <string name="album_unknown">பெயரில்லாதது</string>
+    <string name="done_title">குவியல் முடிந்தது</string>
+    <string name="done_nothing_left_title">இங்கே எதுவும் மீதமில்லை</string>
+    <string name="done_nothing_left_body">இந்தக் குவியலின் எல்லா புகைப்படங்களும் ஏற்கனவே வரிசைப்படுத்தப்பட்டுவிட்டன.</string>
+    <string name="done_view_all">என் எல்லா புகைப்படங்களையும் பார்</string>
+    <string name="done_change_pile">குவியலை மாற்று</string>
+    <string name="done_start_over">மீண்டும் தொடங்கு</string>
+    <string name="summary_reviewed">பார்த்தவை</string>
+    <string name="summary_kept">வைத்தவை</string>
+    <string name="summary_deleted">நீக்கியவை</string>
+    <string name="summary_to_free">விடுவிக்கப்படும்</string>
+    <plurals name="summary_pace">
+        <item quantity="one">%1$s, நிமிடத்திற்கு %2$d புகைப்படம்</item>
+        <item quantity="other">%1$s, நிமிடத்திற்கு %2$d புகைப்படங்கள்</item>
+    </plurals>
+    <string name="goal_reached">தினசரி இலக்கை அடைந்தீர்கள்</string>
+    <string name="goal_reached_with_streak">தினசரி இலக்கை அடைந்தீர்கள், %d நாள் தொடர்</string>
+    <string name="stats_title">உங்கள் புள்ளிவிவரங்கள்</string>
+    <string name="stats_share_a11y">உங்கள் புள்ளிவிவரங்களைப் பகிர்</string>
+    <string name="stats_freed_label">இதுவரை விடுவித்தது</string>
+    <string name="stats_reviewed">புகைப்படங்கள் பார்த்தவை</string>
+    <string name="stats_deleted">புகைப்படங்கள் நீக்கியவை</string>
+    <plurals name="stats_streak_days">
+        <item quantity="one">%d நாள் தொடர்</item>
+        <item quantity="other">%d நாள் தொடர்</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="one">அதிகபட்சம்: %d நாள்</item>
+        <item quantity="other">அதிகபட்சம்: %d நாட்கள்</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="one">இன்று: %2$d புகைப்படத்தில் %1$d</item>
+        <item quantity="other">இன்று: %2$d புகைப்படங்களில் %1$d</item>
+    </plurals>
+    <string name="stats_milestones">மைல்கற்கள்</string>
+    <string name="stats_milestone_reached_a11y">அடைந்தது</string>
+    <string name="stats_reset">புள்ளிவிவரங்களை மீட்டமை</string>
+    <string name="stats_reset_title">உங்கள் புள்ளிவிவரங்களை மீட்டமைக்கவா?</string>
+    <string name="stats_reset_body">சேமிப்பக எண்ணிக்கை, தொடர் மற்றும் மைல்கற்களை அழிக்கும். உங்கள் புகைப்படங்களும் முடிவுகளும் அப்படியே இருக்கும்.</string>
+    <string name="stats_reset_confirm">மீட்டமை</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="one">%d புகைப்படம் வரிசைப்படுத்தப்பட்டது</item>
+        <item quantity="other">%d புகைப்படங்கள் வரிசைப்படுத்தப்பட்டன</item>
+    </plurals>
+    <string name="milestone_freed">%s விடுவித்தீர்கள்</string>
+    <string name="milestone_streak">%d நாள் தொடர்</string>
+    <string name="milestone_overlay_title">மைல்கல்</string>
+    <string name="milestone_share">பகிர்</string>
+    <string name="milestone_dismiss">தொடருங்கள்</string>
+    <string name="share_card_tagline">Unrolled மூலம் வரிசைப்படுத்தியது</string>
+    <string name="share_card_stats_title">Unrolled மூலம் விடுவித்த இடம்</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="one">%1$d புகைப்படம் பார்த்தது, %2$d நீக்கியது</item>
+        <item quantity="other">%1$d புகைப்படங்கள் பார்த்தவை, %2$d நீக்கியவை</item>
+    </plurals>
+    <plurals name="similar_badge">
+        <item quantity="one">%d ஒத்தது</item>
+        <item quantity="other">%d ஒத்தவை</item>
+    </plurals>
+    <string name="similar_title">ஒத்த புகைப்படங்கள்</string>
+    <string name="similar_hint">வைத்திருக்க வேண்டியவற்றைத் தட்டுங்கள்.</string>
+    <string name="similar_keep_a11y">வைத்தது, நீக்க தட்டவும்</string>
+    <string name="similar_delete_a11y">நீக்கியது, வைத்திருக்க தட்டவும்</string>
+    <string name="similar_confirm">%1$d வைத்திரு, %2$d நீக்கு</string>
+    <string name="similar_cancel">ரத்துசெய்</string>
+    <string name="video_badge_a11y">வீடியோ</string>
+    <string name="settings_section_deck">டெக்</string>
+    <string name="settings_section_goals">இலக்குகள் மற்றும் தொடர்கள்</string>
+    <string name="settings_section_display">புகைப்படக் காட்சி</string>
+    <string name="settings_include_videos">வீடியோக்களையும் சேர்</string>
+    <string name="settings_detect_similar">ஒத்த புகைப்படங்களைக் கண்டறி</string>
+    <string name="settings_detect_similar_hint">கிட்டத்தட்ட ஒரே மாதிரியான படங்களைக் குழுவாக்கி, சிறந்ததை வைத்திருக்க உதவும்.</string>
+    <string name="settings_gamification">இலக்குகள் மற்றும் தொடர்கள்</string>
+    <string name="settings_gamification_hint">தினசரி இலக்கு வளையம், தொடர் மற்றும் மைல்கற்கள். எண்ணிக்கைகள் இந்தச் சாதனத்திலேயே இருக்கும்.</string>
+    <string name="settings_daily_goal">தினசரி இலக்கு (புகைப்படங்கள்)</string>
+    <string name="settings_reminder">தினசரி நினைவூட்டல்</string>
+    <string name="settings_reminder_hint">ஒரு லோக்கல் அறிவிப்பு, உங்கள் மொபைலிலிருந்து எதுவும் வெளியே செல்லாது.</string>
+    <string name="settings_reminder_hour">நினைவூட்டல் நேரம்</string>
+    <string name="settings_show_location_hint">நகரத்தின் பெயரைக் காட்ட புகைப்பட ஆயத்தொலைவுகளை சிஸ்டம் ஜியோகோடருக்கு அனுப்பும்.</string>
+    <string name="reminder_channel_name">நினைவூட்டல்கள்</string>
+    <string name="reminder_title">உங்கள் கேலரி காத்திருக்கிறது</string>
+    <plurals name="reminder_body">
+        <item quantity="one">இன்று %d புகைப்படமா?</item>
+        <item quantity="other">இன்று %d புகைப்படங்களா?</item>
+    </plurals>
+    <string name="deleted_row_status_size">நீக்கத் தயார், %s</string>
+</resources>

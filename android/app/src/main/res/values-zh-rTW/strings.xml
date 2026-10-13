@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_about_menu_item">關於 Unrolled</string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="other">保留 %d 張</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="other">刪除 %d 張</item>
+    </plurals>
+    <string name="header_stats_pill_a11y_open_hint">開啟待刪除清單。</string>
+    <string name="header_shuffle_a11y">隨機排列照片</string>
+    <string name="header_more_a11y">更多選項</string>
+    <string name="action_delete_a11y">刪除這張照片</string>
+    <string name="action_undo_a11y">復原上一個選擇</string>
+    <string name="action_keep_a11y">保留這張照片</string>
+    <string name="permission_gate_title">照片圖庫存取權限</string>
+    <string name="permission_gate_body">Unrolled 需要讀取你的完整照片圖庫，你才能一張一張地瀏覽。所有資料都不會離開你的裝置：不連網，也不需要帳號。如果你在設定中開啟地點名稱，照片的座標會傳送給系統的地理編碼服務以取得城市名稱。你也可以只選取部分照片，Unrolled 就只會顯示這些照片。</string>
+    <string name="permission_gate_allow">允許存取</string>
+    <string name="permission_gate_open_settings">開啟設定</string>
+    <string name="empty_state_title">找不到照片</string>
+    <string name="empty_state_body">你的圖庫是空的。</string>
+    <string name="empty_partial_title">沒有選取的照片</string>
+    <string name="empty_partial_body">你只允許 Unrolled 存取部分照片。請選取更多照片以繼續。</string>
+    <string name="empty_partial_change">變更選取</string>
+    <string name="load_error_title">無法載入你的照片</string>
+    <string name="load_error_body">讀取圖庫時發生問題。</string>
+    <string name="load_error_retry">重試</string>
+    <string name="settings_title">設定</string>
+    <string name="settings_show_location">顯示位置</string>
+    <string name="header_view_in_photos_a11y">在圖庫中檢視這張照片</string>
+    <string name="about_tagline">滑一滑，相簿煥然一新。</string>
+    <string name="about_version">版本</string>
+    <string name="about_build">建置號</string>
+    <string name="about_close">關閉</string>
+    <string name="about_privacy_policy">隱私權政策</string>
+    <string name="about_support">支援</string>
+    <string name="deleted_title">待刪除的照片</string>
+    <string name="deleted_close_a11y">關閉</string>
+    <string name="deleted_empty_title">沒有待刪除的照片</string>
+    <string name="deleted_empty_body">向左滑動即可放進垃圾桶。</string>
+    <string name="deleted_row_fallback_title">照片</string>
+    <string name="deleted_row_status">待刪除</string>
+    <string name="deleted_row_keep">保留</string>
+    <string name="deleted_row_preview_a11y">預覽這張照片</string>
+    <string name="deleted_footer_button">清空垃圾桶 (%d)</string>
+    <string name="deleted_reset">重設</string>
+    <string name="deleted_reset_title">重設所有進度？</string>
+    <string name="deleted_reset_body">清除所有保留/刪除標記，讓卡組重新顯示整個圖庫。照片本身不受影響。</string>
+    <string name="deleted_reset_confirm">重設</string>
+    <string name="deleted_reset_cancel">取消</string>
+    <string name="trash_error_old_android">需要 Android 11 或更新版本。</string>
+    <string name="trash_error_generic">無法啟動系統垃圾桶。</string>
+    <string name="stamp_keep">保留</string>
+    <string name="stamp_delete">刪除</string>
+    <string name="fullscreen_close_a11y">關閉</string>
+    <string name="header_pile_label">照片堆</string>
+    <string name="header_open_picker_a11y">開啟照片堆選擇器</string>
+    <plurals name="header_remaining">
+        <item quantity="other">剩餘 %d 張</item>
+    </plurals>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="other">每日目標：%1$d / %2$d 張。開啟你的統計。</item>
+    </plurals>
+    <string name="pile_picker_title">選擇照片堆</string>
+    <string name="pile_picker_cancel">取消</string>
+    <string name="pile_section_sessions">快速整理</string>
+    <string name="pile_section_months">依月份</string>
+    <string name="pile_section_albums">相簿</string>
+    <string name="pile_all">所有照片</string>
+    <string name="pile_on_this_day">歷史上的今天</string>
+    <string name="pile_one_year_ago">一年前</string>
+    <string name="pile_screenshots">螢幕截圖</string>
+    <string name="pile_videos">影片</string>
+    <string name="pile_count_summary">%1$s 張照片，剩餘 %2$s 張</string>
+    <string name="pile_done">已完成</string>
+    <string name="pile_selected_a11y">目前的照片堆</string>
+    <string name="album_unknown">未命名</string>
+    <string name="done_title">這堆整理完了</string>
+    <string name="done_nothing_left_title">這裡沒有剩下的了</string>
+    <string name="done_nothing_left_body">這堆照片已經全部整理完畢。</string>
+    <string name="done_view_all">檢視我的所有照片</string>
+    <string name="done_change_pile">換一堆</string>
+    <string name="done_start_over">重新開始</string>
+    <string name="summary_reviewed">已瀏覽</string>
+    <string name="summary_kept">已保留</string>
+    <string name="summary_deleted">已刪除</string>
+    <string name="summary_to_free">可釋放</string>
+    <plurals name="summary_pace">
+        <item quantity="other">%1$s，每分鐘 %2$d 張</item>
+    </plurals>
+    <string name="goal_reached">已達成每日目標</string>
+    <string name="goal_reached_with_streak">已達成每日目標，連續 %d 天</string>
+    <string name="stats_title">你的統計</string>
+    <string name="stats_share_a11y">分享你的統計</string>
+    <string name="stats_freed_label">至今已釋放</string>
+    <string name="stats_reviewed">已瀏覽照片</string>
+    <string name="stats_deleted">已刪除照片</string>
+    <plurals name="stats_streak_days">
+        <item quantity="other">連續 %d 天</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="other">最長：%d 天</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="other">今天：%1$d / %2$d 張</item>
+    </plurals>
+    <string name="stats_milestones">里程碑</string>
+    <string name="stats_milestone_reached_a11y">已達成</string>
+    <string name="stats_reset">重設統計</string>
+    <string name="stats_reset_title">重設你的統計？</string>
+    <string name="stats_reset_body">清除空間計數、連續天數和里程碑。照片和你的決定不受影響。</string>
+    <string name="stats_reset_confirm">重設</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="other">整理了 %d 張照片</item>
+    </plurals>
+    <string name="milestone_freed">釋放 %s</string>
+    <string name="milestone_streak">連續 %d 天</string>
+    <string name="milestone_overlay_title">里程碑</string>
+    <string name="milestone_share">分享</string>
+    <string name="milestone_dismiss">繼續</string>
+    <string name="share_card_tagline">用 Unrolled 整理</string>
+    <string name="share_card_stats_title">用 Unrolled 釋放的空間</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="other">瀏覽 %1$d 張照片，刪除 %2$d 張</item>
+    </plurals>
+    <plurals name="similar_badge">
+        <item quantity="other">%d 張相似</item>
+    </plurals>
+    <string name="similar_title">相似照片</string>
+    <string name="similar_hint">點一下要保留的照片。</string>
+    <string name="similar_keep_a11y">已保留，點一下即刪除</string>
+    <string name="similar_delete_a11y">已刪除，點一下即保留</string>
+    <string name="similar_confirm">保留 %1$d 張，刪除 %2$d 張</string>
+    <string name="similar_cancel">取消</string>
+    <string name="video_badge_a11y">影片</string>
+    <string name="settings_section_deck">卡組</string>
+    <string name="settings_section_goals">目標與連續天數</string>
+    <string name="settings_section_display">照片顯示</string>
+    <string name="settings_include_videos">包含影片</string>
+    <string name="settings_detect_similar">偵測相似照片</string>
+    <string name="settings_detect_similar_hint">把幾乎相同的照片歸為一組，只留最好的一張。</string>
+    <string name="settings_gamification">目標與連續天數</string>
+    <string name="settings_gamification_hint">每日目標環、連續天數和里程碑。計數只保存在這部裝置上。</string>
+    <string name="settings_daily_goal">每日目標（張）</string>
+    <string name="settings_reminder">每日提醒</string>
+    <string name="settings_reminder_hint">本機通知，不會有任何資料離開你的手機。</string>
+    <string name="settings_reminder_hour">提醒時間</string>
+    <string name="settings_show_location_hint">將照片座標傳送給系統地理編碼器以顯示城市名稱。</string>
+    <string name="reminder_channel_name">提醒</string>
+    <string name="reminder_title">你的圖庫在等你</string>
+    <plurals name="reminder_body">
+        <item quantity="other">今天整理 %d 張？</item>
+    </plurals>
+    <string name="deleted_row_status_size">待刪除，%s</string>
+</resources>

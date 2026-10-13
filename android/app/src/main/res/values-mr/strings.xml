@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_about_menu_item">Unrolled बद्दल</string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="one">%d ठेवला</item>
+        <item quantity="other">%d ठेवले</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="one">%d हटवला</item>
+        <item quantity="other">%d हटवले</item>
+    </plurals>
+    <string name="header_stats_pill_a11y_open_hint">ट्रॅश यादी उघडते.</string>
+    <string name="header_shuffle_a11y">फोटो शफल करा</string>
+    <string name="header_more_a11y">आणखी पर्याय</string>
+    <string name="action_delete_a11y">हा फोटो हटवा</string>
+    <string name="action_undo_a11y">शेवटचा निर्णय मागे घ्या</string>
+    <string name="action_keep_a11y">हा फोटो ठेवा</string>
+    <string name="permission_gate_title">फोटो लायब्ररीची परवानगी</string>
+    <string name="permission_gate_body">Unrolled ला तुमची संपूर्ण फोटो लायब्ररी वाचण्याची गरज आहे, म्हणजे तुम्ही ती एकेका कार्डने पाहू शकाल. तुमच्या डिव्हाइसबाहेर काहीही जात नाही: नेटवर्क नाही, खाते नाही. सेटिंग्जमध्ये ठिकाणांची नावे सुरू केली, तर शहराचे नाव मिळवण्यासाठी फोटोचे निर्देशांक सिस्टमच्या जिओकोडिंग सेवेकडे पाठवले जातात. तुम्ही फक्त काही फोटो निवडू शकता, मग Unrolled फक्त तेच दाखवेल.</string>
+    <string name="permission_gate_allow">परवानगी द्या</string>
+    <string name="permission_gate_open_settings">सेटिंग्ज उघडा</string>
+    <string name="empty_state_title">कोणतेही फोटो सापडले नाहीत</string>
+    <string name="empty_state_body">तुमची लायब्ररी रिकामी आहे.</string>
+    <string name="empty_partial_title">कोणतेही फोटो निवडलेले नाहीत</string>
+    <string name="empty_partial_body">तुम्ही Unrolled ला फक्त निवडक फोटो पाहण्याची परवानगी दिली आहे. पुढे जाण्यासाठी आणखी फोटो निवडा.</string>
+    <string name="empty_partial_change">निवड बदला</string>
+    <string name="load_error_title">तुमचे फोटो लोड होऊ शकले नाहीत</string>
+    <string name="load_error_body">तुमची लायब्ररी वाचताना काहीतरी चुकले.</string>
+    <string name="load_error_retry">पुन्हा प्रयत्न करा</string>
+    <string name="settings_title">सेटिंग्ज</string>
+    <string name="settings_show_location">ठिकाण दाखवा</string>
+    <string name="header_view_in_photos_a11y">हा फोटो गॅलरीत पाहा</string>
+    <string name="about_tagline">स्वाइप करून कॅमेरा रोल स्वच्छ करा.</string>
+    <string name="about_version">आवृत्ती</string>
+    <string name="about_build">बिल्ड</string>
+    <string name="about_close">बंद करा</string>
+    <string name="about_privacy_policy">गोपनीयता धोरण</string>
+    <string name="about_support">मदत</string>
+    <string name="deleted_title">हटवलेले फोटो</string>
+    <string name="deleted_close_a11y">बंद करा</string>
+    <string name="deleted_empty_title">हटवण्यासाठी फोटो नाहीत</string>
+    <string name="deleted_empty_body">ट्रॅश भरण्यासाठी डावीकडे स्वाइप करा.</string>
+    <string name="deleted_row_fallback_title">फोटो</string>
+    <string name="deleted_row_status">हटवण्यासाठी तयार</string>
+    <string name="deleted_row_keep">ठेवा</string>
+    <string name="deleted_row_preview_a11y">हा फोटो मोठा करून पाहा</string>
+    <string name="deleted_footer_button">ट्रॅश रिकामा करा (%d)</string>
+    <string name="deleted_reset">रीसेट करा</string>
+    <string name="deleted_reset_title">सगळी प्रगती रीसेट करायची?</string>
+    <string name="deleted_reset_body">ठेवले/हटवले अशा सगळ्या खुणा पुसल्या जातात, म्हणजे डेकमध्ये पुन्हा पूर्ण लायब्ररी दिसते. फोटो स्वतः जसेच्या तसे राहतात.</string>
+    <string name="deleted_reset_confirm">रीसेट करा</string>
+    <string name="deleted_reset_cancel">रद्द करा</string>
+    <string name="trash_error_old_android">Android 11 किंवा नवीन आवृत्ती लागते.</string>
+    <string name="trash_error_generic">सिस्टम ट्रॅश सुरू करता आला नाही.</string>
+    <string name="stamp_keep">ठेवा</string>
+    <string name="stamp_delete">हटवा</string>
+    <string name="fullscreen_close_a11y">बंद करा</string>
+    <string name="header_pile_label">ढीग</string>
+    <string name="header_open_picker_a11y">ढीग निवडा</string>
+    <plurals name="header_remaining">
+        <item quantity="one">%d बाकी</item>
+        <item quantity="other">%d बाकी</item>
+    </plurals>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="one">रोजचे ध्येय: %2$d पैकी %1$d फोटो. तुमची आकडेवारी उघडते.</item>
+        <item quantity="other">रोजचे ध्येय: %2$d पैकी %1$d फोटो. तुमची आकडेवारी उघडते.</item>
+    </plurals>
+    <string name="pile_picker_title">एक ढीग निवडा</string>
+    <string name="pile_picker_cancel">रद्द करा</string>
+    <string name="pile_section_sessions">सेशन</string>
+    <string name="pile_section_months">महिने</string>
+    <string name="pile_section_albums">अल्बम</string>
+    <string name="pile_all">सगळे फोटो</string>
+    <string name="pile_on_this_day">याच दिवशी</string>
+    <string name="pile_one_year_ago">एक वर्षापूर्वी</string>
+    <string name="pile_screenshots">स्क्रीनशॉट</string>
+    <string name="pile_videos">व्हिडिओ</string>
+    <string name="pile_count_summary">%1$s फोटो, %2$s बाकी</string>
+    <string name="pile_done">पूर्ण</string>
+    <string name="pile_selected_a11y">सध्याचा ढीग</string>
+    <string name="album_unknown">नाव नाही</string>
+    <string name="done_title">ढीग पूर्ण झाला</string>
+    <string name="done_nothing_left_title">इथे काही उरले नाही</string>
+    <string name="done_nothing_left_body">या ढिगातला प्रत्येक फोटो आधीच आवरला आहे.</string>
+    <string name="done_view_all">माझे सगळे फोटो पाहा</string>
+    <string name="done_change_pile">ढीग बदला</string>
+    <string name="done_start_over">पुन्हा सुरू करा</string>
+    <string name="summary_reviewed">पाहिले</string>
+    <string name="summary_kept">ठेवले</string>
+    <string name="summary_deleted">हटवले</string>
+    <string name="summary_to_free">मोकळी होणार</string>
+    <plurals name="summary_pace">
+        <item quantity="one">%1$s, मिनिटाला %2$d फोटो</item>
+        <item quantity="other">%1$s, मिनिटाला %2$d फोटो</item>
+    </plurals>
+    <string name="goal_reached">आजचे ध्येय गाठले</string>
+    <string name="goal_reached_with_streak">आजचे ध्येय गाठले, %d दिवसांची स्ट्रीक</string>
+    <string name="stats_title">तुमची आकडेवारी</string>
+    <string name="stats_share_a11y">तुमची आकडेवारी शेअर करा</string>
+    <string name="stats_freed_label">आतापर्यंत मोकळी झाली</string>
+    <string name="stats_reviewed">फोटो पाहिले</string>
+    <string name="stats_deleted">फोटो हटवले</string>
+    <plurals name="stats_streak_days">
+        <item quantity="one">%d दिवसाची स्ट्रीक</item>
+        <item quantity="other">%d दिवसांची स्ट्रीक</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="one">सर्वात लांब: %d दिवस</item>
+        <item quantity="other">सर्वात लांब: %d दिवस</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="one">आज: %2$d पैकी %1$d फोटो</item>
+        <item quantity="other">आज: %2$d पैकी %1$d फोटो</item>
+    </plurals>
+    <string name="stats_milestones">टप्पे</string>
+    <string name="stats_milestone_reached_a11y">गाठला</string>
+    <string name="stats_reset">आकडेवारी रीसेट करा</string>
+    <string name="stats_reset_title">तुमची आकडेवारी रीसेट करायची?</string>
+    <string name="stats_reset_body">स्टोरेज काउंटर, स्ट्रीक आणि टप्पे पुसले जातात. तुमचे फोटो आणि निर्णय जसेच्या तसे राहतात.</string>
+    <string name="stats_reset_confirm">रीसेट करा</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="one">%d फोटो आवरला</item>
+        <item quantity="other">%d फोटो आवरले</item>
+    </plurals>
+    <string name="milestone_freed">%s मोकळी झाली</string>
+    <string name="milestone_streak">%d दिवसांची स्ट्रीक</string>
+    <string name="milestone_overlay_title">टप्पा</string>
+    <string name="milestone_share">शेअर करा</string>
+    <string name="milestone_dismiss">पुढे चला</string>
+    <string name="share_card_tagline">Unrolled ने आवरले</string>
+    <string name="share_card_stats_title">Unrolled ने मोकळी केलेली जागा</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="one">%1$d फोटो पाहिला, %2$d हटवला</item>
+        <item quantity="other">%1$d फोटो पाहिले, %2$d हटवले</item>
+    </plurals>
+    <plurals name="similar_badge">
+        <item quantity="one">%d सारखा</item>
+        <item quantity="other">%d सारखे</item>
+    </plurals>
+    <string name="similar_title">सारखे फोटो</string>
+    <string name="similar_hint">जे ठेवायचे त्यांवर टॅप करा.</string>
+    <string name="similar_keep_a11y">ठेवला, हटवण्यासाठी टॅप करा</string>
+    <string name="similar_delete_a11y">हटवला, ठेवण्यासाठी टॅप करा</string>
+    <string name="similar_confirm">%1$d ठेवा, %2$d हटवा</string>
+    <string name="similar_cancel">रद्द करा</string>
+    <string name="video_badge_a11y">व्हिडिओ</string>
+    <string name="settings_section_deck">डेक</string>
+    <string name="settings_section_goals">ध्येये आणि स्ट्रीक</string>
+    <string name="settings_section_display">फोटो डिस्प्ले</string>
+    <string name="settings_include_videos">व्हिडिओ समाविष्ट करा</string>
+    <string name="settings_detect_similar">सारखे फोटो ओळखा</string>
+    <string name="settings_detect_similar_hint">जवळपास सारखे फोटो एकत्र दाखवते, म्हणजे तुम्ही सर्वोत्तम ठेवू शकाल.</string>
+    <string name="settings_gamification">ध्येये आणि स्ट्रीक</string>
+    <string name="settings_gamification_hint">रोजच्या ध्येयाची रिंग, स्ट्रीक आणि टप्पे. काउंटर याच डिव्हाइसवर राहतात.</string>
+    <string name="settings_daily_goal">रोजचे ध्येय (फोटो)</string>
+    <string name="settings_reminder">रोजचा रिमाइंडर</string>
+    <string name="settings_reminder_hint">एक लोकल नोटिफिकेशन, तुमच्या फोनबाहेर काहीही जात नाही.</string>
+    <string name="settings_reminder_hour">रिमाइंडरची वेळ</string>
+    <string name="settings_show_location_hint">शहराचे नाव दाखवण्यासाठी फोटोचे निर्देशांक सिस्टमच्या जिओकोडरकडे पाठवते.</string>
+    <string name="reminder_channel_name">रिमाइंडर</string>
+    <string name="reminder_title">तुमची गॅलरी वाट पाहत आहे</string>
+    <plurals name="reminder_body">
+        <item quantity="one">आज %d फोटो?</item>
+        <item quantity="other">आज %d फोटो?</item>
+    </plurals>
+    <string name="deleted_row_status_size">हटवण्यासाठी तयार, %s</string>
+</resources>

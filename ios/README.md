@@ -59,7 +59,7 @@ Unrolled/
 │   └── LocationGeocoder.swift     cached CLGeocoder
 ├── Resources/
 │   ├── Assets.xcassets         AppIcon (light/dark/tinted), AppLogo
-│   ├── Localizable.xcstrings   en + fr, every key translated
+│   ├── Localizable.xcstrings   21 languages, every key translated (StringCatalogTests)
 │   └── InfoPlist.xcstrings
 ├── Info.plist
 └── PrivacyInfo.xcprivacy       required Apple privacy manifest

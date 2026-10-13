@@ -29,16 +29,136 @@
       "comment" : "Shown in the system permission dialog when the app first asks for Photos access",
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يحتاج Unrolled إلى الوصول إلى صورك لتتمكن من تصفحها وفرزها بالسحب."
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled-এর আপনার ছবির অ্যাক্সেস দরকার, যাতে আপনি সোয়াইপ করে সেগুলো বাছাই করতে পারেন।"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled braucht Zugriff auf deine Fotos, damit du sie durchwischen und sortieren kannst."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unrolled needs access to your photos so you can swipe through and sort them."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled necesita acceso a tus fotos para que puedas recorrerlas y ordenarlas deslizando."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unrolled a besoin d'accéder à tes photos pour que tu puisses les trier en swipant."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled को आपकी फ़ोटो की अनुमति चाहिए, ताकि आप उन्हें स्वाइप करके छाँट सकें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled perlu akses ke fotomu agar kamu bisa menggeser dan menyortirnya."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled ha bisogno di accedere alle tue foto perché tu possa sfogliarle e sistemarle con uno swipe."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真をスワイプで整理できるように、Unrolledは写真へのアクセスを必要とします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진을 스와이프하며 정리할 수 있도록 Unrolled에 사진 접근 권한이 필요합니다."
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled ला तुमच्या फोटोंचा ॲक्सेस लागतो, म्हणजे तुम्ही ते स्वाइप करून आवरू शकाल."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled heeft toegang tot je foto's nodig zodat je erdoorheen kunt swipen en ze kunt sorteren."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Unrolled precisa de acesso às suas fotos para que você possa deslizar por elas e organizá-las."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled нужен доступ к твоим фото, чтобы их можно было листать и разбирать."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "நீங்கள் ஸ்வைப் செய்து வரிசைப்படுத்த, உங்கள் புகைப்படங்களுக்கு Unrolled-க்கு அணுகல் தேவை."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "మీరు స్వైప్ చేస్తూ సార్ట్ చేసేందుకు Unrolledకు మీ ఫోటోలకు యాక్సెస్ అవసరం."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled'ın fotoğraflarını kaydırarak ayıklayabilmen için onlara erişmesi gerekiyor."
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled کو آپ کی تصاویر تک رسائی چاہیے تاکہ آپ انہیں سوائپ کر کے چھانٹ سکیں۔"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled cần truy cập ảnh của bạn để bạn có thể vuốt và sắp xếp chúng."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled 需要访问你的照片，这样你才能滑动浏览并整理。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrolled 需要存取你的照片，你才能滑動瀏覽並整理。"
           }
         }
       }

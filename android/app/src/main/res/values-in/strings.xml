@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_about_menu_item">Tentang Unrolled</string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="other">%d disimpan</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="other">%d dihapus</item>
+    </plurals>
+    <string name="header_stats_pill_a11y_open_hint">Membuka daftar sampah.</string>
+    <string name="header_shuffle_a11y">Acak foto</string>
+    <string name="header_more_a11y">Opsi lainnya</string>
+    <string name="action_delete_a11y">Hapus foto ini</string>
+    <string name="action_undo_a11y">Urungkan pilihan terakhir</string>
+    <string name="action_keep_a11y">Simpan foto ini</string>
+    <string name="permission_gate_title">Akses galeri foto</string>
+    <string name="permission_gate_body">Unrolled perlu membaca seluruh galeri fotomu agar kamu bisa menelusurinya kartu demi kartu. Tidak ada yang keluar dari perangkatmu: tanpa jaringan, tanpa akun. Jika kamu mengaktifkan nama lokasi di Pengaturan, koordinat foto dikirim ke layanan geocoding sistem untuk mendapatkan nama kota. Kamu juga bisa memilih beberapa foto saja dan Unrolled hanya akan menampilkan foto-foto itu.</string>
+    <string name="permission_gate_allow">Izinkan akses</string>
+    <string name="permission_gate_open_settings">Buka pengaturan</string>
+    <string name="empty_state_title">Tidak ada foto</string>
+    <string name="empty_state_body">Galerimu kosong.</string>
+    <string name="empty_partial_title">Tidak ada foto yang dipilih</string>
+    <string name="empty_partial_body">Kamu hanya memberi Unrolled akses ke sebagian foto. Pilih lebih banyak untuk melanjutkan.</string>
+    <string name="empty_partial_change">Ubah pilihan</string>
+    <string name="load_error_title">Fotomu tidak bisa dimuat</string>
+    <string name="load_error_body">Terjadi kesalahan saat membaca galerimu.</string>
+    <string name="load_error_retry">Coba lagi</string>
+    <string name="settings_title">Pengaturan</string>
+    <string name="settings_show_location">Tampilkan lokasi</string>
+    <string name="header_view_in_photos_a11y">Lihat foto ini di galeri</string>
+    <string name="about_tagline">Geser untuk membersihkan rol kameramu.</string>
+    <string name="about_version">Versi</string>
+    <string name="about_build">Build</string>
+    <string name="about_close">Tutup</string>
+    <string name="about_privacy_policy">Kebijakan privasi</string>
+    <string name="about_support">Dukungan</string>
+    <string name="deleted_title">Foto yang dihapus</string>
+    <string name="deleted_close_a11y">Tutup</string>
+    <string name="deleted_empty_title">Tidak ada foto untuk dihapus</string>
+    <string name="deleted_empty_body">Geser ke kiri untuk mengisi sampah.</string>
+    <string name="deleted_row_fallback_title">Foto</string>
+    <string name="deleted_row_status">Siap dihapus</string>
+    <string name="deleted_row_keep">Simpan</string>
+    <string name="deleted_row_preview_a11y">Pratinjau foto ini</string>
+    <string name="deleted_footer_button">Kosongkan sampah (%d)</string>
+    <string name="deleted_reset">Atur ulang</string>
+    <string name="deleted_reset_title">Atur ulang semua progres?</string>
+    <string name="deleted_reset_body">Menghapus semua tanda simpan/hapus sehingga dek menampilkan seluruh galeri lagi. Fotonya sendiri tidak disentuh.</string>
+    <string name="deleted_reset_confirm">Atur ulang</string>
+    <string name="deleted_reset_cancel">Batal</string>
+    <string name="trash_error_old_android">Memerlukan Android 11 atau yang lebih baru.</string>
+    <string name="trash_error_generic">Sampah sistem tidak bisa dijalankan.</string>
+    <string name="stamp_keep">SIMPAN</string>
+    <string name="stamp_delete">HAPUS</string>
+    <string name="fullscreen_close_a11y">Tutup</string>
+    <string name="header_pile_label">TUMPUKAN</string>
+    <string name="header_open_picker_a11y">Buka pemilih tumpukan</string>
+    <plurals name="header_remaining">
+        <item quantity="other">%d tersisa</item>
+    </plurals>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="other">Target harian: %1$d dari %2$d foto. Membuka statistikmu.</item>
+    </plurals>
+    <string name="pile_picker_title">Pilih tumpukan</string>
+    <string name="pile_picker_cancel">Batal</string>
+    <string name="pile_section_sessions">Sesi</string>
+    <string name="pile_section_months">Bulan</string>
+    <string name="pile_section_albums">Album</string>
+    <string name="pile_all">Semua foto</string>
+    <string name="pile_on_this_day">Pada hari ini</string>
+    <string name="pile_one_year_ago">Setahun yang lalu</string>
+    <string name="pile_screenshots">Tangkapan layar</string>
+    <string name="pile_videos">Video</string>
+    <string name="pile_count_summary">%1$s foto, %2$s tersisa</string>
+    <string name="pile_done">Selesai</string>
+    <string name="pile_selected_a11y">Tumpukan saat ini</string>
+    <string name="album_unknown">Tanpa nama</string>
+    <string name="done_title">Tumpukan selesai</string>
+    <string name="done_nothing_left_title">Tidak ada yang tersisa</string>
+    <string name="done_nothing_left_body">Semua foto di tumpukan ini sudah disortir.</string>
+    <string name="done_view_all">Lihat semua fotoku</string>
+    <string name="done_change_pile">Ganti tumpukan</string>
+    <string name="done_start_over">Mulai dari awal</string>
+    <string name="summary_reviewed">ditinjau</string>
+    <string name="summary_kept">disimpan</string>
+    <string name="summary_deleted">dihapus</string>
+    <string name="summary_to_free">akan dibebaskan</string>
+    <plurals name="summary_pace">
+        <item quantity="other">%1$s dengan %2$d foto/menit</item>
+    </plurals>
+    <string name="goal_reached">Target harian tercapai</string>
+    <string name="goal_reached_with_streak">Target harian tercapai, rentetan %d hari</string>
+    <string name="stats_title">Statistikmu</string>
+    <string name="stats_share_a11y">Bagikan statistikmu</string>
+    <string name="stats_freed_label">dibebaskan sejauh ini</string>
+    <string name="stats_reviewed">foto ditinjau</string>
+    <string name="stats_deleted">foto dihapus</string>
+    <plurals name="stats_streak_days">
+        <item quantity="other">Rentetan %d hari</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="other">Terpanjang: %d hari</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="other">Hari ini: %1$d dari %2$d foto</item>
+    </plurals>
+    <string name="stats_milestones">PENCAPAIAN</string>
+    <string name="stats_milestone_reached_a11y">Tercapai</string>
+    <string name="stats_reset">Atur ulang statistik</string>
+    <string name="stats_reset_title">Atur ulang statistikmu?</string>
+    <string name="stats_reset_body">Menghapus penghitung ruang, rentetan, dan pencapaian. Foto dan keputusanmu tidak disentuh.</string>
+    <string name="stats_reset_confirm">Atur ulang</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="other">%d foto disortir</item>
+    </plurals>
+    <string name="milestone_freed">%s dibebaskan</string>
+    <string name="milestone_streak">Rentetan %d hari</string>
+    <string name="milestone_overlay_title">PENCAPAIAN</string>
+    <string name="milestone_share">Bagikan</string>
+    <string name="milestone_dismiss">Lanjutkan</string>
+    <string name="share_card_tagline">Disortir dengan Unrolled</string>
+    <string name="share_card_stats_title">Ruang yang dibebaskan dengan Unrolled</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="other">%1$d foto ditinjau, %2$d dihapus</item>
+    </plurals>
+    <plurals name="similar_badge">
+        <item quantity="other">%d serupa</item>
+    </plurals>
+    <string name="similar_title">Foto serupa</string>
+    <string name="similar_hint">Ketuk yang ingin disimpan.</string>
+    <string name="similar_keep_a11y">Disimpan, ketuk untuk menghapus</string>
+    <string name="similar_delete_a11y">Dihapus, ketuk untuk menyimpan</string>
+    <string name="similar_confirm">Simpan %1$d, hapus %2$d</string>
+    <string name="similar_cancel">Batal</string>
+    <string name="video_badge_a11y">Video</string>
+    <string name="settings_section_deck">DEK</string>
+    <string name="settings_section_goals">TARGET DAN RENTETAN</string>
+    <string name="settings_section_display">TAMPILAN FOTO</string>
+    <string name="settings_include_videos">Sertakan video</string>
+    <string name="settings_detect_similar">Deteksi foto serupa</string>
+    <string name="settings_detect_similar_hint">Mengelompokkan jepretan yang hampir identik agar kamu bisa menyimpan yang terbaik.</string>
+    <string name="settings_gamification">Target dan rentetan</string>
+    <string name="settings_gamification_hint">Cincin target harian, rentetan, dan pencapaian. Penghitung tetap di perangkat ini.</string>
+    <string name="settings_daily_goal">Target harian (foto)</string>
+    <string name="settings_reminder">Pengingat harian</string>
+    <string name="settings_reminder_hint">Notifikasi lokal, tidak ada yang keluar dari ponselmu.</string>
+    <string name="settings_reminder_hour">Waktu pengingat</string>
+    <string name="settings_show_location_hint">Mengirim koordinat foto ke geocoder sistem untuk menampilkan nama kota.</string>
+    <string name="reminder_channel_name">Pengingat</string>
+    <string name="reminder_title">Galerimu menunggu</string>
+    <plurals name="reminder_body">
+        <item quantity="other">%d foto hari ini?</item>
+    </plurals>
+    <string name="deleted_row_status_size">Siap dihapus, %s</string>
+</resources>

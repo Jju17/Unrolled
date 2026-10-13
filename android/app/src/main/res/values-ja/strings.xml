@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_about_menu_item">Unrolledについて</string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="other">%d枚残した</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="other">%d枚削除</item>
+    </plurals>
+    <string name="header_stats_pill_a11y_open_hint">削除リストを開きます。</string>
+    <string name="header_shuffle_a11y">写真をシャッフル</string>
+    <string name="header_more_a11y">その他のオプション</string>
+    <string name="action_delete_a11y">この写真を削除</string>
+    <string name="action_undo_a11y">最後の選択を取り消す</string>
+    <string name="action_keep_a11y">この写真を残す</string>
+    <string name="permission_gate_title">写真ライブラリへのアクセス</string>
+    <string name="permission_gate_body">Unrolledは、写真を1枚ずつカードのように見ていけるように、写真ライブラリ全体を読み取る必要があります。データが端末の外に出ることはありません。通信もアカウントも不要です。設定で地名の表示をオンにすると、都市名を取得するために写真の位置情報がシステムのジオコーディングサービスに送信されます。一部の写真だけを選ぶこともでき、その場合Unrolledはそれらの写真のみを表示します。</string>
+    <string name="permission_gate_allow">アクセスを許可</string>
+    <string name="permission_gate_open_settings">設定を開く</string>
+    <string name="empty_state_title">写真が見つかりません</string>
+    <string name="empty_state_body">ライブラリは空です。</string>
+    <string name="empty_partial_title">選択された写真がありません</string>
+    <string name="empty_partial_body">Unrolledには一部の写真へのアクセスのみが許可されています。続けるには、さらに写真を選んでください。</string>
+    <string name="empty_partial_change">選択を変更</string>
+    <string name="load_error_title">写真を読み込めませんでした</string>
+    <string name="load_error_body">ライブラリの読み取り中に問題が発生しました。</string>
+    <string name="load_error_retry">再試行</string>
+    <string name="settings_title">設定</string>
+    <string name="settings_show_location">位置情報を表示</string>
+    <string name="header_view_in_photos_a11y">この写真をギャラリーで表示</string>
+    <string name="about_tagline">スワイプでカメラロールをすっきり。</string>
+    <string name="about_version">バージョン</string>
+    <string name="about_build">ビルド</string>
+    <string name="about_close">閉じる</string>
+    <string name="about_privacy_policy">プライバシーポリシー</string>
+    <string name="about_support">サポート</string>
+    <string name="deleted_title">削除する写真</string>
+    <string name="deleted_close_a11y">閉じる</string>
+    <string name="deleted_empty_title">削除する写真はありません</string>
+    <string name="deleted_empty_body">左にスワイプしてゴミ箱に入れましょう。</string>
+    <string name="deleted_row_fallback_title">写真</string>
+    <string name="deleted_row_status">削除待ち</string>
+    <string name="deleted_row_keep">残す</string>
+    <string name="deleted_row_preview_a11y">この写真をプレビュー</string>
+    <string name="deleted_footer_button">ゴミ箱を空にする (%d)</string>
+    <string name="deleted_reset">リセット</string>
+    <string name="deleted_reset_title">すべての進行状況をリセットしますか？</string>
+    <string name="deleted_reset_body">残す/削除のマークをすべて消去し、デッキにライブラリ全体を再表示します。写真そのものは変更されません。</string>
+    <string name="deleted_reset_confirm">リセット</string>
+    <string name="deleted_reset_cancel">キャンセル</string>
+    <string name="trash_error_old_android">Android 11以降が必要です。</string>
+    <string name="trash_error_generic">システムのゴミ箱を呼び出せませんでした。</string>
+    <string name="stamp_keep">残す</string>
+    <string name="stamp_delete">削除</string>
+    <string name="fullscreen_close_a11y">閉じる</string>
+    <string name="header_pile_label">山</string>
+    <string name="header_open_picker_a11y">山を選ぶ</string>
+    <plurals name="header_remaining">
+        <item quantity="other">残り%d枚</item>
+    </plurals>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="other">今日の目標：%2$d枚中%1$d枚。統計を開きます。</item>
+    </plurals>
+    <string name="pile_picker_title">山を選ぶ</string>
+    <string name="pile_picker_cancel">キャンセル</string>
+    <string name="pile_section_sessions">セッション</string>
+    <string name="pile_section_months">月別</string>
+    <string name="pile_section_albums">アルバム</string>
+    <string name="pile_all">すべての写真</string>
+    <string name="pile_on_this_day">過去のこの日</string>
+    <string name="pile_one_year_ago">1年前</string>
+    <string name="pile_screenshots">スクリーンショット</string>
+    <string name="pile_videos">動画</string>
+    <string name="pile_count_summary">%1$s枚、残り%2$s枚</string>
+    <string name="pile_done">完了</string>
+    <string name="pile_selected_a11y">現在の山</string>
+    <string name="album_unknown">名称未設定</string>
+    <string name="done_title">この山は完了</string>
+    <string name="done_nothing_left_title">ここにはもう何もありません</string>
+    <string name="done_nothing_left_body">この山の写真はすべて整理済みです。</string>
+    <string name="done_view_all">すべての写真を見る</string>
+    <string name="done_change_pile">山を変更</string>
+    <string name="done_start_over">最初からやり直す</string>
+    <string name="summary_reviewed">確認済み</string>
+    <string name="summary_kept">残した</string>
+    <string name="summary_deleted">削除した</string>
+    <string name="summary_to_free">空く容量</string>
+    <plurals name="summary_pace">
+        <item quantity="other">%1$s、毎分%2$d枚</item>
+    </plurals>
+    <string name="goal_reached">今日の目標を達成</string>
+    <string name="goal_reached_with_streak">今日の目標を達成、%d日連続</string>
+    <string name="stats_title">あなたの統計</string>
+    <string name="stats_share_a11y">統計を共有</string>
+    <string name="stats_freed_label">これまでに空けた容量</string>
+    <string name="stats_reviewed">確認した写真</string>
+    <string name="stats_deleted">削除した写真</string>
+    <plurals name="stats_streak_days">
+        <item quantity="other">%d日連続</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="other">最長：%d日</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="other">今日：%2$d枚中%1$d枚</item>
+    </plurals>
+    <string name="stats_milestones">マイルストーン</string>
+    <string name="stats_milestone_reached_a11y">達成済み</string>
+    <string name="stats_reset">統計をリセット</string>
+    <string name="stats_reset_title">統計をリセットしますか？</string>
+    <string name="stats_reset_body">容量カウンター、連続記録、マイルストーンを消去します。写真と選択の内容は変更されません。</string>
+    <string name="stats_reset_confirm">リセット</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="other">%d枚を整理</item>
+    </plurals>
+    <string name="milestone_freed">%s空けた</string>
+    <string name="milestone_streak">%d日連続</string>
+    <string name="milestone_overlay_title">マイルストーン</string>
+    <string name="milestone_share">共有</string>
+    <string name="milestone_dismiss">続ける</string>
+    <string name="share_card_tagline">Unrolledで整理</string>
+    <string name="share_card_stats_title">Unrolledで空けた容量</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="other">%1$d枚確認、%2$d枚削除</item>
+    </plurals>
+    <plurals name="similar_badge">
+        <item quantity="other">似た写真%d枚</item>
+    </plurals>
+    <string name="similar_title">似ている写真</string>
+    <string name="similar_hint">残す写真をタップしてください。</string>
+    <string name="similar_keep_a11y">残す。タップで削除</string>
+    <string name="similar_delete_a11y">削除。タップで残す</string>
+    <string name="similar_confirm">%1$d枚残す、%2$d枚削除</string>
+    <string name="similar_cancel">キャンセル</string>
+    <string name="video_badge_a11y">動画</string>
+    <string name="settings_section_deck">デッキ</string>
+    <string name="settings_section_goals">目標と連続記録</string>
+    <string name="settings_section_display">写真の表示</string>
+    <string name="settings_include_videos">動画を含める</string>
+    <string name="settings_detect_similar">似ている写真を検出</string>
+    <string name="settings_detect_similar_hint">ほぼ同じ写真をまとめて、いちばん良い1枚を残せます。</string>
+    <string name="settings_gamification">目標と連続記録</string>
+    <string name="settings_gamification_hint">1日の目標リング、連続記録、マイルストーン。カウンターはこの端末内に保存されます。</string>
+    <string name="settings_daily_goal">1日の目標（枚数）</string>
+    <string name="settings_reminder">毎日のリマインダー</string>
+    <string name="settings_reminder_hint">ローカル通知です。データが端末の外に出ることはありません。</string>
+    <string name="settings_reminder_hour">リマインダーの時刻</string>
+    <string name="settings_show_location_hint">都市名を表示するために、写真の位置情報をシステムのジオコーダーに送信します。</string>
+    <string name="reminder_channel_name">リマインダー</string>
+    <string name="reminder_title">ギャラリーが待っています</string>
+    <plurals name="reminder_body">
+        <item quantity="other">今日は%d枚どうですか？</item>
+    </plurals>
+    <string name="deleted_row_status_size">削除待ち、%s</string>
+</resources>

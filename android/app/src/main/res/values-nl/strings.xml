@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_about_menu_item">Over Unrolled</string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="one">%d bewaard</item>
+        <item quantity="other">%d bewaard</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="one">%d verwijderd</item>
+        <item quantity="other">%d verwijderd</item>
+    </plurals>
+    <string name="header_stats_pill_a11y_open_hint">Opent de verwijderlijst.</string>
+    <string name="header_shuffle_a11y">Foto\'s schudden</string>
+    <string name="header_more_a11y">Meer opties</string>
+    <string name="action_delete_a11y">Deze foto verwijderen</string>
+    <string name="action_undo_a11y">Laatste keuze ongedaan maken</string>
+    <string name="action_keep_a11y">Deze foto bewaren</string>
+    <string name="permission_gate_title">Toegang tot je foto\'s</string>
+    <string name="permission_gate_body">Unrolled moet je volledige fotobibliotheek kunnen lezen zodat je er kaart voor kaart doorheen kunt bladeren. Niets verlaat je toestel: geen netwerk, geen account. Als je plaatsnamen inschakelt in de instellingen, worden de coördinaten van je foto\'s naar de geocodeerdienst van het systeem gestuurd om een stadsnaam op te halen. Je kunt ook maar een paar foto\'s kiezen, dan laat Unrolled alleen die zien.</string>
+    <string name="permission_gate_allow">Toegang toestaan</string>
+    <string name="permission_gate_open_settings">Instellingen openen</string>
+    <string name="empty_state_title">Geen foto\'s gevonden</string>
+    <string name="empty_state_body">Je bibliotheek is leeg.</string>
+    <string name="empty_partial_title">Geen foto\'s geselecteerd</string>
+    <string name="empty_partial_body">Je hebt Unrolled alleen toegang gegeven tot een selectie foto\'s. Kies er meer om verder te gaan.</string>
+    <string name="empty_partial_change">Selectie wijzigen</string>
+    <string name="load_error_title">Je foto\'s konden niet worden geladen</string>
+    <string name="load_error_body">Er ging iets mis bij het lezen van je bibliotheek.</string>
+    <string name="load_error_retry">Opnieuw proberen</string>
+    <string name="settings_title">Instellingen</string>
+    <string name="settings_show_location">Locatie tonen</string>
+    <string name="header_view_in_photos_a11y">Deze foto in de galerij bekijken</string>
+    <string name="about_tagline">Swipe je filmrol schoon.</string>
+    <string name="about_version">Versie</string>
+    <string name="about_build">Build</string>
+    <string name="about_close">Sluiten</string>
+    <string name="about_privacy_policy">Privacybeleid</string>
+    <string name="about_support">Ondersteuning</string>
+    <string name="deleted_title">Verwijderde foto\'s</string>
+    <string name="deleted_close_a11y">Sluiten</string>
+    <string name="deleted_empty_title">Geen foto\'s om te verwijderen</string>
+    <string name="deleted_empty_body">Swipe naar links om de prullenbak te vullen.</string>
+    <string name="deleted_row_fallback_title">Foto</string>
+    <string name="deleted_row_status">Klaar om te verwijderen</string>
+    <string name="deleted_row_keep">Bewaren</string>
+    <string name="deleted_row_preview_a11y">Deze foto groot bekijken</string>
+    <string name="deleted_footer_button">Prullenbak legen (%d)</string>
+    <string name="deleted_reset">Resetten</string>
+    <string name="deleted_reset_title">Alle voortgang resetten?</string>
+    <string name="deleted_reset_body">Wist alle bewaard/verwijderd-markeringen zodat het deck weer de hele bibliotheek toont. De foto\'s zelf blijven onaangeroerd.</string>
+    <string name="deleted_reset_confirm">Resetten</string>
+    <string name="deleted_reset_cancel">Annuleren</string>
+    <string name="trash_error_old_android">Vereist Android 11 of nieuwer.</string>
+    <string name="trash_error_generic">De prullenbak van het systeem kon niet worden aangeroepen.</string>
+    <string name="stamp_keep">BEWAREN</string>
+    <string name="stamp_delete">VERWIJDEREN</string>
+    <string name="fullscreen_close_a11y">Sluiten</string>
+    <string name="header_pile_label">STAPEL</string>
+    <string name="header_open_picker_a11y">Stapelkeuze openen</string>
+    <plurals name="header_remaining">
+        <item quantity="one">nog %d</item>
+        <item quantity="other">nog %d</item>
+    </plurals>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="one">Dagdoel: %1$d van %2$d foto. Opent je statistieken.</item>
+        <item quantity="other">Dagdoel: %1$d van %2$d foto\'s. Opent je statistieken.</item>
+    </plurals>
+    <string name="pile_picker_title">Kies een stapel</string>
+    <string name="pile_picker_cancel">Annuleren</string>
+    <string name="pile_section_sessions">Sessies</string>
+    <string name="pile_section_months">Maanden</string>
+    <string name="pile_section_albums">Albums</string>
+    <string name="pile_all">Alle foto\'s</string>
+    <string name="pile_on_this_day">Op deze dag</string>
+    <string name="pile_one_year_ago">Een jaar geleden</string>
+    <string name="pile_screenshots">Schermafbeeldingen</string>
+    <string name="pile_videos">Video\'s</string>
+    <string name="pile_count_summary">%1$s foto\'s, nog %2$s</string>
+    <string name="pile_done">Klaar</string>
+    <string name="pile_selected_a11y">Huidige stapel</string>
+    <string name="album_unknown">Onbekend</string>
+    <string name="done_title">Stapel klaar</string>
+    <string name="done_nothing_left_title">Hier is niets meer</string>
+    <string name="done_nothing_left_body">Elke foto van deze stapel is al gesorteerd.</string>
+    <string name="done_view_all">Al mijn foto\'s bekijken</string>
+    <string name="done_change_pile">Andere stapel</string>
+    <string name="done_start_over">Opnieuw beginnen</string>
+    <string name="summary_reviewed">bekeken</string>
+    <string name="summary_kept">bewaard</string>
+    <string name="summary_deleted">verwijderd</string>
+    <string name="summary_to_free">vrij te maken</string>
+    <plurals name="summary_pace">
+        <item quantity="one">%1$s met %2$d foto/min</item>
+        <item quantity="other">%1$s met %2$d foto\'s/min</item>
+    </plurals>
+    <string name="goal_reached">Dagdoel gehaald</string>
+    <string name="goal_reached_with_streak">Dagdoel gehaald, reeks van %d dagen</string>
+    <string name="stats_title">Je statistieken</string>
+    <string name="stats_share_a11y">Je statistieken delen</string>
+    <string name="stats_freed_label">tot nu toe vrijgemaakt</string>
+    <string name="stats_reviewed">foto\'s bekeken</string>
+    <string name="stats_deleted">foto\'s verwijderd</string>
+    <plurals name="stats_streak_days">
+        <item quantity="one">Reeks van %d dag</item>
+        <item quantity="other">Reeks van %d dagen</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="one">Langste: %d dag</item>
+        <item quantity="other">Langste: %d dagen</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="one">Vandaag: %1$d van %2$d foto</item>
+        <item quantity="other">Vandaag: %1$d van %2$d foto\'s</item>
+    </plurals>
+    <string name="stats_milestones">MIJLPALEN</string>
+    <string name="stats_milestone_reached_a11y">Bereikt</string>
+    <string name="stats_reset">Statistieken resetten</string>
+    <string name="stats_reset_title">Je statistieken resetten?</string>
+    <string name="stats_reset_body">Zet de opslagteller, de reeks en de mijlpalen op nul. Je foto\'s en keuzes blijven onaangeroerd.</string>
+    <string name="stats_reset_confirm">Resetten</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="one">%d foto gesorteerd</item>
+        <item quantity="other">%d foto\'s gesorteerd</item>
+    </plurals>
+    <string name="milestone_freed">%s vrijgemaakt</string>
+    <string name="milestone_streak">Reeks van %d dagen</string>
+    <string name="milestone_overlay_title">MIJLPAAL</string>
+    <string name="milestone_share">Delen</string>
+    <string name="milestone_dismiss">Ga zo door</string>
+    <string name="share_card_tagline">Gesorteerd met Unrolled</string>
+    <string name="share_card_stats_title">Ruimte vrijgemaakt met Unrolled</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="one">%1$d foto bekeken, %2$d verwijderd</item>
+        <item quantity="other">%1$d foto\'s bekeken, %2$d verwijderd</item>
+    </plurals>
+    <plurals name="similar_badge">
+        <item quantity="one">%d vergelijkbaar</item>
+        <item quantity="other">%d vergelijkbaar</item>
+    </plurals>
+    <string name="similar_title">Vergelijkbare foto\'s</string>
+    <string name="similar_hint">Tik op de foto\'s die je wilt bewaren.</string>
+    <string name="similar_keep_a11y">Bewaard, tik om te verwijderen</string>
+    <string name="similar_delete_a11y">Verwijderd, tik om te bewaren</string>
+    <string name="similar_confirm">%1$d bewaren, %2$d verwijderen</string>
+    <string name="similar_cancel">Annuleren</string>
+    <string name="video_badge_a11y">Video</string>
+    <string name="settings_section_deck">DECK</string>
+    <string name="settings_section_goals">DOELEN EN REEKSEN</string>
+    <string name="settings_section_display">FOTOWEERGAVE</string>
+    <string name="settings_include_videos">Video\'s meenemen</string>
+    <string name="settings_detect_similar">Vergelijkbare foto\'s herkennen</string>
+    <string name="settings_detect_similar_hint">Groepeert bijna identieke foto\'s zodat je de beste bewaart.</string>
+    <string name="settings_gamification">Doelen en reeksen</string>
+    <string name="settings_gamification_hint">Dagdoelring, reeks en mijlpalen. De tellers blijven op dit toestel.</string>
+    <string name="settings_daily_goal">Dagdoel (foto\'s)</string>
+    <string name="settings_reminder">Dagelijkse herinnering</string>
+    <string name="settings_reminder_hint">Een lokale melding, niets verlaat je telefoon.</string>
+    <string name="settings_reminder_hour">Tijd van de herinnering</string>
+    <string name="settings_show_location_hint">Stuurt de coördinaten van de foto naar de geocoder van het systeem om een stadsnaam te tonen.</string>
+    <string name="reminder_channel_name">Herinneringen</string>
+    <string name="reminder_title">Je galerij wacht op je</string>
+    <plurals name="reminder_body">
+        <item quantity="one">%d foto vandaag?</item>
+        <item quantity="other">%d foto\'s vandaag?</item>
+    </plurals>
+    <string name="deleted_row_status_size">Klaar om te verwijderen, %s</string>
+</resources>

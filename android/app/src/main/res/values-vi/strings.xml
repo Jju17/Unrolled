@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_about_menu_item">Giới thiệu Unrolled</string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="other">Đã giữ %d</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="other">Đã xóa %d</item>
+    </plurals>
+    <string name="header_stats_pill_a11y_open_hint">Mở danh sách thùng rác.</string>
+    <string name="header_shuffle_a11y">Xáo trộn ảnh</string>
+    <string name="header_more_a11y">Tùy chọn khác</string>
+    <string name="action_delete_a11y">Xóa ảnh này</string>
+    <string name="action_undo_a11y">Hoàn tác lựa chọn cuối</string>
+    <string name="action_keep_a11y">Giữ ảnh này</string>
+    <string name="permission_gate_title">Quyền truy cập thư viện ảnh</string>
+    <string name="permission_gate_body">Unrolled cần đọc toàn bộ thư viện ảnh của bạn để bạn có thể duyệt từng thẻ một. Không có gì rời khỏi thiết bị của bạn: không mạng, không tài khoản. Nếu bạn bật tên địa điểm trong Cài đặt, tọa độ ảnh sẽ được gửi đến dịch vụ mã hóa địa lý của hệ thống để lấy tên thành phố. Bạn cũng có thể chỉ chọn vài ảnh và Unrolled sẽ chỉ hiển thị những ảnh đó.</string>
+    <string name="permission_gate_allow">Cho phép truy cập</string>
+    <string name="permission_gate_open_settings">Mở cài đặt</string>
+    <string name="empty_state_title">Không tìm thấy ảnh</string>
+    <string name="empty_state_body">Thư viện của bạn trống.</string>
+    <string name="empty_partial_title">Chưa chọn ảnh nào</string>
+    <string name="empty_partial_body">Bạn chỉ cho Unrolled truy cập một số ảnh đã chọn. Hãy chọn thêm để tiếp tục.</string>
+    <string name="empty_partial_change">Thay đổi lựa chọn</string>
+    <string name="load_error_title">Không tải được ảnh của bạn</string>
+    <string name="load_error_body">Đã xảy ra lỗi khi đọc thư viện của bạn.</string>
+    <string name="load_error_retry">Thử lại</string>
+    <string name="settings_title">Cài đặt</string>
+    <string name="settings_show_location">Hiện vị trí</string>
+    <string name="header_view_in_photos_a11y">Xem ảnh này trong thư viện</string>
+    <string name="about_tagline">Vuốt để dọn sạch cuộn camera của bạn.</string>
+    <string name="about_version">Phiên bản</string>
+    <string name="about_build">Bản dựng</string>
+    <string name="about_close">Đóng</string>
+    <string name="about_privacy_policy">Chính sách quyền riêng tư</string>
+    <string name="about_support">Hỗ trợ</string>
+    <string name="deleted_title">Ảnh đã xóa</string>
+    <string name="deleted_close_a11y">Đóng</string>
+    <string name="deleted_empty_title">Không có ảnh để xóa</string>
+    <string name="deleted_empty_body">Vuốt sang trái để thêm vào thùng rác.</string>
+    <string name="deleted_row_fallback_title">Ảnh</string>
+    <string name="deleted_row_status">Sẵn sàng xóa</string>
+    <string name="deleted_row_keep">Giữ</string>
+    <string name="deleted_row_preview_a11y">Xem trước ảnh này</string>
+    <string name="deleted_footer_button">Dọn thùng rác (%d)</string>
+    <string name="deleted_reset">Đặt lại</string>
+    <string name="deleted_reset_title">Đặt lại toàn bộ tiến trình?</string>
+    <string name="deleted_reset_body">Xóa mọi đánh dấu giữ/xóa để bộ thẻ hiển thị lại toàn bộ thư viện. Bản thân các ảnh không bị ảnh hưởng.</string>
+    <string name="deleted_reset_confirm">Đặt lại</string>
+    <string name="deleted_reset_cancel">Hủy</string>
+    <string name="trash_error_old_android">Yêu cầu Android 11 trở lên.</string>
+    <string name="trash_error_generic">Không kích hoạt được thùng rác hệ thống.</string>
+    <string name="stamp_keep">GIỮ</string>
+    <string name="stamp_delete">XÓA</string>
+    <string name="fullscreen_close_a11y">Đóng</string>
+    <string name="header_pile_label">CHỒNG ẢNH</string>
+    <string name="header_open_picker_a11y">Mở bộ chọn chồng ảnh</string>
+    <plurals name="header_remaining">
+        <item quantity="other">Còn %d</item>
+    </plurals>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="other">Mục tiêu hằng ngày: %1$d trên %2$d ảnh. Mở thống kê của bạn.</item>
+    </plurals>
+    <string name="pile_picker_title">Chọn một chồng ảnh</string>
+    <string name="pile_picker_cancel">Hủy</string>
+    <string name="pile_section_sessions">Phiên</string>
+    <string name="pile_section_months">Tháng</string>
+    <string name="pile_section_albums">Album</string>
+    <string name="pile_all">Tất cả ảnh</string>
+    <string name="pile_on_this_day">Vào ngày này</string>
+    <string name="pile_one_year_ago">Một năm trước</string>
+    <string name="pile_screenshots">Ảnh chụp màn hình</string>
+    <string name="pile_videos">Video</string>
+    <string name="pile_count_summary">%1$s ảnh, còn %2$s</string>
+    <string name="pile_done">Xong</string>
+    <string name="pile_selected_a11y">Chồng ảnh hiện tại</string>
+    <string name="album_unknown">Không tên</string>
+    <string name="done_title">Đã xong chồng ảnh</string>
+    <string name="done_nothing_left_title">Không còn gì ở đây</string>
+    <string name="done_nothing_left_body">Mọi ảnh trong chồng này đã được sắp xếp.</string>
+    <string name="done_view_all">Xem tất cả ảnh của tôi</string>
+    <string name="done_change_pile">Đổi chồng ảnh</string>
+    <string name="done_start_over">Làm lại từ đầu</string>
+    <string name="summary_reviewed">đã xem</string>
+    <string name="summary_kept">đã giữ</string>
+    <string name="summary_deleted">đã xóa</string>
+    <string name="summary_to_free">sẽ giải phóng</string>
+    <plurals name="summary_pace">
+        <item quantity="other">%1$s với %2$d ảnh/phút</item>
+    </plurals>
+    <string name="goal_reached">Đã đạt mục tiêu hằng ngày</string>
+    <string name="goal_reached_with_streak">Đã đạt mục tiêu hằng ngày, chuỗi %d ngày</string>
+    <string name="stats_title">Thống kê của bạn</string>
+    <string name="stats_share_a11y">Chia sẻ thống kê của bạn</string>
+    <string name="stats_freed_label">đã giải phóng đến nay</string>
+    <string name="stats_reviewed">ảnh đã xem</string>
+    <string name="stats_deleted">ảnh đã xóa</string>
+    <plurals name="stats_streak_days">
+        <item quantity="other">Chuỗi %d ngày</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="other">Dài nhất: %d ngày</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="other">Hôm nay: %1$d trên %2$d ảnh</item>
+    </plurals>
+    <string name="stats_milestones">CỘT MỐC</string>
+    <string name="stats_milestone_reached_a11y">Đã đạt</string>
+    <string name="stats_reset">Đặt lại thống kê</string>
+    <string name="stats_reset_title">Đặt lại thống kê của bạn?</string>
+    <string name="stats_reset_body">Xóa bộ đếm dung lượng, chuỗi ngày và các cột mốc. Ảnh và quyết định của bạn không bị ảnh hưởng.</string>
+    <string name="stats_reset_confirm">Đặt lại</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="other">Đã sắp xếp %d ảnh</item>
+    </plurals>
+    <string name="milestone_freed">Đã giải phóng %s</string>
+    <string name="milestone_streak">Chuỗi %d ngày</string>
+    <string name="milestone_overlay_title">CỘT MỐC</string>
+    <string name="milestone_share">Chia sẻ</string>
+    <string name="milestone_dismiss">Tiếp tục</string>
+    <string name="share_card_tagline">Sắp xếp với Unrolled</string>
+    <string name="share_card_stats_title">Dung lượng giải phóng với Unrolled</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="other">Đã xem %1$d ảnh, xóa %2$d</item>
+    </plurals>
+    <plurals name="similar_badge">
+        <item quantity="other">%d ảnh tương tự</item>
+    </plurals>
+    <string name="similar_title">Ảnh tương tự</string>
+    <string name="similar_hint">Chạm vào những ảnh muốn giữ.</string>
+    <string name="similar_keep_a11y">Đã giữ, chạm để xóa</string>
+    <string name="similar_delete_a11y">Đã xóa, chạm để giữ</string>
+    <string name="similar_confirm">Giữ %1$d, xóa %2$d</string>
+    <string name="similar_cancel">Hủy</string>
+    <string name="video_badge_a11y">Video</string>
+    <string name="settings_section_deck">BỘ THẺ</string>
+    <string name="settings_section_goals">MỤC TIÊU VÀ CHUỖI NGÀY</string>
+    <string name="settings_section_display">HIỂN THỊ ẢNH</string>
+    <string name="settings_include_videos">Bao gồm video</string>
+    <string name="settings_detect_similar">Phát hiện ảnh tương tự</string>
+    <string name="settings_detect_similar_hint">Gom các ảnh gần giống nhau để bạn giữ lại ảnh đẹp nhất.</string>
+    <string name="settings_gamification">Mục tiêu và chuỗi ngày</string>
+    <string name="settings_gamification_hint">Vòng mục tiêu hằng ngày, chuỗi ngày và cột mốc. Bộ đếm chỉ lưu trên thiết bị này.</string>
+    <string name="settings_daily_goal">Mục tiêu hằng ngày (ảnh)</string>
+    <string name="settings_reminder">Nhắc nhở hằng ngày</string>
+    <string name="settings_reminder_hint">Một thông báo cục bộ, không có gì rời khỏi điện thoại của bạn.</string>
+    <string name="settings_reminder_hour">Giờ nhắc nhở</string>
+    <string name="settings_show_location_hint">Gửi tọa độ ảnh đến bộ mã hóa địa lý của hệ thống để hiện tên thành phố.</string>
+    <string name="reminder_channel_name">Nhắc nhở</string>
+    <string name="reminder_title">Thư viện của bạn đang chờ</string>
+    <plurals name="reminder_body">
+        <item quantity="other">%d ảnh hôm nay nhé?</item>
+    </plurals>
+    <string name="deleted_row_status_size">Sẵn sàng xóa, %s</string>
+</resources>

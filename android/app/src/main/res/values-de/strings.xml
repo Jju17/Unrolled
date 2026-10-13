@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_about_menu_item">Über Unrolled</string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="one">%d behalten</item>
+        <item quantity="other">%d behalten</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="one">%d gelöscht</item>
+        <item quantity="other">%d gelöscht</item>
+    </plurals>
+    <string name="header_stats_pill_a11y_open_hint">Öffnet die Löschliste.</string>
+    <string name="header_shuffle_a11y">Fotos mischen</string>
+    <string name="header_more_a11y">Weitere Optionen</string>
+    <string name="action_delete_a11y">Dieses Foto löschen</string>
+    <string name="action_undo_a11y">Letzte Entscheidung rückgängig machen</string>
+    <string name="action_keep_a11y">Dieses Foto behalten</string>
+    <string name="permission_gate_title">Zugriff auf deine Fotos</string>
+    <string name="permission_gate_body">Unrolled muss deine gesamte Fotomediathek lesen, damit du sie Karte für Karte durchgehen kannst. Nichts verlässt dein Gerät: kein Netzwerk, kein Konto. Wenn du in den Einstellungen Ortsnamen aktivierst, werden die Koordinaten der Fotos an den Geocoding-Dienst des Systems gesendet, um einen Stadtnamen zu erhalten. Du kannst auch nur ein paar Fotos auswählen, dann zeigt Unrolled nur diese.</string>
+    <string name="permission_gate_allow">Zugriff erlauben</string>
+    <string name="permission_gate_open_settings">Einstellungen öffnen</string>
+    <string name="empty_state_title">Keine Fotos gefunden</string>
+    <string name="empty_state_body">Deine Mediathek ist leer.</string>
+    <string name="empty_partial_title">Keine Fotos ausgewählt</string>
+    <string name="empty_partial_body">Du hast Unrolled nur Zugriff auf eine Auswahl von Fotos gegeben. Wähle weitere aus, um fortzufahren.</string>
+    <string name="empty_partial_change">Auswahl ändern</string>
+    <string name="load_error_title">Deine Fotos konnten nicht geladen werden</string>
+    <string name="load_error_body">Beim Lesen deiner Mediathek ist etwas schiefgelaufen.</string>
+    <string name="load_error_retry">Erneut versuchen</string>
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_show_location">Ort anzeigen</string>
+    <string name="header_view_in_photos_a11y">Dieses Foto in der Galerie anzeigen</string>
+    <string name="about_tagline">Räum deine Fotos per Swipe auf.</string>
+    <string name="about_version">Version</string>
+    <string name="about_build">Build</string>
+    <string name="about_close">Schließen</string>
+    <string name="about_privacy_policy">Datenschutzerklärung</string>
+    <string name="about_support">Support</string>
+    <string name="deleted_title">Gelöschte Fotos</string>
+    <string name="deleted_close_a11y">Schließen</string>
+    <string name="deleted_empty_title">Keine Fotos zum Löschen</string>
+    <string name="deleted_empty_body">Wische nach links, um den Papierkorb zu füllen.</string>
+    <string name="deleted_row_fallback_title">Foto</string>
+    <string name="deleted_row_status">Bereit zum Löschen</string>
+    <string name="deleted_row_keep">Behalten</string>
+    <string name="deleted_row_preview_a11y">Dieses Foto groß anzeigen</string>
+    <string name="deleted_footer_button">Papierkorb leeren (%d)</string>
+    <string name="deleted_reset">Zurücksetzen</string>
+    <string name="deleted_reset_title">Gesamten Fortschritt zurücksetzen?</string>
+    <string name="deleted_reset_body">Löscht alle Behalten/Löschen-Markierungen, damit das Deck wieder die ganze Mediathek zeigt. Die Fotos selbst bleiben unberührt.</string>
+    <string name="deleted_reset_confirm">Zurücksetzen</string>
+    <string name="deleted_reset_cancel">Abbrechen</string>
+    <string name="trash_error_old_android">Erfordert Android 11 oder neuer.</string>
+    <string name="trash_error_generic">Der Papierkorb des Systems konnte nicht ausgelöst werden.</string>
+    <string name="stamp_keep">BEHALTEN</string>
+    <string name="stamp_delete">LÖSCHEN</string>
+    <string name="fullscreen_close_a11y">Schließen</string>
+    <string name="header_pile_label">STAPEL</string>
+    <string name="header_open_picker_a11y">Stapelauswahl öffnen</string>
+    <plurals name="header_remaining">
+        <item quantity="one">%d übrig</item>
+        <item quantity="other">%d übrig</item>
+    </plurals>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="one">Tagesziel: %1$d von %2$d Foto. Öffnet deine Statistiken.</item>
+        <item quantity="other">Tagesziel: %1$d von %2$d Fotos. Öffnet deine Statistiken.</item>
+    </plurals>
+    <string name="pile_picker_title">Stapel wählen</string>
+    <string name="pile_picker_cancel">Abbrechen</string>
+    <string name="pile_section_sessions">Sitzungen</string>
+    <string name="pile_section_months">Monate</string>
+    <string name="pile_section_albums">Alben</string>
+    <string name="pile_all">Alle Fotos</string>
+    <string name="pile_on_this_day">An diesem Tag</string>
+    <string name="pile_one_year_ago">Vor einem Jahr</string>
+    <string name="pile_screenshots">Bildschirmfotos</string>
+    <string name="pile_videos">Videos</string>
+    <string name="pile_count_summary">%1$s Fotos, %2$s übrig</string>
+    <string name="pile_done">Fertig</string>
+    <string name="pile_selected_a11y">Aktueller Stapel</string>
+    <string name="album_unknown">Unbekannt</string>
+    <string name="done_title">Stapel geschafft</string>
+    <string name="done_nothing_left_title">Hier ist nichts mehr</string>
+    <string name="done_nothing_left_body">Jedes Foto dieses Stapels ist schon sortiert.</string>
+    <string name="done_view_all">Alle meine Fotos ansehen</string>
+    <string name="done_change_pile">Stapel wechseln</string>
+    <string name="done_start_over">Von vorn beginnen</string>
+    <string name="summary_reviewed">durchgesehen</string>
+    <string name="summary_kept">behalten</string>
+    <string name="summary_deleted">gelöscht</string>
+    <string name="summary_to_free">freizugeben</string>
+    <plurals name="summary_pace">
+        <item quantity="one">%1$s mit %2$d Foto/Min</item>
+        <item quantity="other">%1$s mit %2$d Fotos/Min</item>
+    </plurals>
+    <string name="goal_reached">Tagesziel erreicht</string>
+    <string name="goal_reached_with_streak">Tagesziel erreicht, Serie von %d Tagen</string>
+    <string name="stats_title">Deine Statistiken</string>
+    <string name="stats_share_a11y">Deine Statistiken teilen</string>
+    <string name="stats_freed_label">bisher freigegeben</string>
+    <string name="stats_reviewed">Fotos durchgesehen</string>
+    <string name="stats_deleted">Fotos gelöscht</string>
+    <plurals name="stats_streak_days">
+        <item quantity="one">Serie von %d Tag</item>
+        <item quantity="other">Serie von %d Tagen</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="one">Längste: %d Tag</item>
+        <item quantity="other">Längste: %d Tage</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="one">Heute: %1$d von %2$d Foto</item>
+        <item quantity="other">Heute: %1$d von %2$d Fotos</item>
+    </plurals>
+    <string name="stats_milestones">MEILENSTEINE</string>
+    <string name="stats_milestone_reached_a11y">Erreicht</string>
+    <string name="stats_reset">Statistiken zurücksetzen</string>
+    <string name="stats_reset_title">Deine Statistiken zurücksetzen?</string>
+    <string name="stats_reset_body">Setzt den Speicherzähler, die Serie und die Meilensteine zurück. Deine Fotos und Entscheidungen bleiben unberührt.</string>
+    <string name="stats_reset_confirm">Zurücksetzen</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="one">%d Foto sortiert</item>
+        <item quantity="other">%d Fotos sortiert</item>
+    </plurals>
+    <string name="milestone_freed">%s freigegeben</string>
+    <string name="milestone_streak">Serie von %d Tagen</string>
+    <string name="milestone_overlay_title">MEILENSTEIN</string>
+    <string name="milestone_share">Teilen</string>
+    <string name="milestone_dismiss">Weiter so</string>
+    <string name="share_card_tagline">Sortiert mit Unrolled</string>
+    <string name="share_card_stats_title">Mit Unrolled freigegebener Speicher</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="one">%1$d Foto durchgesehen, %2$d gelöscht</item>
+        <item quantity="other">%1$d Fotos durchgesehen, %2$d gelöscht</item>
+    </plurals>
+    <plurals name="similar_badge">
+        <item quantity="one">%d ähnliches</item>
+        <item quantity="other">%d ähnliche</item>
+    </plurals>
+    <string name="similar_title">Ähnliche Fotos</string>
+    <string name="similar_hint">Tippe auf die, die du behalten willst.</string>
+    <string name="similar_keep_a11y">Behalten, zum Löschen tippen</string>
+    <string name="similar_delete_a11y">Gelöscht, zum Behalten tippen</string>
+    <string name="similar_confirm">%1$d behalten, %2$d löschen</string>
+    <string name="similar_cancel">Abbrechen</string>
+    <string name="video_badge_a11y">Video</string>
+    <string name="settings_section_deck">DECK</string>
+    <string name="settings_section_goals">ZIELE UND SERIEN</string>
+    <string name="settings_section_display">FOTOANZEIGE</string>
+    <string name="settings_include_videos">Videos einbeziehen</string>
+    <string name="settings_detect_similar">Ähnliche Fotos erkennen</string>
+    <string name="settings_detect_similar_hint">Gruppiert fast identische Aufnahmen, damit du die beste behältst.</string>
+    <string name="settings_gamification">Ziele und Serien</string>
+    <string name="settings_gamification_hint">Tagesziel-Ring, Serie und Meilensteine. Die Zähler bleiben auf diesem Gerät.</string>
+    <string name="settings_daily_goal">Tagesziel (Fotos)</string>
+    <string name="settings_reminder">Tägliche Erinnerung</string>
+    <string name="settings_reminder_hint">Eine lokale Mitteilung, nichts verlässt dein Handy.</string>
+    <string name="settings_reminder_hour">Erinnerungszeit</string>
+    <string name="settings_show_location_hint">Sendet die Fotokoordinaten an den Geocoder des Systems, um einen Stadtnamen anzuzeigen.</string>
+    <string name="reminder_channel_name">Erinnerungen</string>
+    <string name="reminder_title">Deine Galerie wartet</string>
+    <plurals name="reminder_body">
+        <item quantity="one">%d Foto heute?</item>
+        <item quantity="other">%d Fotos heute?</item>
+    </plurals>
+    <string name="deleted_row_status_size">Bereit zum Löschen, %s</string>
+</resources>

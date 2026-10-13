@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_about_menu_item">Unrolled గురించి</string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="one">%d ఉంచారు</item>
+        <item quantity="other">%d ఉంచారు</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="one">%d తొలగించారు</item>
+        <item quantity="other">%d తొలగించారు</item>
+    </plurals>
+    <string name="header_stats_pill_a11y_open_hint">ట్రాష్ జాబితాను తెరుస్తుంది.</string>
+    <string name="header_shuffle_a11y">ఫోటోలను షఫుల్ చేయండి</string>
+    <string name="header_more_a11y">మరిన్ని ఎంపికలు</string>
+    <string name="action_delete_a11y">ఈ ఫోటోను తొలగించండి</string>
+    <string name="action_undo_a11y">చివరి ఎంపికను రద్దు చేయండి</string>
+    <string name="action_keep_a11y">ఈ ఫోటోను ఉంచండి</string>
+    <string name="permission_gate_title">ఫోటో లైబ్రరీ యాక్సెస్</string>
+    <string name="permission_gate_body">మీ ఫోటోలను కార్డు కార్డుగా చూసేందుకు Unrolled మీ పూర్తి ఫోటో లైబ్రరీని చదవాలి. మీ పరికరం నుండి ఏదీ బయటకు వెళ్లదు: నెట్‌వర్క్ లేదు, ఖాతా లేదు. సెట్టింగ్‌లలో ప్రదేశ పేర్లను ఆన్ చేస్తే, నగరం పేరు పొందేందుకు ఫోటో కోఆర్డినేట్‌లు సిస్టమ్ జియోకోడింగ్ సేవకు పంపబడతాయి. మీరు కొన్ని ఫోటోలను మాత్రమే ఎంచుకోవచ్చు, అప్పుడు Unrolled వాటిని మాత్రమే చూపిస్తుంది.</string>
+    <string name="permission_gate_allow">యాక్సెస్ అనుమతించండి</string>
+    <string name="permission_gate_open_settings">సెట్టింగ్‌లను తెరవండి</string>
+    <string name="empty_state_title">ఫోటోలు కనిపించలేదు</string>
+    <string name="empty_state_body">మీ లైబ్రరీ ఖాళీగా ఉంది.</string>
+    <string name="empty_partial_title">ఎంచుకున్న ఫోటోలు లేవు</string>
+    <string name="empty_partial_body">మీరు Unrolledకు కొన్ని ఫోటోలకు మాత్రమే యాక్సెస్ ఇచ్చారు. కొనసాగించడానికి మరిన్ని ఎంచుకోండి.</string>
+    <string name="empty_partial_change">ఎంపికను మార్చండి</string>
+    <string name="load_error_title">మీ ఫోటోలను లోడ్ చేయలేకపోయాం</string>
+    <string name="load_error_body">మీ లైబ్రరీని చదివేటప్పుడు ఏదో తప్పు జరిగింది.</string>
+    <string name="load_error_retry">మళ్లీ ప్రయత్నించండి</string>
+    <string name="settings_title">సెట్టింగ్‌లు</string>
+    <string name="settings_show_location">లొకేషన్ చూపించు</string>
+    <string name="header_view_in_photos_a11y">ఈ ఫోటోను గ్యాలరీలో చూడండి</string>
+    <string name="about_tagline">స్వైప్ చేసి మీ కెమెరా రోల్‌ను శుభ్రం చేయండి.</string>
+    <string name="about_version">వెర్షన్</string>
+    <string name="about_build">బిల్డ్</string>
+    <string name="about_close">మూసివేయండి</string>
+    <string name="about_privacy_policy">గోప్యతా విధానం</string>
+    <string name="about_support">సపోర్ట్</string>
+    <string name="deleted_title">తొలగించిన ఫోటోలు</string>
+    <string name="deleted_close_a11y">మూసివేయండి</string>
+    <string name="deleted_empty_title">తొలగించడానికి ఫోటోలు లేవు</string>
+    <string name="deleted_empty_body">ట్రాష్ నింపడానికి ఎడమవైపు స్వైప్ చేయండి.</string>
+    <string name="deleted_row_fallback_title">ఫోటో</string>
+    <string name="deleted_row_status">తొలగించడానికి సిద్ధం</string>
+    <string name="deleted_row_keep">ఉంచండి</string>
+    <string name="deleted_row_preview_a11y">ఈ ఫోటోను ప్రివ్యూ చేయండి</string>
+    <string name="deleted_footer_button">ట్రాష్ ఖాళీ చేయండి (%d)</string>
+    <string name="deleted_reset">రీసెట్ చేయండి</string>
+    <string name="deleted_reset_title">మొత్తం పురోగతిని రీసెట్ చేయాలా?</string>
+    <string name="deleted_reset_body">ఉంచిన/తొలగించిన గుర్తులన్నీ తొలగిస్తుంది, డెక్ మళ్లీ పూర్తి లైబ్రరీని చూపిస్తుంది. ఫోటోలు మాత్రం అలాగే ఉంటాయి.</string>
+    <string name="deleted_reset_confirm">రీసెట్ చేయండి</string>
+    <string name="deleted_reset_cancel">రద్దు చేయండి</string>
+    <string name="trash_error_old_android">Android 11 లేదా కొత్త వెర్షన్ అవసరం.</string>
+    <string name="trash_error_generic">సిస్టమ్ ట్రాష్‌ను ప్రారంభించలేకపోయాం.</string>
+    <string name="stamp_keep">ఉంచు</string>
+    <string name="stamp_delete">తొలగించు</string>
+    <string name="fullscreen_close_a11y">మూసివేయండి</string>
+    <string name="header_pile_label">కుప్ప</string>
+    <string name="header_open_picker_a11y">కుప్ప ఎంపికను తెరవండి</string>
+    <plurals name="header_remaining">
+        <item quantity="one">%d మిగిలింది</item>
+        <item quantity="other">%d మిగిలాయి</item>
+    </plurals>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="one">రోజువారీ లక్ష్యం: %2$d ఫోటోలో %1$d. మీ గణాంకాలను తెరుస్తుంది.</item>
+        <item quantity="other">రోజువారీ లక్ష్యం: %2$d ఫోటోలలో %1$d. మీ గణాంకాలను తెరుస్తుంది.</item>
+    </plurals>
+    <string name="pile_picker_title">కుప్పను ఎంచుకోండి</string>
+    <string name="pile_picker_cancel">రద్దు చేయండి</string>
+    <string name="pile_section_sessions">సెషన్‌లు</string>
+    <string name="pile_section_months">నెలలు</string>
+    <string name="pile_section_albums">ఆల్బమ్‌లు</string>
+    <string name="pile_all">అన్ని ఫోటోలు</string>
+    <string name="pile_on_this_day">ఈ రోజున</string>
+    <string name="pile_one_year_ago">ఒక సంవత్సరం క్రితం</string>
+    <string name="pile_screenshots">స్క్రీన్‌షాట్‌లు</string>
+    <string name="pile_videos">వీడియోలు</string>
+    <string name="pile_count_summary">%1$s ఫోటోలు, %2$s మిగిలాయి</string>
+    <string name="pile_done">పూర్తయింది</string>
+    <string name="pile_selected_a11y">ప్రస్తుత కుప్ప</string>
+    <string name="album_unknown">పేరు లేనిది</string>
+    <string name="done_title">కుప్ప పూర్తయింది</string>
+    <string name="done_nothing_left_title">ఇక్కడ ఏమీ మిగలలేదు</string>
+    <string name="done_nothing_left_body">ఈ కుప్పలోని ప్రతి ఫోటో ఇప్పటికే సార్ట్ అయింది.</string>
+    <string name="done_view_all">నా ఫోటోలన్నీ చూడండి</string>
+    <string name="done_change_pile">కుప్ప మార్చండి</string>
+    <string name="done_start_over">మళ్లీ మొదలుపెట్టండి</string>
+    <string name="summary_reviewed">సమీక్షించినవి</string>
+    <string name="summary_kept">ఉంచినవి</string>
+    <string name="summary_deleted">తొలగించినవి</string>
+    <string name="summary_to_free">ఖాళీ అవుతుంది</string>
+    <plurals name="summary_pace">
+        <item quantity="one">%1$s, నిమిషానికి %2$d ఫోటో</item>
+        <item quantity="other">%1$s, నిమిషానికి %2$d ఫోటోలు</item>
+    </plurals>
+    <string name="goal_reached">రోజువారీ లక్ష్యం చేరుకున్నారు</string>
+    <string name="goal_reached_with_streak">రోజువారీ లక్ష్యం చేరుకున్నారు, %d రోజుల స్ట్రీక్</string>
+    <string name="stats_title">మీ గణాంకాలు</string>
+    <string name="stats_share_a11y">మీ గణాంకాలను షేర్ చేయండి</string>
+    <string name="stats_freed_label">ఇప్పటివరకు ఖాళీ చేశారు</string>
+    <string name="stats_reviewed">ఫోటోలు సమీక్షించారు</string>
+    <string name="stats_deleted">ఫోటోలు తొలగించారు</string>
+    <plurals name="stats_streak_days">
+        <item quantity="one">%d రోజు స్ట్రీక్</item>
+        <item quantity="other">%d రోజుల స్ట్రీక్</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="one">అత్యధికం: %d రోజు</item>
+        <item quantity="other">అత్యధికం: %d రోజులు</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="one">ఈరోజు: %2$d ఫోటోలో %1$d</item>
+        <item quantity="other">ఈరోజు: %2$d ఫోటోలలో %1$d</item>
+    </plurals>
+    <string name="stats_milestones">మైలురాళ్లు</string>
+    <string name="stats_milestone_reached_a11y">చేరుకున్నారు</string>
+    <string name="stats_reset">గణాంకాలను రీసెట్ చేయండి</string>
+    <string name="stats_reset_title">మీ గణాంకాలను రీసెట్ చేయాలా?</string>
+    <string name="stats_reset_body">స్టోరేజ్ కౌంటర్, స్ట్రీక్ మరియు మైలురాళ్లను తొలగిస్తుంది. మీ ఫోటోలు, నిర్ణయాలు అలాగే ఉంటాయి.</string>
+    <string name="stats_reset_confirm">రీసెట్ చేయండి</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="one">%d ఫోటో సార్ట్ చేశారు</item>
+        <item quantity="other">%d ఫోటోలు సార్ట్ చేశారు</item>
+    </plurals>
+    <string name="milestone_freed">%s ఖాళీ చేశారు</string>
+    <string name="milestone_streak">%d రోజుల స్ట్రీక్</string>
+    <string name="milestone_overlay_title">మైలురాయి</string>
+    <string name="milestone_share">షేర్ చేయండి</string>
+    <string name="milestone_dismiss">కొనసాగించండి</string>
+    <string name="share_card_tagline">Unrolledతో సార్ట్ చేశారు</string>
+    <string name="share_card_stats_title">Unrolledతో ఖాళీ చేసిన స్థలం</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="one">%1$d ఫోటో సమీక్షించారు, %2$d తొలగించారు</item>
+        <item quantity="other">%1$d ఫోటోలు సమీక్షించారు, %2$d తొలగించారు</item>
+    </plurals>
+    <plurals name="similar_badge">
+        <item quantity="one">%d ఒకేలాంటిది</item>
+        <item quantity="other">%d ఒకేలాంటివి</item>
+    </plurals>
+    <string name="similar_title">ఒకేలా ఉన్న ఫోటోలు</string>
+    <string name="similar_hint">ఉంచాల్సినవాటిని నొక్కండి.</string>
+    <string name="similar_keep_a11y">ఉంచారు, తొలగించడానికి నొక్కండి</string>
+    <string name="similar_delete_a11y">తొలగించారు, ఉంచడానికి నొక్కండి</string>
+    <string name="similar_confirm">%1$d ఉంచండి, %2$d తొలగించండి</string>
+    <string name="similar_cancel">రద్దు చేయండి</string>
+    <string name="video_badge_a11y">వీడియో</string>
+    <string name="settings_section_deck">డెక్</string>
+    <string name="settings_section_goals">లక్ష్యాలు మరియు స్ట్రీక్‌లు</string>
+    <string name="settings_section_display">ఫోటో ప్రదర్శన</string>
+    <string name="settings_include_videos">వీడియోలను చేర్చు</string>
+    <string name="settings_detect_similar">ఒకేలా ఉన్న ఫోటోలను గుర్తించు</string>
+    <string name="settings_detect_similar_hint">దాదాపు ఒకేలా ఉన్న షాట్‌లను గ్రూప్ చేస్తుంది, మీరు ఉత్తమమైనదాన్ని ఉంచుకోవచ్చు.</string>
+    <string name="settings_gamification">లక్ష్యాలు మరియు స్ట్రీక్‌లు</string>
+    <string name="settings_gamification_hint">రోజువారీ లక్ష్య రింగ్, స్ట్రీక్ మరియు మైలురాళ్లు. కౌంటర్లు ఈ పరికరంలోనే ఉంటాయి.</string>
+    <string name="settings_daily_goal">రోజువారీ లక్ష్యం (ఫోటోలు)</string>
+    <string name="settings_reminder">రోజువారీ రిమైండర్</string>
+    <string name="settings_reminder_hint">ఒక లోకల్ నోటిఫికేషన్, మీ ఫోన్ నుండి ఏదీ బయటకు వెళ్లదు.</string>
+    <string name="settings_reminder_hour">రిమైండర్ సమయం</string>
+    <string name="settings_show_location_hint">నగరం పేరు చూపించడానికి ఫోటో కోఆర్డినేట్‌లను సిస్టమ్ జియోకోడర్‌కు పంపుతుంది.</string>
+    <string name="reminder_channel_name">రిమైండర్‌లు</string>
+    <string name="reminder_title">మీ గ్యాలరీ వేచి ఉంది</string>
+    <plurals name="reminder_body">
+        <item quantity="one">ఈరోజు %d ఫోటో?</item>
+        <item quantity="other">ఈరోజు %d ఫోటోలు?</item>
+    </plurals>
+    <string name="deleted_row_status_size">తొలగించడానికి సిద్ధం, %s</string>
+</resources>

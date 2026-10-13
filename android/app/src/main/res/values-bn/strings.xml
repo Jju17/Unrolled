@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_about_menu_item">Unrolled সম্পর্কে</string>
+    <plurals name="header_stats_pill_a11y_kept">
+        <item quantity="one">%dটি রাখা হয়েছে</item>
+        <item quantity="other">%dটি রাখা হয়েছে</item>
+    </plurals>
+    <plurals name="header_stats_pill_a11y_deleted">
+        <item quantity="one">%dটি মোছা হয়েছে</item>
+        <item quantity="other">%dটি মোছা হয়েছে</item>
+    </plurals>
+    <string name="header_stats_pill_a11y_open_hint">ট্র্যাশ তালিকা খোলে।</string>
+    <string name="header_shuffle_a11y">ছবি শাফল করুন</string>
+    <string name="header_more_a11y">আরও বিকল্প</string>
+    <string name="action_delete_a11y">এই ছবিটি মুছুন</string>
+    <string name="action_undo_a11y">শেষ সিদ্ধান্ত বাতিল করুন</string>
+    <string name="action_keep_a11y">এই ছবিটি রাখুন</string>
+    <string name="permission_gate_title">ফটো লাইব্রেরির অনুমতি</string>
+    <string name="permission_gate_body">Unrolled-এর আপনার পুরো ফটো লাইব্রেরি পড়ার অনুমতি দরকার, যাতে আপনি একটা একটা কার্ড করে দেখতে পারেন। কিছুই আপনার ডিভাইস ছেড়ে যায় না: কোনো নেটওয়ার্ক নেই, কোনো অ্যাকাউন্ট নেই। সেটিংসে জায়গার নাম চালু করলে শহরের নাম পেতে ছবির স্থানাঙ্ক সিস্টেমের জিওকোডিং পরিষেবায় পাঠানো হয়। চাইলে শুধু কয়েকটি ছবি বেছে নিতে পারেন, Unrolled তখন শুধু সেগুলোই দেখাবে।</string>
+    <string name="permission_gate_allow">অনুমতি দিন</string>
+    <string name="permission_gate_open_settings">সেটিংস খুলুন</string>
+    <string name="empty_state_title">কোনো ছবি পাওয়া যায়নি</string>
+    <string name="empty_state_body">আপনার লাইব্রেরি খালি।</string>
+    <string name="empty_partial_title">কোনো ছবি নির্বাচিত নেই</string>
+    <string name="empty_partial_body">আপনি Unrolled-কে শুধু কিছু নির্বাচিত ছবি দেখার অনুমতি দিয়েছেন। চালিয়ে যেতে আরও ছবি বেছে নিন।</string>
+    <string name="empty_partial_change">নির্বাচন বদলান</string>
+    <string name="load_error_title">আপনার ছবি লোড করা যায়নি</string>
+    <string name="load_error_body">আপনার লাইব্রেরি পড়ার সময় কিছু একটা ভুল হয়েছে।</string>
+    <string name="load_error_retry">আবার চেষ্টা করুন</string>
+    <string name="settings_title">সেটিংস</string>
+    <string name="settings_show_location">অবস্থান দেখান</string>
+    <string name="header_view_in_photos_a11y">এই ছবিটি গ্যালারিতে দেখুন</string>
+    <string name="about_tagline">সোয়াইপ করে ক্যামেরা রোল পরিষ্কার করুন।</string>
+    <string name="about_version">ভার্সন</string>
+    <string name="about_build">বিল্ড</string>
+    <string name="about_close">বন্ধ করুন</string>
+    <string name="about_privacy_policy">গোপনীয়তা নীতি</string>
+    <string name="about_support">সহায়তা</string>
+    <string name="deleted_title">মুছে ফেলা ছবি</string>
+    <string name="deleted_close_a11y">বন্ধ করুন</string>
+    <string name="deleted_empty_title">মোছার মতো কোনো ছবি নেই</string>
+    <string name="deleted_empty_body">ট্র্যাশ ভরতে বাঁ দিকে সোয়াইপ করুন।</string>
+    <string name="deleted_row_fallback_title">ছবি</string>
+    <string name="deleted_row_status">মোছার জন্য প্রস্তুত</string>
+    <string name="deleted_row_keep">রাখুন</string>
+    <string name="deleted_row_preview_a11y">এই ছবিটি বড় করে দেখুন</string>
+    <string name="deleted_footer_button">ট্র্যাশ খালি করুন (%d)</string>
+    <string name="deleted_reset">রিসেট করুন</string>
+    <string name="deleted_reset_title">সব অগ্রগতি রিসেট করবেন?</string>
+    <string name="deleted_reset_body">রাখা/মোছার সব চিহ্ন মুছে যায়, যাতে ডেকে আবার পুরো লাইব্রেরি দেখা যায়। ছবিগুলো নিজে অক্ষত থাকে।</string>
+    <string name="deleted_reset_confirm">রিসেট করুন</string>
+    <string name="deleted_reset_cancel">বাতিল</string>
+    <string name="trash_error_old_android">Android 11 বা তার নতুন ভার্সন লাগবে।</string>
+    <string name="trash_error_generic">সিস্টেম ট্র্যাশ চালু করা যায়নি।</string>
+    <string name="stamp_keep">রাখুন</string>
+    <string name="stamp_delete">মুছুন</string>
+    <string name="fullscreen_close_a11y">বন্ধ করুন</string>
+    <string name="header_pile_label">স্তূপ</string>
+    <string name="header_open_picker_a11y">স্তূপ বেছে নিন</string>
+    <plurals name="header_remaining">
+        <item quantity="one">%dটি বাকি</item>
+        <item quantity="other">%dটি বাকি</item>
+    </plurals>
+    <plurals name="header_goal_ring_a11y">
+        <item quantity="one">দৈনিক লক্ষ্য: %2$dটির মধ্যে %1$dটি ছবি। আপনার পরিসংখ্যান খোলে।</item>
+        <item quantity="other">দৈনিক লক্ষ্য: %2$dটির মধ্যে %1$dটি ছবি। আপনার পরিসংখ্যান খোলে।</item>
+    </plurals>
+    <string name="pile_picker_title">একটি স্তূপ বেছে নিন</string>
+    <string name="pile_picker_cancel">বাতিল</string>
+    <string name="pile_section_sessions">সেশন</string>
+    <string name="pile_section_months">মাস</string>
+    <string name="pile_section_albums">অ্যালবাম</string>
+    <string name="pile_all">সব ছবি</string>
+    <string name="pile_on_this_day">এই দিনে</string>
+    <string name="pile_one_year_ago">এক বছর আগে</string>
+    <string name="pile_screenshots">স্ক্রিনশট</string>
+    <string name="pile_videos">ভিডিও</string>
+    <string name="pile_count_summary">%1$s ছবি, %2$s বাকি</string>
+    <string name="pile_done">শেষ</string>
+    <string name="pile_selected_a11y">বর্তমান স্তূপ</string>
+    <string name="album_unknown">নামহীন</string>
+    <string name="done_title">স্তূপ শেষ</string>
+    <string name="done_nothing_left_title">এখানে আর কিছু নেই</string>
+    <string name="done_nothing_left_body">এই স্তূপের সব ছবি আগেই বাছাই করা হয়ে গেছে।</string>
+    <string name="done_view_all">আমার সব ছবি দেখুন</string>
+    <string name="done_change_pile">স্তূপ বদলান</string>
+    <string name="done_start_over">আবার শুরু করুন</string>
+    <string name="summary_reviewed">দেখা হয়েছে</string>
+    <string name="summary_kept">রাখা হয়েছে</string>
+    <string name="summary_deleted">মোছা হয়েছে</string>
+    <string name="summary_to_free">খালি হবে</string>
+    <plurals name="summary_pace">
+        <item quantity="one">%1$s, মিনিটে %2$dটি ছবি</item>
+        <item quantity="other">%1$s, মিনিটে %2$dটি ছবি</item>
+    </plurals>
+    <string name="goal_reached">আজকের লক্ষ্য পূরণ</string>
+    <string name="goal_reached_with_streak">আজকের লক্ষ্য পূরণ, %d দিনের স্ট্রিক</string>
+    <string name="stats_title">আপনার পরিসংখ্যান</string>
+    <string name="stats_share_a11y">আপনার পরিসংখ্যান শেয়ার করুন</string>
+    <string name="stats_freed_label">এ পর্যন্ত খালি হয়েছে</string>
+    <string name="stats_reviewed">ছবি দেখা হয়েছে</string>
+    <string name="stats_deleted">ছবি মোছা হয়েছে</string>
+    <plurals name="stats_streak_days">
+        <item quantity="one">%d দিনের স্ট্রিক</item>
+        <item quantity="other">%d দিনের স্ট্রিক</item>
+    </plurals>
+    <plurals name="stats_longest_streak">
+        <item quantity="one">দীর্ঘতম: %d দিন</item>
+        <item quantity="other">দীর্ঘতম: %d দিন</item>
+    </plurals>
+    <plurals name="stats_today_progress">
+        <item quantity="one">আজ: %2$dটির মধ্যে %1$dটি ছবি</item>
+        <item quantity="other">আজ: %2$dটির মধ্যে %1$dটি ছবি</item>
+    </plurals>
+    <string name="stats_milestones">মাইলফলক</string>
+    <string name="stats_milestone_reached_a11y">অর্জিত</string>
+    <string name="stats_reset">পরিসংখ্যান রিসেট করুন</string>
+    <string name="stats_reset_title">আপনার পরিসংখ্যান রিসেট করবেন?</string>
+    <string name="stats_reset_body">স্টোরেজ কাউন্টার, স্ট্রিক আর মাইলফলক মুছে যায়। আপনার ছবি আর সিদ্ধান্ত অক্ষত থাকে।</string>
+    <string name="stats_reset_confirm">রিসেট করুন</string>
+    <plurals name="milestone_reviewed">
+        <item quantity="one">%dটি ছবি বাছাই করা হয়েছে</item>
+        <item quantity="other">%dটি ছবি বাছাই করা হয়েছে</item>
+    </plurals>
+    <string name="milestone_freed">%s খালি হয়েছে</string>
+    <string name="milestone_streak">%d দিনের স্ট্রিক</string>
+    <string name="milestone_overlay_title">মাইলফলক</string>
+    <string name="milestone_share">শেয়ার করুন</string>
+    <string name="milestone_dismiss">চালিয়ে যান</string>
+    <string name="share_card_tagline">Unrolled দিয়ে বাছাই করা</string>
+    <string name="share_card_stats_title">Unrolled দিয়ে খালি হওয়া জায়গা</string>
+    <plurals name="share_card_stats_subtitle">
+        <item quantity="one">%1$dটি ছবি দেখা হয়েছে, %2$dটি মোছা হয়েছে</item>
+        <item quantity="other">%1$dটি ছবি দেখা হয়েছে, %2$dটি মোছা হয়েছে</item>
+    </plurals>
+    <plurals name="similar_badge">
+        <item quantity="one">%dটি একই রকম</item>
+        <item quantity="other">%dটি একই রকম</item>
+    </plurals>
+    <string name="similar_title">একই রকম ছবি</string>
+    <string name="similar_hint">যেগুলো রাখবেন সেগুলোতে ট্যাপ করুন।</string>
+    <string name="similar_keep_a11y">রাখা হয়েছে, মুছতে ট্যাপ করুন</string>
+    <string name="similar_delete_a11y">মোছা হয়েছে, রাখতে ট্যাপ করুন</string>
+    <string name="similar_confirm">%1$d রাখুন, %2$d মুছুন</string>
+    <string name="similar_cancel">বাতিল</string>
+    <string name="video_badge_a11y">ভিডিও</string>
+    <string name="settings_section_deck">ডেক</string>
+    <string name="settings_section_goals">লক্ষ্য ও স্ট্রিক</string>
+    <string name="settings_section_display">ছবির প্রদর্শন</string>
+    <string name="settings_include_videos">ভিডিও অন্তর্ভুক্ত করুন</string>
+    <string name="settings_detect_similar">একই রকম ছবি শনাক্ত করুন</string>
+    <string name="settings_detect_similar_hint">প্রায় একই রকম ছবিগুলো একসাথে দেখায়, যাতে আপনি সেরাটি রাখতে পারেন।</string>
+    <string name="settings_gamification">লক্ষ্য ও স্ট্রিক</string>
+    <string name="settings_gamification_hint">দৈনিক লক্ষ্যের রিং, স্ট্রিক আর মাইলফলক। কাউন্টার এই ডিভাইসেই থাকে।</string>
+    <string name="settings_daily_goal">দৈনিক লক্ষ্য (ছবি)</string>
+    <string name="settings_reminder">দৈনিক রিমাইন্ডার</string>
+    <string name="settings_reminder_hint">একটি লোকাল নোটিফিকেশন, কিছুই আপনার ফোন ছেড়ে যায় না।</string>
+    <string name="settings_reminder_hour">রিমাইন্ডারের সময়</string>
+    <string name="settings_show_location_hint">শহরের নাম দেখাতে ছবির স্থানাঙ্ক সিস্টেমের জিওকোডারে পাঠায়।</string>
+    <string name="reminder_channel_name">রিমাইন্ডার</string>
+    <string name="reminder_title">আপনার গ্যালারি অপেক্ষা করছে</string>
+    <plurals name="reminder_body">
+        <item quantity="one">আজ %dটি ছবি?</item>
+        <item quantity="other">আজ %dটি ছবি?</item>
+    </plurals>
+    <string name="deleted_row_status_size">মোছার জন্য প্রস্তুত, %s</string>
+</resources>

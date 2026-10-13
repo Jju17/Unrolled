@@ -153,7 +153,7 @@ The release `signingConfig` reads from Gradle properties in `~/.gradle/gradle.pr
 - `.claude/rules/*.md` are the canonical architecture references for each client and are committed.
 - No commits without the affected platform's gate green.
 - Never edit the generated iOS `.xcodeproj`; edit `ios/project.yml` and re-run `xcodegen generate`.
-- Every user-visible string lives in `Localizable.xcstrings` (iOS) or `strings.xml` + `values-fr/strings.xml` (Android), French added in the same change. No em dashes, no unicode arrows in copy.
+- Every user-visible string lives in `Localizable.xcstrings` (iOS) or `strings.xml` + one `values-<locale>/strings.xml` per language (Android). The apps ship in 21 languages (English, French, German, Dutch, Spanish, Italian, Portuguese, Russian, Turkish, Arabic, Hindi, Bengali, Marathi, Telugu, Tamil, Urdu, Indonesian, Vietnamese, Japanese, Korean, Chinese simplified and traditional); a new key is added to every language in the same change and a parity test on each platform enforces it. No em dashes, no unicode arrows in copy.
 - No force unwraps in production code.
 
 ## Ownership
