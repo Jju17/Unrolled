@@ -357,6 +357,20 @@ Paste the whole fenced block for the target version into **Play Console → [tra
 
 When bumping `versionCode` / `versionName` in `android/app/build.gradle.kts`, **prepend a new block here (newest on top)** and keep the three locales in sync.
 
+#### v1.2.3 (versionCode 6, targetSdk 37)
+
+```
+<en-US>
+Tap a photo in the trash list to see it full screen before you decide. Long pile names now fit in the header.
+</en-US>
+<fr-FR>
+Touche une photo de la corbeille pour la voir en grand avant de décider. Les noms de piles longs tiennent maintenant dans l'en-tête.
+</fr-FR>
+<nl-NL>
+Tik op een foto in de prullenbak om ze op volledig scherm te bekijken voor je beslist. Lange stapelnamen passen nu in de kop.
+</nl-NL>
+```
+
 #### v1.2.2 (versionCode 5, targetSdk 37)
 
 ```
