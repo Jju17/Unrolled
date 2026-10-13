@@ -357,6 +357,20 @@ Paste the whole fenced block for the target version into **Play Console → [tra
 
 When bumping `versionCode` / `versionName` in `android/app/build.gradle.kts`, **prepend a new block here (newest on top)** and keep the three locales in sync.
 
+#### v1.2.4 (versionCode 7, targetSdk 37)
+
+```
+<en-US>
+Milestone tiles share the same size and the header shows only what is left in the pile.
+</en-US>
+<fr-FR>
+Les jalons ont tous la même taille et l'en-tête n'affiche plus que ce qui reste dans la pile.
+</fr-FR>
+<nl-NL>
+De mijlpalen hebben nu dezelfde grootte en de kop toont alleen wat er nog in de stapel zit.
+</nl-NL>
+```
+
 #### v1.2.3 (versionCode 6, targetSdk 37)
 
 ```
