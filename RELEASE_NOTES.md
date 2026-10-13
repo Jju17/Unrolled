@@ -357,6 +357,20 @@ Paste the whole fenced block for the target version into **Play Console → [tra
 
 When bumping `versionCode` / `versionName` in `android/app/build.gradle.kts`, **prepend a new block here (newest on top)** and keep the three locales in sync.
 
+#### v1.2.5 (versionCode 8, targetSdk 37)
+
+```
+<en-US>
+Unrolled now speaks 21 languages, from Spanish and German to Hindi, Arabic, Japanese and Chinese. It follows your phone's language automatically.
+</en-US>
+<fr-FR>
+Unrolled parle maintenant 21 langues, de l'espagnol et l'allemand au hindi, à l'arabe, au japonais et au chinois. L'app suit automatiquement la langue de ton téléphone.
+</fr-FR>
+<nl-NL>
+Unrolled spreekt nu 21 talen, van Spaans en Duits tot Hindi, Arabisch, Japans en Chinees. De app volgt automatisch de taal van je telefoon.
+</nl-NL>
+```
+
 #### v1.2.4 (versionCode 7, targetSdk 37)
 
 ```
