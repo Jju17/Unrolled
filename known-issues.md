@@ -18,6 +18,8 @@ Living tracker for the whole repo: what is open, what was resolved and when. His
 
 ## Resolved
 
+- 2026-10-13: iOS header unreachable behind the card. A portrait photo cropped with `.fill` overflowed the card above the clip, and SwiftUI clipping only hides pixels, it does not bound touches: taps on the header opened the photo fullscreen. Each clipped layer now carries a matching `contentShape`.
+
 - 2026-10-12: CI. `verify.yml` runs the four gates on push and pull request, each job only when its paths changed (iOS on pushes to `main` only), caches written from `main` only; Dependabot grouped weekly; releases and deploys from the Mac (`scripts/release-ios.sh`, `scripts/release-android.sh`, `scripts/deploy.sh`) after waiting for the Verify run. Functions moved to Node 24. First TestFlight archive still to be run once to confirm the team id in `project.yml`.
 
 - 2026-10-12: product pass. Piles (month, on this day, a year ago, screenshots, videos, albums) with progress, session summary with bytes to free and confetti, lifetime storage-freed counter and stats sheet, similar-photo grouping (on-device dHash), videos in the deck with full-screen playback, daily goal ring, streak with weekly freeze, milestones with shareable cards, optional local reminder, "Goals and streaks" switch. Web landing page written.

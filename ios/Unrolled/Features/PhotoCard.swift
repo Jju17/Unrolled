@@ -60,6 +60,7 @@ struct PhotoCard: View {
                 )
                 .frame(width: geo.size.width, height: geo.size.height)
                 .clipped()
+                .contentShape(Rectangle())
 
                 if renderAsLivePhoto {
                     LivePhotoPlayer(
@@ -69,6 +70,7 @@ struct PhotoCard: View {
                     )
                     .frame(width: geo.size.width, height: geo.size.height)
                     .clipped()
+                    .contentShape(Rectangle())
                     .allowsHitTesting(true)
                 }
 

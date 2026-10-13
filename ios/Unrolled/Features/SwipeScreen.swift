@@ -744,6 +744,7 @@ private struct CardSlot: View {
         // newly-promoted card while it reloaded.
         .pinchable()
         .clipShape(RoundedRectangle(cornerRadius: 24))
+        .contentShape(RoundedRectangle(cornerRadius: 24))
         .offset(x: offsetX, y: offsetY)
         .rotationEffect(.degrees(rotation), anchor: .bottom)
         .scaleEffect(scale, anchor: .bottom)
