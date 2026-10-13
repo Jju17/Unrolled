@@ -171,6 +171,7 @@ struct SwipeScreen: View {
                             .tracking(-0.5)
                             .foregroundStyle(textPrim)
                             .lineLimit(1)
+                            .minimumScaleFactor(0.8)
                         Image(systemName: "chevron.down")
                             .font(.system(size: 12, weight: .bold))
                             .foregroundStyle(textPrim)
@@ -178,12 +179,16 @@ struct SwipeScreen: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityHint(Text("Open pile picker"))
-                if !headerSubtitle.isEmpty {
-                    Text(verbatim: headerSubtitle)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(textSec)
-                        .lineLimit(1)
+                HStack(spacing: 8) {
+                    if !headerSubtitle.isEmpty {
+                        Text(verbatim: headerSubtitle)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(textSec)
+                            .lineLimit(1)
+                    }
+                    statsPill
                 }
+                .frame(minHeight: 32)
             }
             Spacer()
             HStack(spacing: 10) {
@@ -203,7 +208,6 @@ struct SwipeScreen: View {
                     .buttonStyle(.plain)
                     .accessibilityHint(Text("Opens your stats"))
                 }
-                statsPill
                 iconButton(
                     systemImage: "shuffle",
                     active: store.shuffleEnabled
@@ -235,7 +239,7 @@ struct SwipeScreen: View {
         }
         .padding(.horizontal, 20)
         .padding(.top, 12)
-        .padding(.bottom, 12)
+        .padding(.bottom, 4)
     }
 
     private var goalToast: some View {
@@ -303,7 +307,7 @@ struct SwipeScreen: View {
                     }
                 }
                 .padding(.horizontal, 10)
-                .padding(.vertical, 6)
+                .padding(.vertical, 5)
                 .background(
                     Capsule().fill(
                         colorScheme == .dark
@@ -311,6 +315,8 @@ struct SwipeScreen: View {
                             : Color.black.opacity(0.05)
                     )
                 )
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .accessibilityElement(children: .ignore)

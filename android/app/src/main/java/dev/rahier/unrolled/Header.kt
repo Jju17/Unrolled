@@ -78,7 +78,7 @@ internal fun Header(
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 8.dp),
+                .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 2.dp),
             verticalAlignment = Alignment.Bottom
         ) {
             Column(Modifier.weight(1f)) {
@@ -114,17 +114,30 @@ internal fun Header(
                     Spacer(Modifier.width(4.dp))
                     Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = textPrim, modifier = Modifier.size(18.dp))
                 }
-                if (state.libraryLoaded) {
-                    val remaining = pluralStringResource(R.plurals.header_remaining, state.remainingInDeck, state.remainingInDeck)
-                    val freed = if (state.stats.bytesFreed > 0) {
-                        stringResource(R.string.header_freed, formatBytes(state.stats.bytesFreed))
-                    } else null
-                    Text(
-                        listOfNotNull(remaining, freed).joinToString(stringResource(R.string.header_subtitle_separator)),
-                        color = textSec,
-                        fontSize = 12.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (state.libraryLoaded) {
+                        val remaining = pluralStringResource(R.plurals.header_remaining, state.remainingInDeck, state.remainingInDeck)
+                        val freed = if (state.stats.bytesFreed > 0) {
+                            stringResource(R.string.header_freed, formatBytes(state.stats.bytesFreed))
+                        } else null
+                        Text(
+                            listOfNotNull(remaining, freed).joinToString(stringResource(R.string.header_subtitle_separator)),
+                            color = textSec,
+                            fontSize = 12.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                    }
+                    StatsPill(
+                        state = state,
+                        darkTheme = darkTheme,
+                        textPrim = textPrim,
+                        textSec = textSec,
+                        onClick = { onIntent(SwipeIntent.DeletedSheetButtonTapped) }
                     )
                 }
             }
@@ -140,13 +153,6 @@ internal fun Header(
                         onClick = { onIntent(SwipeIntent.StatsButtonTapped) }
                     )
                 }
-                StatsPill(
-                    state = state,
-                    darkTheme = darkTheme,
-                    textPrim = textPrim,
-                    textSec = textSec,
-                    onClick = { onIntent(SwipeIntent.DeletedSheetButtonTapped) }
-                )
                 TopbarIconButton(
                     icon = Icons.Default.Shuffle,
                     darkTheme = darkTheme,
