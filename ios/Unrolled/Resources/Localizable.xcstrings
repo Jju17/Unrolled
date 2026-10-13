@@ -145,18 +145,6 @@
         }
       }
     },
-    "%lld kept, %lld deleted" : {
-      "comment" : "Stats pill accessibility label",
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld gardées, %2$lld supprimées"
-          }
-        }
-      }
-    },
     "%lld left" : {
       "localizations" : {
         "fr" : {
@@ -404,18 +392,6 @@
         }
       }
     },
-    "Couldn't delete the photos." : {
-      "comment" : "Generic fallback when PhotoKit batch delete fails",
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Impossible de supprimer les photos."
-          }
-        }
-      }
-    },
     "Current streak" : {
       "localizations" : {
         "fr" : {
@@ -554,18 +530,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mettre à la poubelle (%@)"
-          }
-        }
-      }
-    },
-    "Empty trash (%lld)" : {
-      "comment" : "Trash review footer button: count is the number of staged photos",
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mettre à la poubelle (%lld)"
           }
         }
       }
