@@ -88,7 +88,6 @@
         <item quantity="many">%d restantes</item>
         <item quantity="other">%d restantes</item>
     </plurals>
-    <string name="header_freed">%s libérés</string>
     <plurals name="header_goal_ring_a11y">
         <item quantity="one">Objectif du jour : %1$d photo sur %2$d. Ouvre tes statistiques.</item>
         <item quantity="many">Objectif du jour : %1$d photos sur %2$d. Ouvre tes statistiques.</item>

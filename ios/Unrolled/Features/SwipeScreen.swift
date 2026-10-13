@@ -146,14 +146,8 @@ struct SwipeScreen: View {
     }
 
     private var headerSubtitle: String {
-        var parts: [String] = []
-        if store.libraryLoaded, !store.isLoading {
-            parts.append(String(localized: "\(store.remainingCount) left"))
-        }
-        if store.stats.bytesFreed > 0 {
-            parts.append(String(localized: "\(PileTitles.bytes(store.stats.bytesFreed)) freed"))
-        }
-        return parts.joined(separator: ", ")
+        guard store.libraryLoaded, !store.isLoading else { return "" }
+        return String(localized: "\(store.remainingCount) left")
     }
 
     private var header: some View {

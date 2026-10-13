@@ -85,8 +85,6 @@
         <item quantity="one">%d left</item>
         <item quantity="other">%d left</item>
     </plurals>
-    <string name="header_freed">%s freed</string>
-    <string name="header_subtitle_separator" translatable="false"> · </string>
     <plurals name="header_goal_ring_a11y">
         <item quantity="one">Daily goal: %1$d of %2$d photo. Opens your stats.</item>
         <item quantity="other">Daily goal: %1$d of %2$d photos. Opens your stats.</item>

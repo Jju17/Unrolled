@@ -47,16 +47,6 @@
         }
       }
     },
-    "%@ freed" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ libérés"
-          }
-        }
-      }
-    },
     "%@ kept, %@ deleted" : {
       "localizations" : {
         "en" : {

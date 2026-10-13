@@ -119,12 +119,8 @@ internal fun Header(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (state.libraryLoaded) {
-                        val remaining = pluralStringResource(R.plurals.header_remaining, state.remainingInDeck, state.remainingInDeck)
-                        val freed = if (state.stats.bytesFreed > 0) {
-                            stringResource(R.string.header_freed, formatBytes(state.stats.bytesFreed))
-                        } else null
                         Text(
-                            listOfNotNull(remaining, freed).joinToString(stringResource(R.string.header_subtitle_separator)),
+                            pluralStringResource(R.plurals.header_remaining, state.remainingInDeck, state.remainingInDeck),
                             color = textSec,
                             fontSize = 12.sp,
                             maxLines = 1,

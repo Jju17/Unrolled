@@ -99,10 +99,11 @@ struct StatsSheet: View {
             Text(MilestoneText.headline(milestone))
                 .font(.system(size: 11, weight: .medium))
                 .multilineTextAlignment(.center)
+                .lineLimit(2)
                 .foregroundStyle(reached ? .primary : .secondary)
         }
-        .frame(maxWidth: .infinity)
         .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, minHeight: 80)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(reached ? Color.yellow.opacity(0.15) : Color(.secondarySystemFill))
