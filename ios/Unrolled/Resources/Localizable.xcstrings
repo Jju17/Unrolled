@@ -972,6 +972,17 @@
         }
       }
     },
+    "Preview this photo" : {
+      "comment" : "Trash list: thumbnail accessibility label",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voir cette photo en grand"
+          }
+        }
+      }
+    },
     "Privacy Policy" : {
       "comment" : "About sheet: link row label",
       "extractionState" : "stale",

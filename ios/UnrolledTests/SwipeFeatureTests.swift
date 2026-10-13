@@ -744,6 +744,63 @@ final class SwipeFeatureTests: XCTestCase {
         await store.send(.deletedPhotoRestoreTapped(id: "nope"))
     }
 
+    func test_trashPhotoTapped_opensPreviewAtThatPhoto() async {
+        let store = makeStore(
+            SwipeFeature.State(deletedPhotoIDs: ["a1", "a3"], photos: PhotoAsset.five, trashPhotos: [.p1, .p3])
+        )
+        await store.send(.trashPhotoTapped(id: "a3")) {
+            $0.trashPreviewIndex = 1
+        }
+        await store.send(.trashPreviewDismissed) {
+            $0.trashPreviewIndex = nil
+        }
+    }
+
+    func test_trashPhotoTapped_unknownID_isNoOp() async {
+        let store = makeStore(SwipeFeature.State(deletedPhotoIDs: ["a1"], photos: PhotoAsset.five, trashPhotos: [.p1]))
+        await store.send(.trashPhotoTapped(id: "nope"))
+    }
+
+    func test_trashPreviewKeep_restoresThePhotoAndClosesThePreview() async {
+        let store = makeStore(
+            SwipeFeature.State(
+                deletedPhotoIDs: ["a1", "a3"],
+                history: [SwipeHistoryEntry(photoID: "a3", kept: false)],
+                photos: PhotoAsset.five,
+                sessionDeletedIDs: ["a3"],
+                trashPhotos: [.p1, .p3],
+                trashPreviewIndex: 0
+            )
+        )
+        await store.send(.trashPreviewKeepTapped(localIdx: 1)) {
+            $0.deletedPhotoIDs = ["a1"]
+            $0.trashPhotos = [.p1]
+            $0.trashPreviewIndex = nil
+            $0.keptPhotoIDs = ["a3"]
+            $0.history = []
+            $0.sessionDeletedIDs = []
+            $0.sessionKeptIDs = ["a3"]
+        }
+    }
+
+    func test_trashPreviewKeep_outOfRange_isNoOp() async {
+        let store = makeStore(
+            SwipeFeature.State(deletedPhotoIDs: ["a1"], photos: PhotoAsset.five, trashPhotos: [.p1], trashPreviewIndex: 0)
+        )
+        await store.send(.trashPreviewKeepTapped(localIdx: 1))
+        await store.send(.trashPreviewKeepTapped(localIdx: -1))
+    }
+
+    func test_deletedSheetClosed_dropsThePreview() async {
+        let store = makeStore(
+            SwipeFeature.State(deletedPhotoIDs: ["a1"], deletedSheetOpen: true, photos: PhotoAsset.five, trashPhotos: [.p1], trashPreviewIndex: 0)
+        )
+        await store.send(.binding(.set(\.deletedSheetOpen, false))) {
+            $0.deletedSheetOpen = false
+            $0.trashPreviewIndex = nil
+        }
+    }
+
     func test_emptyTrashButton_emptyList_isNoOp() async {
         let store = makeStore()
         await store.send(.emptyTrashButtonTapped)

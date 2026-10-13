@@ -24,7 +24,9 @@ struct FullscreenPhotoView: View {
     let photos: [PhotoAsset]
     let startIndex: Int
     let settings: UserSettings
-    let onMarkAtRelativeIndex: (_ localIdx: Int, _ kept: Bool) -> Void
+    let onKeepAtRelativeIndex: (_ localIdx: Int) -> Void
+    /// `nil` hides the delete button (trash preview: the photo is already staged).
+    let onDeleteAtRelativeIndex: ((_ localIdx: Int) -> Void)?
 
     @State private var currentPage: Int = 0
     @State private var dismissDrag: CGFloat = 0
@@ -166,12 +168,14 @@ struct FullscreenPhotoView: View {
     private var actionBar: some View {
         HStack(spacing: 18) {
             Spacer()
-            actionButton(systemImage: "xmark", color: dropColor) {
-                onMarkAtRelativeIndex(currentPage, false)
+            if let onDeleteAtRelativeIndex {
+                actionButton(systemImage: "xmark", color: dropColor) {
+                    onDeleteAtRelativeIndex(currentPage)
+                }
+                .accessibilityLabel(Text("Delete this photo"))
             }
-            .accessibilityLabel(Text("Delete this photo"))
             actionButton(systemImage: "heart.fill", color: keepColor) {
-                onMarkAtRelativeIndex(currentPage, true)
+                onKeepAtRelativeIndex(currentPage)
             }
             .accessibilityLabel(Text("Keep this photo"))
             Spacer()

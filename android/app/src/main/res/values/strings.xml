@@ -60,6 +60,7 @@
     <string name="deleted_row_fallback_title">Photo</string>
     <string name="deleted_row_status">Ready to delete</string>
     <string name="deleted_row_keep">Keep</string>
+    <string name="deleted_row_preview_a11y">Preview this photo</string>
     <string name="deleted_footer_button">Empty trash (%d)</string>
     <string name="deleted_reset">Reset</string>
     <string name="deleted_reset_title">Reset all progress?</string>

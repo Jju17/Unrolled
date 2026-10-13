@@ -34,6 +34,13 @@ struct DeletedPhotosSheet: View {
 
     private var deletedPhotos: [PhotoAsset] { store.trashPhotos }
 
+    private var previewOpen: Binding<Bool> {
+        Binding(
+            get: { store.trashPreviewIndex != nil },
+            set: { if !$0 { store.send(.trashPreviewDismissed) } }
+        )
+    }
+
     private var trashBytes: Int64 {
         deletedPhotos.reduce(0) { $0 + (store.byteCounts[$1.id] ?? 0) }
     }
@@ -73,6 +80,15 @@ struct DeletedPhotosSheet: View {
                 }
             } message: {
                 Text("Clears every kept/deleted marker so the deck shows the full library again. The photos themselves are untouched.")
+            }
+            .fullScreenCover(isPresented: previewOpen) {
+                FullscreenPhotoView(
+                    photos: store.trashPhotos,
+                    startIndex: store.trashPreviewIndex ?? 0,
+                    settings: store.settings,
+                    onKeepAtRelativeIndex: { store.send(.trashPreviewKeepTapped(localIdx: $0)) },
+                    onDeleteAtRelativeIndex: nil
+                )
             }
         }
     }
@@ -117,13 +133,20 @@ struct DeletedPhotosSheet: View {
 
     private func row(for photo: PhotoAsset) -> some View {
         HStack(spacing: 12) {
-            PhotoAssetImage(
-                assetID: photo.id,
-                targetSize: CGSize(width: 160, height: 160),
-                contentMode: .fill
-            )
-            .frame(width: 64, height: 64)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            Button {
+                store.send(.trashPhotoTapped(id: photo.id))
+            } label: {
+                PhotoAssetImage(
+                    assetID: photo.id,
+                    targetSize: CGSize(width: 160, height: 160),
+                    contentMode: .fill
+                )
+                .frame(width: 64, height: 64)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .contentShape(RoundedRectangle(cornerRadius: 10))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text("Preview this photo"))
 
             VStack(alignment: .leading, spacing: 2) {
                 if let date = photo.creationDate {

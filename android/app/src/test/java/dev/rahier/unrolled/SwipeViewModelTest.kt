@@ -980,6 +980,70 @@ class SwipeViewModelTest {
     }
 
     @Test
+    fun `TrashPhotoTapped opens the preview at that photo and dismiss closes it`() = runTest(dispatcher) {
+        val viewModel = loadedVm()
+        viewModel.swipe(SwipeIntent.DeleteButtonTapped)
+        viewModel.swipe(SwipeIntent.DeleteButtonTapped)
+
+        viewModel.onIntent(SwipeIntent.TrashPhotoTapped(p2.id))
+        assertEquals(1, viewModel.state.value.trashPreviewIndex)
+
+        viewModel.onIntent(SwipeIntent.TrashPreviewDismissed)
+        assertNull(viewModel.state.value.trashPreviewIndex)
+    }
+
+    @Test
+    fun `TrashPhotoTapped with an unknown id is a no-op`() = runTest(dispatcher) {
+        val viewModel = loadedVm()
+        viewModel.swipe(SwipeIntent.DeleteButtonTapped)
+        viewModel.onIntent(SwipeIntent.TrashPhotoTapped(999L))
+        assertNull(viewModel.state.value.trashPreviewIndex)
+    }
+
+    @Test
+    fun `TrashPreviewKeepTapped restores the photo and closes the preview`() = runTest(dispatcher) {
+        val viewModel = loadedVm()
+        viewModel.swipe(SwipeIntent.DeleteButtonTapped)
+        viewModel.swipe(SwipeIntent.DeleteButtonTapped)
+        viewModel.onIntent(SwipeIntent.TrashPhotoTapped(p1.id))
+
+        viewModel.onIntent(SwipeIntent.TrashPreviewKeepTapped(1))
+
+        val s = viewModel.state.value
+        assertNull(s.trashPreviewIndex)
+        assertEquals(listOf(p1.id), s.deletedPhotoIDs)
+        assertEquals(listOf(p1), s.trashPhotos)
+        assertEquals(listOf(p2.id), s.keptPhotoIDs)
+        assertEquals(setOf(p2.id), s.sessionKeptIds)
+    }
+
+    @Test
+    fun `TrashPreviewKeepTapped out of range is a no-op`() = runTest(dispatcher) {
+        val viewModel = loadedVm()
+        viewModel.swipe(SwipeIntent.DeleteButtonTapped)
+        viewModel.onIntent(SwipeIntent.TrashPhotoTapped(p1.id))
+
+        viewModel.onIntent(SwipeIntent.TrashPreviewKeepTapped(1))
+        viewModel.onIntent(SwipeIntent.TrashPreviewKeepTapped(-1))
+
+        val s = viewModel.state.value
+        assertEquals(0, s.trashPreviewIndex)
+        assertEquals(listOf(p1.id), s.deletedPhotoIDs)
+    }
+
+    @Test
+    fun `DeletedSheetDismissed drops the preview`() = runTest(dispatcher) {
+        val viewModel = loadedVm()
+        viewModel.swipe(SwipeIntent.DeleteButtonTapped)
+        viewModel.onIntent(SwipeIntent.DeletedSheetButtonTapped)
+        viewModel.onIntent(SwipeIntent.TrashPhotoTapped(p1.id))
+
+        viewModel.onIntent(SwipeIntent.DeletedSheetDismissed)
+
+        assertNull(viewModel.state.value.trashPreviewIndex)
+    }
+
+    @Test
     fun `EmptyTrashButtonTapped with non-empty list kicks off delete with the trash uris`() = runTest(dispatcher) {
         val viewModel = loadedVm()
         viewModel.onIntent(SwipeIntent.DeleteButtonTapped)

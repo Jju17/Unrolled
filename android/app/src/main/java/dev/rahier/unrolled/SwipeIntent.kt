@@ -58,6 +58,9 @@ sealed interface SwipeIntent {
     data object TrashPendingConsumed : SwipeIntent
     /** Assets resolved for the persisted trash ids. */
     data class TrashPhotosLoaded(val photos: List<PhotoAsset>) : SwipeIntent
+    data class TrashPhotoTapped(val id: Long) : SwipeIntent
+    data object TrashPreviewDismissed : SwipeIntent
+    data class TrashPreviewKeepTapped(val localIdx: Int) : SwipeIntent
     /** Result of the system trash dialog. `message == null` with `success == false` is a user cancel. */
     data class TrashResult(val success: Boolean, val message: String? = null) : SwipeIntent
     data object UndoButtonTapped : SwipeIntent

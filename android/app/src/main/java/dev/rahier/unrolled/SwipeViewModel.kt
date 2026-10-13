@@ -86,27 +86,13 @@ class SwipeViewModel(
 
             SwipeIntent.DeleteButtonTapped -> startSwipe(direction = -1)
 
-            is SwipeIntent.DeletedPhotoRestoreTapped -> {
-                val id = intent.id
-                if (!_state.value.deletedPhotoIDs.contains(id)) return
-                _state.update {
-                    it.copy(
-                        deletedPhotoIDs = it.deletedPhotoIDs - id,
-                        trashPhotos = it.trashPhotos.filterNot { p -> p.id == id },
-                        keptPhotoIDs = (it.keptPhotoIDs - id) + id,
-                        history = it.history.filterNot { h -> id in h.photoIds },
-                        sessionDeletedIds = it.sessionDeletedIds - id,
-                        sessionKeptIds = if (id in it.sessionDeletedIds) it.sessionKeptIds + id else it.sessionKeptIds
-                    )
-                }
-                persistProgress()
-            }
+            is SwipeIntent.DeletedPhotoRestoreTapped -> restoreFromTrash(intent.id)
 
             SwipeIntent.DeletedSheetButtonTapped ->
                 _state.update { it.copy(deletedSheetOpen = true) }
 
             SwipeIntent.DeletedSheetDismissed ->
-                _state.update { it.copy(deletedSheetOpen = false, deleteError = null) }
+                _state.update { it.copy(deletedSheetOpen = false, deleteError = null, trashPreviewIndex = null) }
 
             SwipeIntent.EmptyTrashButtonTapped -> {
                 val s = _state.value
@@ -203,6 +189,7 @@ class SwipeViewModel(
                             deletedPhotoIDs = emptyList(),
                             keptPhotoIDs = emptyList(),
                             trashPhotos = emptyList(),
+                            trashPreviewIndex = null,
                             deletedSheetOpen = false
                         )
                     )
@@ -347,6 +334,25 @@ class SwipeViewModel(
             SwipeIntent.TrashPendingConsumed ->
                 _state.update { it.copy(trashPendingUris = null) }
 
+            is SwipeIntent.TrashPhotoTapped -> {
+                val index = _state.value.trashPhotos.indexOfFirst { it.id == intent.id }
+                if (index < 0) return
+                _state.update { it.copy(trashPreviewIndex = index) }
+            }
+
+            SwipeIntent.TrashPreviewDismissed ->
+                _state.update { it.copy(trashPreviewIndex = null) }
+
+            is SwipeIntent.TrashPreviewKeepTapped -> {
+                val s = _state.value
+                val base = s.trashPreviewIndex ?: return
+                val target = base + intent.localIdx
+                if (intent.localIdx < 0 || target >= s.trashPhotos.size) return
+                val id = s.trashPhotos[target].id
+                _state.update { it.copy(trashPreviewIndex = null) }
+                restoreFromTrash(id)
+            }
+
             is SwipeIntent.TrashPhotosLoaded -> {
                 val before = _state.value.deletedPhotoIDs
                 _state.update {
@@ -463,7 +469,7 @@ class SwipeViewModel(
         trashJob?.cancel()
         val ids = _state.value.deletedPhotoIDs
         if (ids.isEmpty()) {
-            _state.update { it.copy(trashPhotos = emptyList()) }
+            _state.update { it.copy(trashPhotos = emptyList(), trashPreviewIndex = null) }
             return
         }
         trashJob = viewModelScope.launch {
@@ -615,11 +621,33 @@ class SwipeViewModel(
 
     private fun forgetPhotos(state: SwipeState, photos: List<PhotoAsset>): SwipeState {
         val ids = photos.mapTo(HashSet()) { it.id }
+        val trashPhotos = state.trashPhotos.filterNot { it.id in ids }
         return state.copy(
             keptPhotoIDs = state.keptPhotoIDs.filterNot { it in ids },
             deletedPhotoIDs = state.deletedPhotoIDs.filterNot { it in ids },
-            trashPhotos = state.trashPhotos.filterNot { it.id in ids }
+            trashPhotos = trashPhotos,
+            trashPreviewIndex = clampedTrashPreview(state.trashPreviewIndex, trashPhotos.size)
         )
+    }
+
+    private fun clampedTrashPreview(index: Int?, trashCount: Int): Int? =
+        if (index == null || trashCount == 0) null else index.coerceAtMost(trashCount - 1)
+
+    private fun restoreFromTrash(id: Long) {
+        if (!_state.value.deletedPhotoIDs.contains(id)) return
+        _state.update {
+            val trashPhotos = it.trashPhotos.filterNot { p -> p.id == id }
+            it.copy(
+                deletedPhotoIDs = it.deletedPhotoIDs - id,
+                trashPhotos = trashPhotos,
+                trashPreviewIndex = clampedTrashPreview(it.trashPreviewIndex, trashPhotos.size),
+                keptPhotoIDs = (it.keptPhotoIDs - id) + id,
+                history = it.history.filterNot { h -> id in h.photoIds },
+                sessionDeletedIds = it.sessionDeletedIds - id,
+                sessionKeptIds = if (id in it.sessionDeletedIds) it.sessionKeptIds + id else it.sessionKeptIds
+            )
+        }
+        persistProgress()
     }
 
     private fun toggleShuffle(state: SwipeState): SwipeState {

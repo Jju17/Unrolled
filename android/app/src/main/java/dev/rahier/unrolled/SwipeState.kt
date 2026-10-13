@@ -53,6 +53,7 @@ data class SwipeState(
     val trashPendingUris: List<String>? = null,
     /** Resolved assets for [deletedPhotoIDs], same order. */
     val trashPhotos: List<PhotoAsset> = emptyList(),
+    val trashPreviewIndex: Int? = null,
     val unshuffledIndex: Int = 0
 ) {
     val done: Boolean get() = pilePhotoCount > 0 && activeIndex >= photos.size

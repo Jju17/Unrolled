@@ -223,6 +223,7 @@ internal fun DeletedPhotosSheet(
                             border = border,
                             textPrim = textPrim,
                             textSec = textSec,
+                            onPreview = { onIntent(SwipeIntent.TrashPhotoTapped(photo.id)) },
                             onRestore = {
                                 onIntent(SwipeIntent.DeletedPhotoRestoreTapped(photo.id))
                             }
@@ -250,6 +251,7 @@ private fun DeletedRow(
     border: Color,
     textPrim: Color,
     textSec: Color,
+    onPreview: () -> Unit,
     onRestore: () -> Unit
 ) {
     Row(
@@ -263,12 +265,13 @@ private fun DeletedRow(
     ) {
         AsyncImage(
             model = photo.uri,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.deleted_row_preview_a11y),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(64.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(Color(0xFF222222))
+                .clickable(role = Role.Button, onClick = onPreview)
         )
         Spacer(Modifier.size(12.dp))
         Column(Modifier.weight(1f)) {

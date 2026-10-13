@@ -69,7 +69,8 @@ internal fun FullscreenPhotoView(
     photos: List<PhotoAsset>,
     startIndex: Int,
     settings: UserSettings,
-    onMarkAtRelativeIndex: (localIdx: Int, kept: Boolean) -> Unit,
+    onKeepAtRelativeIndex: (localIdx: Int) -> Unit,
+    onDeleteAtRelativeIndex: ((localIdx: Int) -> Unit)?,
     onClose: () -> Unit
 ) {
     val visiblePhotos = remember(photos, startIndex) {
@@ -184,20 +185,20 @@ internal fun FullscreenPhotoView(
                     MetadataStrip(photo = it, settings = settings)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
-                    ActionButton(
-                        icon = Icons.Default.Close,
-                        tint = DropColor,
-                        contentDescription = stringResource(R.string.action_delete_a11y),
-                        onClick = {
-                            onMarkAtRelativeIndex(pagerState.currentPage, false)
-                        }
-                    )
+                    if (onDeleteAtRelativeIndex != null) {
+                        ActionButton(
+                            icon = Icons.Default.Close,
+                            tint = DropColor,
+                            contentDescription = stringResource(R.string.action_delete_a11y),
+                            onClick = { onDeleteAtRelativeIndex(pagerState.currentPage) }
+                        )
+                    }
                     ActionButton(
                         icon = Icons.Default.Favorite,
                         tint = KeepColor,
                         contentDescription = stringResource(R.string.action_keep_a11y),
                         onClick = {
-                            onMarkAtRelativeIndex(pagerState.currentPage, true)
+                            onKeepAtRelativeIndex(pagerState.currentPage)
                         }
                     )
                 }

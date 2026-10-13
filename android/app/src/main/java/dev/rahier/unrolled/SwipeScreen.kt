@@ -301,9 +301,8 @@ fun SwipeScreenContent(
                 photos = state.photos,
                 startIndex = state.activeIndex,
                 settings = state.settings,
-                onMarkAtRelativeIndex = { localIdx, kept ->
-                    onIntent(SwipeIntent.FullscreenMarkAtRelativeIndex(localIdx, kept))
-                },
+                onKeepAtRelativeIndex = { onIntent(SwipeIntent.FullscreenMarkAtRelativeIndex(it, true)) },
+                onDeleteAtRelativeIndex = { onIntent(SwipeIntent.FullscreenMarkAtRelativeIndex(it, false)) },
                 onClose = { onIntent(SwipeIntent.FullscreenDismissed) }
             )
         }
@@ -345,6 +344,17 @@ fun SwipeScreenContent(
                 state = state,
                 darkTheme = darkTheme,
                 onIntent = onIntent
+            )
+        }
+
+        state.trashPreviewIndex?.let { startIndex ->
+            FullscreenPhotoView(
+                photos = state.trashPhotos,
+                startIndex = startIndex,
+                settings = state.settings,
+                onKeepAtRelativeIndex = { onIntent(SwipeIntent.TrashPreviewKeepTapped(it)) },
+                onDeleteAtRelativeIndex = null,
+                onClose = { onIntent(SwipeIntent.TrashPreviewDismissed) }
             )
         }
     }

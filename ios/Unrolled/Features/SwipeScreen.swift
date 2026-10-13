@@ -113,10 +113,11 @@ struct SwipeScreen: View {
                 photos: store.photos,
                 startIndex: store.activeIndex,
                 settings: store.settings,
-                onMarkAtRelativeIndex: { localIdx, kept in
-                    store.send(
-                        .fullscreenMarkAtRelativeIndex(localIdx: localIdx, kept: kept)
-                    )
+                onKeepAtRelativeIndex: { localIdx in
+                    store.send(.fullscreenMarkAtRelativeIndex(localIdx: localIdx, kept: true))
+                },
+                onDeleteAtRelativeIndex: { localIdx in
+                    store.send(.fullscreenMarkAtRelativeIndex(localIdx: localIdx, kept: false))
                 }
             )
         }

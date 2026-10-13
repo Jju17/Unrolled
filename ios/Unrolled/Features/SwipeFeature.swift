@@ -65,6 +65,7 @@ struct SwipeFeature {
         var trashInFlight = false
         /// Resolved assets for `deletedPhotoIDs`, same order.
         var trashPhotos: [PhotoAsset] = []
+        var trashPreviewIndex: Int?
         /// Position in `loadedPhotos` when shuffle was enabled, so that
         /// disabling it resumes at the same place.
         var unshuffledIndex: Int = 0
@@ -177,6 +178,9 @@ struct SwipeFeature {
         case swipeExitAnimationCompleted
         case topCardTapped
         case trashPhotosLoaded([PhotoAsset])
+        case trashPhotoTapped(id: String)
+        case trashPreviewDismissed
+        case trashPreviewKeepTapped(localIdx: Int)
         case undoButtonTapped
         case viewAllPhotosTapped
         case viewInPhotosTapped
@@ -220,6 +224,7 @@ struct SwipeFeature {
             case .binding(\.deletedSheetOpen):
                 if !state.deletedSheetOpen {
                     state.deleteError = nil
+                    state.trashPreviewIndex = nil
                 }
                 return .none
 
@@ -253,20 +258,7 @@ struct SwipeFeature {
                 return startSwipe(&state, direction: -1)
 
             case .deletedPhotoRestoreTapped(let id):
-                guard state.deletedPhotoIDs.contains(id) else { return .none }
-                state.deletedPhotoIDs.removeAll { $0 == id }
-                state.trashPhotos.removeAll { $0.id == id }
-                if !state.keptPhotoIDs.contains(id) {
-                    state.keptPhotoIDs.append(id)
-                }
-                if state.sessionDeletedIDs.remove(id) != nil {
-                    state.sessionKeptIDs.insert(id)
-                }
-                state.history = state.history.compactMap { entry in
-                    let remaining = entry.decisions.filter { $0.photoID != id }
-                    return remaining.isEmpty ? nil : SwipeHistoryEntry(decisions: remaining)
-                }
-                return persistProgress(state)
+                return restoreFromTrash(&state, id: id)
 
             case .deletedSheetButtonTapped:
                 state.deletedSheetOpen = true
@@ -308,6 +300,7 @@ struct SwipeFeature {
                     remapActiveIndex(&state, topID: topID)
                     state.deletedPhotoIDs.removeAll()
                     state.trashPhotos.removeAll()
+                    state.trashPreviewIndex = nil
                     state.deletedSheetOpen = false
                     state.deleteError = nil
                     state.history.removeAll()
@@ -397,6 +390,7 @@ struct SwipeFeature {
                     state.keptPhotoIDs.removeAll { incomingIDs.contains($0) }
                     state.deletedPhotoIDs.removeAll { incomingIDs.contains($0) }
                     state.trashPhotos.removeAll { incomingIDs.contains($0.id) }
+                    clampTrashPreview(&state)
                     rebuildDeck(&state, from: incoming)
                     return .merge(persistProgress(state), requestHashes(&state))
                 case .initial:
@@ -449,6 +443,7 @@ struct SwipeFeature {
                 state.deletedPhotoIDs.removeAll()
                 state.keptPhotoIDs.removeAll()
                 state.trashPhotos.removeAll()
+                state.trashPreviewIndex = nil
                 state.deletedSheetOpen = false
                 state.deleteError = nil
                 resetSession(&state)
@@ -607,6 +602,23 @@ struct SwipeFeature {
                 state.fullscreenOpen = true
                 return .none
 
+            case .trashPhotoTapped(let id):
+                guard let index = state.trashPhotos.firstIndex(where: { $0.id == id }) else { return .none }
+                state.trashPreviewIndex = index
+                return .none
+
+            case .trashPreviewDismissed:
+                state.trashPreviewIndex = nil
+                return .none
+
+            case .trashPreviewKeepTapped(let localIdx):
+                guard let base = state.trashPreviewIndex, localIdx >= 0,
+                      base + localIdx < state.trashPhotos.count
+                else { return .none }
+                let id = state.trashPhotos[base + localIdx].id
+                state.trashPreviewIndex = nil
+                return restoreFromTrash(&state, id: id)
+
             case .trashPhotosLoaded(let photos):
                 let byID = Dictionary(photos.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
                 state.trashPhotos = state.deletedPhotoIDs.compactMap { byID[$0] }
@@ -732,6 +744,33 @@ struct SwipeFeature {
             await send(.similarityHashesLoaded(hashes))
         }
         .cancellable(id: CancelID.fetchHashes, cancelInFlight: false)
+    }
+
+    private func restoreFromTrash(_ state: inout State, id: String) -> Effect<Action> {
+        guard state.deletedPhotoIDs.contains(id) else { return .none }
+        state.deletedPhotoIDs.removeAll { $0 == id }
+        state.trashPhotos.removeAll { $0.id == id }
+        clampTrashPreview(&state)
+        if !state.keptPhotoIDs.contains(id) {
+            state.keptPhotoIDs.append(id)
+        }
+        if state.sessionDeletedIDs.remove(id) != nil {
+            state.sessionKeptIDs.insert(id)
+        }
+        state.history = state.history.compactMap { entry in
+            let remaining = entry.decisions.filter { $0.photoID != id }
+            return remaining.isEmpty ? nil : SwipeHistoryEntry(decisions: remaining)
+        }
+        return persistProgress(state)
+    }
+
+    private func clampTrashPreview(_ state: inout State) {
+        guard let index = state.trashPreviewIndex else { return }
+        if state.trashPhotos.isEmpty {
+            state.trashPreviewIndex = nil
+        } else {
+            state.trashPreviewIndex = min(index, state.trashPhotos.count - 1)
+        }
     }
 
     private func persistSettings(_ value: UserSettings) -> Effect<Action> {
