@@ -76,7 +76,7 @@ https://unrolled-e4775.web.app
 © 2026 Julien Rahier
 ```
 
-**What's New in This Version** (v1.2.5: first App Store release since 1.1.0, covers all of 1.2.x)
+**What's New in This Version** (v1.2.6: first App Store release since 1.1.0, covers all of 1.2.x)
 ```
 ! Big update !
 
@@ -87,9 +87,10 @@ Finish line: every finished pile shows what you reviewed, kept, dropped and the 
 Goals and streaks: a daily goal ring, a streak with one forgiven day per week, milestones you can share. All optional, all local.
 Tap a trash thumbnail to preview it before deleting. Swipe down to close the full-screen photo.
 Unrolled now speaks 21 languages.
+Ready for iPhone Duo: full inner display, and a layout that keeps the buttons off the hinge when the phone is half folded.
 ```
 
-**What's New in This Version** (v1.2.5, French)
+**What's New in This Version** (v1.2.6, French)
 ```
 ! Grosse mise à jour !
 
@@ -100,6 +101,7 @@ Ligne d'arrivée : chaque pile terminée montre ce que tu as revu, gardé, jeté
 Objectifs et séries : un anneau d'objectif quotidien, une série avec un jour pardonné par semaine, des paliers à partager. Tout optionnel, tout local.
 Tape une miniature de la corbeille pour la prévisualiser avant de supprimer. Swipe vers le bas pour fermer le plein écran.
 Unrolled parle maintenant 21 langues.
+Prêt pour l'iPhone Duo : écran intérieur en plein écran, et une mise en page qui garde les boutons loin de la charnière quand le téléphone est à moitié plié.
 ```
 
 **What's New in This Version** (v1.0: first release)
