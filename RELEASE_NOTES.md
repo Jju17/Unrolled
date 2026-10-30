@@ -383,6 +383,20 @@ Paste the whole fenced block for the target version into **Play Console → [tra
 
 When bumping `versionCode` / `versionName` in `android/app/build.gradle.kts`, **prepend a new block here (newest on top)** and keep the three locales in sync.
 
+#### v1.2.6 (versionCode 9, targetSdk 37)
+
+```
+<en-US>
+Layout polish on large and foldable screens.
+</en-US>
+<fr-FR>
+Mise en page peaufinée sur les grands écrans et les écrans pliables.
+</fr-FR>
+<nl-NL>
+Lay-out bijgewerkt voor grote en opvouwbare schermen.
+</nl-NL>
+```
+
 #### v1.2.5 (versionCode 8, targetSdk 37): first Play release
 
 ```
