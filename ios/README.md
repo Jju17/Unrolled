@@ -11,6 +11,8 @@ Native SwiftUI app built on **The Composable Architecture (TCA)**. iOS 17+. Bund
 - PhotoKit (read + delete + limited-library picker + sizes + thumbnails for hashing), AVKit, UserNotifications and `CLGeocoder` wrapped behind TCA clients
 - XCTest + `TestStore` for the reducer suite
 
+iPhone Duo: the app is archived with the iOS 27.1 SDK (Xcode 27.1 or newer, never a beta) so it gets the full inner display. Layout decisions never read the idiom, the orientation or `UIScreen.main`: size classes, `GeometryReader` and `@Environment(\.displayScale)` only. `DeckLayout` (in `Models/`) caps the deck column and the card aspect ratio so the deck stays a centred phone-like column on the inner display and in Split View. When the device is partially folded, `SwipeScreen` reads the active division region (`GeometryProxy.reservedRegions(kind: .division)`, iOS 27.1) and `DeckLayout.foldedPanes` splits the screen on the hinge: the card stack keeps the half away from the fold and `FoldedControls` fills the other half (pile title, action buttons with labels, the photo's metadata card and the similar group when the fold is horizontal, a vertical button column with the pile progress and the next cards when it is vertical). Nothing interactive sits on the fold. Test the four poses (closed, open, open rotated, folded in both orientations) and Split View in Device Hub on the iPhone Duo simulator.
+
 No analytics, no third-party SDK beyond TCA. The only network traffic is the optional reverse-geocoding call (`CLGeocoder`) that prints a city name under a photo, gated by the "Show location" setting. The daily reminder is a local `UserNotifications` calendar trigger, off by default.
 
 ## First-time setup

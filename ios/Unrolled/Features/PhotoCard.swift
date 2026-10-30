@@ -28,6 +28,7 @@ struct PhotoCard: View {
     /// task below. Only used by the top card (others wouldn't show
     /// labels anyway).
     @State private var placeName: String?
+    @Environment(\.displayScale) private var displayScale
 
     /// Top card upgrades to `PHLivePhotoView` when the user has the
     /// toggle on and the asset is a Live Photo. The deeper-stack cards
@@ -54,8 +55,8 @@ struct PhotoCard: View {
                 PhotoAssetImage(
                     assetID: photo.id,
                     targetSize: CGSize(
-                        width: geo.size.width * UIScreen.main.scale,
-                        height: geo.size.height * UIScreen.main.scale
+                        width: geo.size.width * displayScale,
+                        height: geo.size.height * displayScale
                     )
                 )
                 .frame(width: geo.size.width, height: geo.size.height)

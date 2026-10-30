@@ -208,6 +208,7 @@ private struct FullscreenPhotoPage: View {
     let photo: PhotoAsset
     let playLivePhotos: Bool
     let onZoomChanged: (Bool) -> Void
+    @Environment(\.displayScale) private var displayScale
 
     var body: some View {
         ZoomableScrollView(maxScale: 4, onZoomChanged: onZoomChanged) {
@@ -221,8 +222,8 @@ private struct FullscreenPhotoPage: View {
                         PhotoAssetImage(
                             assetID: photo.id,
                             targetSize: CGSize(
-                                width: geo.size.width * UIScreen.main.scale,
-                                height: geo.size.height * UIScreen.main.scale
+                                width: geo.size.width * displayScale,
+                                height: geo.size.height * displayScale
                             ),
                             contentMode: .fit
                         )

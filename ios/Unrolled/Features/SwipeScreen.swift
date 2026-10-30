@@ -9,6 +9,7 @@ import UIKit
 
 struct SwipeScreen: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.displayScale) private var displayScale
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -21,37 +22,34 @@ struct SwipeScreen: View {
     private static let stackAnimation: Animation =
         .spring(response: 0.32, dampingFraction: 0.82)
 
-    private let keepColor = Color(red: 0.188, green: 0.824, blue: 0.541)
-    private let dropColor = Color(red: 0.937, green: 0.243, blue: 0.357)
-    private let undoColor = Color(red: 0.961, green: 0.725, blue: 0.271)
+    private let keepColor = DeckPalette.keep
+    private let dropColor = DeckPalette.drop
+    private let undoColor = DeckPalette.undo
 
-    private var bgPage: Color {
-        colorScheme == .dark
-            ? Color(red: 0.055, green: 0.055, blue: 0.071)
-            : Color(red: 0.965, green: 0.961, blue: 0.945)
-    }
-    private var textPrim: Color {
-        colorScheme == .dark ? .white : Color(red: 0.102, green: 0.102, blue: 0.102)
-    }
-    private var textSec: Color {
-        (colorScheme == .dark ? Color.white : Color.black).opacity(0.55)
-    }
-    private var surface: Color {
-        colorScheme == .dark ? Color(red: 0.102, green: 0.102, blue: 0.125) : .white
-    }
-    private var border: Color {
-        (colorScheme == .dark ? Color.white : Color.black)
-            .opacity(colorScheme == .dark ? 0.08 : 0.06)
-    }
+    private var bgPage: Color { DeckPalette.page(colorScheme) }
+    private var textPrim: Color { DeckPalette.textPrimary(colorScheme) }
+    private var textSec: Color { DeckPalette.textSecondary(colorScheme) }
+    private var surface: Color { DeckPalette.surface(colorScheme) }
+    private var border: Color { DeckPalette.border(colorScheme) }
 
     var body: some View {
         ZStack {
             bgPage.ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                header
-                stackArea
-                actionBar
+            GeometryReader { proxy in
+                let bounds = CGRect(origin: .zero, size: proxy.size)
+                if let fold = Self.activeFold(in: proxy),
+                   let panes = DeckLayout.foldedPanes(in: bounds, fold: fold) {
+                    foldedLayout(panes)
+                } else {
+                    VStack(spacing: 0) {
+                        header
+                        stackArea
+                        actionBar
+                    }
+                    .frame(maxWidth: DeckLayout.maxColumnWidth)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             }
 
             if store.goalCelebration {
@@ -152,89 +150,128 @@ struct SwipeScreen: View {
 
     private var header: some View {
         HStack(alignment: .bottom) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("PILE")
-                    .font(.system(size: 11, weight: .semibold))
-                    .tracking(2)
-                    .foregroundStyle(textSec)
-                Button {
-                    store.send(.pileTitleTapped)
-                } label: {
-                    HStack(spacing: 6) {
-                        Text(verbatim: pileTitle)
-                            .font(.system(size: 24, weight: .bold))
-                            .tracking(-0.5)
-                            .foregroundStyle(textPrim)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(textPrim)
-                    }
-                }
-                .buttonStyle(.plain)
-                .accessibilityHint(Text("Open pile picker"))
-                HStack(spacing: 8) {
-                    if !headerSubtitle.isEmpty {
-                        Text(verbatim: headerSubtitle)
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(textSec)
-                            .lineLimit(1)
-                    }
-                    statsPill
-                }
-                .frame(minHeight: 32)
-            }
+            pileTitleBlock
             Spacer()
-            HStack(spacing: 10) {
-                if store.settings.gamificationEnabled {
-                    Button {
-                        store.send(.statsButtonTapped)
-                    } label: {
-                        GoalRing(
-                            count: store.stats.todayCount,
-                            goal: store.settings.dailyGoal,
-                            streak: store.stats.currentStreak,
-                            color: store.goalReachedToday ? keepColor : dropColor,
-                            track: colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08)
-                        )
-                        .foregroundStyle(textPrim)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityHint(Text("Opens your stats"))
-                }
-                iconButton(
-                    systemImage: "shuffle",
-                    active: store.shuffleEnabled
-                ) {
-                    store.send(.shuffleButtonTapped)
-                }
-                .accessibilityLabel(Text("Shuffle photos"))
-                Menu {
-                    Button {
-                        store.send(.statsButtonTapped)
-                    } label: {
-                        Label(String(localized: "Your stats"), systemImage: "chart.bar")
-                    }
-                    Button {
-                        store.send(.settingsButtonTapped)
-                    } label: {
-                        Label(String(localized: "Settings"), systemImage: "gearshape")
-                    }
-                    Button {
-                        store.send(.aboutMenuItemTapped)
-                    } label: {
-                        Label(String(localized: "About Unrolled"), systemImage: "info.circle")
-                    }
-                } label: {
-                    iconButton(dots: true)
-                }
-                .accessibilityLabel(Text("More options"))
-            }
+            headerControls
         }
         .padding(.horizontal, 20)
         .padding(.top, 12)
         .padding(.bottom, 4)
+    }
+
+    private var pileTitleBlock: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("PILE")
+                .font(.system(size: 11, weight: .semibold))
+                .tracking(2)
+                .foregroundStyle(textSec)
+            Button {
+                store.send(.pileTitleTapped)
+            } label: {
+                HStack(spacing: 6) {
+                    Text(verbatim: pileTitle)
+                        .font(.system(size: 24, weight: .bold))
+                        .tracking(-0.5)
+                        .foregroundStyle(textPrim)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(textPrim)
+                }
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint(Text("Open pile picker"))
+            HStack(spacing: 8) {
+                if !headerSubtitle.isEmpty {
+                    Text(verbatim: headerSubtitle)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(textSec)
+                        .lineLimit(1)
+                }
+                statsPill
+            }
+            .frame(minHeight: 32)
+        }
+    }
+
+    private var headerControls: some View {
+        HStack(spacing: 10) {
+            if store.settings.gamificationEnabled {
+                Button {
+                    store.send(.statsButtonTapped)
+                } label: {
+                    GoalRing(
+                        count: store.stats.todayCount,
+                        goal: store.settings.dailyGoal,
+                        streak: store.stats.currentStreak,
+                        color: store.goalReachedToday ? keepColor : dropColor,
+                        track: colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08)
+                    )
+                    .foregroundStyle(textPrim)
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint(Text("Opens your stats"))
+            }
+            iconButton(
+                systemImage: "shuffle",
+                active: store.shuffleEnabled
+            ) {
+                store.send(.shuffleButtonTapped)
+            }
+            .accessibilityLabel(Text("Shuffle photos"))
+            Menu {
+                Button {
+                    store.send(.statsButtonTapped)
+                } label: {
+                    Label(String(localized: "Your stats"), systemImage: "chart.bar")
+                }
+                Button {
+                    store.send(.settingsButtonTapped)
+                } label: {
+                    Label(String(localized: "Settings"), systemImage: "gearshape")
+                }
+                Button {
+                    store.send(.aboutMenuItemTapped)
+                } label: {
+                    Label(String(localized: "About Unrolled"), systemImage: "info.circle")
+                }
+            } label: {
+                iconButton(dots: true)
+            }
+            .accessibilityLabel(Text("More options"))
+        }
+    }
+
+    // MARK: - Folded iPhone Duo
+
+    private static func activeFold(in proxy: GeometryProxy) -> CGRect? {
+        guard #available(iOS 27.1, *) else { return nil }
+        guard let region = proxy.reservedRegions(kind: .division).first(where: \.isActive) else { return nil }
+        let margins = region.margins
+        return CGRect(
+            x: region.frame.minX - margins.leading,
+            y: region.frame.minY - margins.top,
+            width: region.frame.width + margins.leading + margins.trailing,
+            height: region.frame.height + margins.top + margins.bottom
+        )
+    }
+
+    private func foldedLayout(_ panes: DeckLayout.FoldedPanes) -> some View {
+        ZStack(alignment: .topLeading) {
+            stackArea
+                .frame(width: panes.content.width, height: panes.content.height)
+                .offset(x: panes.content.minX, y: panes.content.minY)
+            FoldedControls(
+                store: store,
+                orientation: panes.orientation,
+                title: { pileTitleBlock },
+                controls: { headerControls },
+                animation: Self.stackAnimation
+            )
+            .frame(width: panes.controls.width, height: panes.controls.height)
+            .offset(x: panes.controls.minX, y: panes.controls.minY)
+        }
     }
 
     private var goalToast: some View {
@@ -373,6 +410,7 @@ struct SwipeScreen: View {
 
     private var stackArea: some View {
         GeometryReader { geo in
+            let cardSize = DeckLayout.cardSize(fitting: geo.size)
             ZStack {
                 switch contentState {
                 case .permissionGate:
@@ -390,7 +428,7 @@ struct SwipeScreen: View {
                             photo: item.photo,
                             depth: depth,
                             drag: depth == 0 ? store.drag : .zero,
-                            size: geo.size,
+                            size: cardSize,
                             keepColor: keepColor,
                             dropColor: dropColor,
                             showLocation: store.settings.showLocation,
@@ -426,8 +464,9 @@ struct SwipeScreen: View {
                             )
                         )
                     }
-                    .onAppear { prefetchUpcoming(size: geo.size) }
-                    .onChange(of: store.activeIndex) { _, _ in prefetchUpcoming(size: geo.size) }
+                    .onAppear { prefetchUpcoming(size: cardSize) }
+                    .onChange(of: store.activeIndex) { _, _ in prefetchUpcoming(size: cardSize) }
+                    .onChange(of: cardSize) { _, new in prefetchUpcoming(size: new) }
 
                     // Fly-off overlay: `id(...)` forces a fresh view
                     // instance per commit so `ExitingCardView.onAppear`
@@ -437,7 +476,7 @@ struct SwipeScreen: View {
                             photo: exiting,
                             direction: store.exitingDirection,
                             startDrag: store.exitingStartDrag,
-                            size: geo.size,
+                            size: cardSize,
                             keepColor: keepColor,
                             dropColor: dropColor,
                             showLocation: store.settings.showLocation
@@ -479,8 +518,8 @@ struct SwipeScreen: View {
         guard end > start else { return }
         let ids = store.photos[start..<end].map(\.id)
         let px = CGSize(
-            width: size.width * UIScreen.main.scale,
-            height: size.height * UIScreen.main.scale
+            width: size.width * displayScale,
+            height: size.height * displayScale
         )
         Task.detached(priority: .utility) {
             PhotoImageCache.shared.prefetch(ids: ids, size: px)
@@ -657,21 +696,9 @@ struct SwipeScreen: View {
 
     private func actionButton<Content: View>(
         size: CGFloat, color: Color, action: @escaping () -> Void,
-        disabled: Bool = false, @ViewBuilder content: () -> Content
+        disabled: Bool = false, @ViewBuilder content: @escaping () -> Content
     ) -> some View {
-        Button(action: action) {
-            ZStack {
-                Circle()
-                    .fill(surface)
-                    .overlay(Circle().stroke(border, lineWidth: 1))
-                    .shadow(color: color.opacity(disabled ? 0 : 0.2), radius: 9, x: 0, y: 6)
-                content()
-            }
-            .frame(width: size, height: size)
-        }
-        .buttonStyle(ActionButtonStyle())
-        .disabled(disabled)
-        .opacity(disabled ? 0.35 : 1)
+        DeckActionButton(size: size, color: color, disabled: disabled, action: action, content: content)
     }
 }
 
@@ -826,14 +853,6 @@ private struct ExitingCardView: View {
         )
         .animation(.easeOut(duration: Self.duration), value: offScreen)
         .onAppear { offScreen = true }
-    }
-}
-
-private struct ActionButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.92 : 1)
-            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
     }
 }
 
