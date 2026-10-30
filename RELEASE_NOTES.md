@@ -76,6 +76,32 @@ https://unrolled-e4775.web.app
 © 2026 Julien Rahier
 ```
 
+**What's New in This Version** (v1.2.5: first App Store release since 1.1.0, covers all of 1.2.x)
+```
+! Big update !
+
+Piles: sort this month, on this day, a year ago, screenshots, videos, any month or album. Each pile shows what is left.
+Similar shots grouped: bursts and near-duplicates detected on your device, keep the best one and drop the rest in one tap.
+Videos join the deck, with full-screen playback.
+Finish line: every finished pile shows what you reviewed, kept, dropped and the storage you free.
+Goals and streaks: a daily goal ring, a streak with one forgiven day per week, milestones you can share. All optional, all local.
+Tap a trash thumbnail to preview it before deleting. Swipe down to close the full-screen photo.
+Unrolled now speaks 21 languages.
+```
+
+**What's New in This Version** (v1.2.5, French)
+```
+! Grosse mise à jour !
+
+Des piles : ce mois-ci, ce jour-là, il y a un an, captures d'écran, vidéos, n'importe quel mois ou album. Chaque pile affiche ce qu'il reste.
+Photos similaires regroupées : rafales et quasi-doublons détectés sur ton appareil, garde la meilleure et jette le reste en un tap.
+Les vidéos rejoignent le paquet, avec lecture en plein écran.
+Ligne d'arrivée : chaque pile terminée montre ce que tu as revu, gardé, jeté et l'espace libéré.
+Objectifs et séries : un anneau d'objectif quotidien, une série avec un jour pardonné par semaine, des paliers à partager. Tout optionnel, tout local.
+Tape une miniature de la corbeille pour la prévisualiser avant de supprimer. Swipe vers le bas pour fermer le plein écran.
+Unrolled parle maintenant 21 langues.
+```
+
 **What's New in This Version** (v1.0: first release)
 ```
 First public release. Sort your camera roll pile by pile: this month, on this day, screenshots, videos or any album. Similar shots are grouped, every finished pile shows the storage you free, and an optional daily goal keeps you going. Private and on-device.
@@ -357,17 +383,17 @@ Paste the whole fenced block for the target version into **Play Console → [tra
 
 When bumping `versionCode` / `versionName` in `android/app/build.gradle.kts`, **prepend a new block here (newest on top)** and keep the three locales in sync.
 
-#### v1.2.5 (versionCode 8, targetSdk 37)
+#### v1.2.5 (versionCode 8, targetSdk 37): first Play release
 
 ```
 <en-US>
-Unrolled now speaks 21 languages, from Spanish and German to Hindi, Arabic, Japanese and Chinese. It follows your phone's language automatically.
+First release on Google Play. Sort your gallery pile by pile: this month, on this day, screenshots, videos or any folder. Similar shots are grouped, every finished pile shows the storage you free, and an optional daily goal keeps you going. Private and on-device, in 21 languages.
 </en-US>
 <fr-FR>
-Unrolled parle maintenant 21 langues, de l'espagnol et l'allemand au hindi, à l'arabe, au japonais et au chinois. L'app suit automatiquement la langue de ton téléphone.
+Première version sur Google Play. Trie ta galerie pile par pile : ce mois-ci, ce jour-là, captures d'écran, vidéos ou n'importe quel dossier. Les photos similaires sont regroupées, chaque pile terminée montre l'espace libéré, et un objectif quotidien optionnel t'accompagne. Privée et locale, en 21 langues.
 </fr-FR>
 <nl-NL>
-Unrolled spreekt nu 21 talen, van Spaans en Duits tot Hindi, Arabisch, Japans en Chinees. De app volgt automatisch de taal van je telefoon.
+Eerste versie op Google Play. Ruim je galerij stapel voor stapel op: deze maand, op deze dag, screenshots, video's of een map naar keuze. Vergelijkbare foto's worden gegroepeerd, elke afgewerkte stapel toont hoeveel ruimte je vrijmaakt, en een optioneel dagelijks doel houdt je op gang. Privé en lokaal, in 21 talen.
 </nl-NL>
 ```
 

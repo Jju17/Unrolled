@@ -6,17 +6,18 @@ Living tracker for the whole repo: what is open, what was resolved and when. His
 
 - **[M] No UI or snapshot tests** on either client (swift-snapshot-testing / Paparazzi). Reducer and ViewModel suites are the only regression net.
 - **[M] No instrumented tests** for `MediaStorePhotoRepository` (cursor lifecycle, partial access, bucket filtering, `loadPhotosByIds` chunking).
-- **[L] Android `versionCode = 2`** must be confirmed against the Play Console release history before the first upload.
 - **[L] Dynamic Type.** Both clients use fixed point sizes; the 11 pt "ALBUM" label is unreadable at accessibility sizes.
 - **[L] Image load failure** leaves a spinner on the card (`PhotoAssetImage`, Coil `AsyncImage` without error state). Needs a placeholder after a timeout.
 - **[L] Locales.** In-app strings exist in en + fr only; store copy already has nl-NL.
 - **[M] Similar-photo thresholds** (10 s gap, Hamming distance 12 on a 9x8 dHash) were chosen from the literature, not tuned on real libraries. Expect false negatives on HDR/exposure brackets and false positives on uniform scenes (sky, walls). Tune with a labelled sample before promoting the badge further.
-- **[M] Android 17 (API 37)** is the compile/target level required by the current AndroidX releases but has not been exercised on a device. Smoke-test videos, the trash request and notifications on an API 37 emulator before the first upload.
+- **[M] Android 17 (API 37)** is the compile/target level required by the current AndroidX releases. The deck, pile picker, trash sheet and finished-pile summary ran on the API 37 Pixel 9 emulator on 2026-10-30; the system trash request, videos and notifications are still to be exercised on a device.
 - **[L] Video playback** is the system player on both platforms (`AVKit` / `VideoView`): no scrubbing polish, no mute toggle, audio follows the ringer. Good enough to decide keep or delete.
 - **[L] Daily reminder** on Android uses `AlarmManager.setInexactRepeating`, so the notification lands within the system's batching window, not at the exact minute.
 - **[L] iOS byte counts** come from `PHAssetResource` and are fetched lazily; the session summary can briefly show a lower "to free" figure until sizes arrive.
 
 ## Resolved
+
+- 2026-10-30: Play Console set up for the first Android release. App content declarations, content rating (IARC: PEGI 3, ESRB Everyone), store listing with four emulator screenshots, upload keystore created (`android/keystore.jks`, password in the login keychain under `unrolled-android-upload-keystore`, copy in `~/Documents/Unrolled-android-upload-key/`). First bundle is `versionCode` 8 (1.2.5), published on the internal testing track (tester list `Unrolled internal`); production still needs the countries, the production release and the Google review. iOS 1.2.5 (build 1037) submitted to App Review the same day with a What's New covering all of 1.2.x; App Store screenshots still show the 1.1.0 UI.
 
 - 2026-10-13: iOS header unreachable behind the card. A portrait photo cropped with `.fill` overflowed the card above the clip, and SwiftUI clipping only hides pixels, it does not bound touches: taps on the header opened the photo fullscreen. Each clipped layer now carries a matching `contentShape`.
 
