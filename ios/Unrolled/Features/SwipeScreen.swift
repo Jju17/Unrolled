@@ -245,9 +245,7 @@ struct SwipeScreen: View {
 
     // MARK: - Folded iPhone Duo
 
-    // Reserved regions need the iOS 27.1 SDK (Xcode 27, Swift 6.4); older toolchains build the flat layout only.
     private static func activeFold(in proxy: GeometryProxy) -> CGRect? {
-        #if compiler(>=6.4)
         guard #available(iOS 27.1, *) else { return nil }
         guard let region = proxy.reservedRegions(kind: .division).first(where: \.isActive) else { return nil }
         let margins = region.margins
@@ -257,10 +255,6 @@ struct SwipeScreen: View {
             width: region.frame.width + margins.leading + margins.trailing,
             height: region.frame.height + margins.top + margins.bottom
         )
-        #else
-        _ = proxy
-        return nil
-        #endif
     }
 
     private func foldedLayout(_ panes: DeckLayout.FoldedPanes) -> some View {

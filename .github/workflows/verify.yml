@@ -118,7 +118,7 @@ jobs:
   ios:
     needs: changes
     if: needs.changes.outputs.ios == 'true' && github.event_name == 'push'
-    runs-on: macos-latest
+    runs-on: xcode-27
     timeout-minutes: 45
     defaults:
       run:

@@ -90,7 +90,7 @@ xcodebuild test -project Unrolled.xcodeproj -scheme Unrolled \
   -destination 'platform=iOS Simulator,OS=latest,name=iPhone 17' -skipMacroValidation
 ```
 
-CI runs the same command on `macos-latest` only when `ios/` changes, with `DerivedData` restored from the last `main` run. TestFlight builds leave from a Mac with `scripts/release-ios.sh <version>` (see the root README); `Scripts/ci/` holds the archive, upload and build-number helpers it uses. The build number is 1000 plus the commit count, so every `main` commit gets a higher one.
+CI runs the same command on the `xcode-27` runner image (Xcode 27.1 and the iOS 27.1 SDK, the `macos-latest` image stops at Xcode 26) only when `ios/` changes, with `DerivedData` restored from the last `main` run. TestFlight builds leave from a Mac with `scripts/release-ios.sh <version>` (see the root README); `Scripts/ci/` holds the archive, upload and build-number helpers it uses. The build number is 1000 plus the commit count, so every `main` commit gets a higher one.
 
 First build takes a few minutes (SPM fetches TCA + transitive deps); subsequent builds are fast.
 
